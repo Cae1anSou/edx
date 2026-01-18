@@ -10,6 +10,8 @@
 - 支持最小教学运营：教师能看进度看板并导出成绩/提交报表。
 - 支持最小学习社区与沟通：课程讨论发帖/回复，关键事件触发通知，用户可管理通知偏好。
 
+> v1 以模块化单体落地领域边界（见 `neoEdx/14_v1_Deployment_and_Runtime_Constraints.md`、`neoEdx/15_v1_Technology_Stack_ADR.md`）。
+
 ## 2. v1 非目标（Non-goals）
 
 以下明确不进入 v1（即使现有系统具备），除非后续范围变更：

@@ -305,6 +305,24 @@ class BackendApplicationTests {
                 .andExpect(jsonPath("$.data.enterpriseId").value("ent-01"));
     }
 
+    @Test
+    void consentShouldSupportUpsertAndGet() throws Exception {
+        mockMvc.perform(withAuth(post("/consent/api/v1/data_sharing_consent"), "consent:write", null)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "username": "test-learner",
+                                  "consented": true
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.consented").value(true));
+
+        mockMvc.perform(withAuth(get("/consent/api/v1/data_sharing_consent?username=test-learner"), "consent:read", null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.username").value("test-learner"));
+    }
+
     private MockHttpServletRequestBuilder withAuth(
             MockHttpServletRequestBuilder builder,
             String permissions,

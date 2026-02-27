@@ -26,6 +26,8 @@ app:
     repository: inmemory
   enterprise:
     repository: inmemory
+  consent:
+    repository: inmemory
   identity:
     repository: inmemory
   enrollment:

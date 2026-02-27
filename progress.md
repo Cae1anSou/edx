@@ -213,3 +213,12 @@
   - Added Flyway migration `V7__enterprise_learner.sql`.
   - Added integration test for enterprise learner upsert/query flow.
   - Re-ran contract freeze report and reduced unmatched count to 5.
+
+### Phase 15: Unmatched API Family Migration (`consent`)
+- **Status:** in_progress
+- Actions taken:
+  - Added consent domain and `/consent/api/v1/data_sharing_consent` API.
+  - Added in-memory and JDBC repositories.
+  - Added Flyway migration `V8__data_sharing_consent.sql`.
+  - Added enterprise/consent root API endpoints for legacy root path compatibility.
+  - Re-ran contract freeze report and reduced unmatched count to 3.

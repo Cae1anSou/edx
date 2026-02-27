@@ -9,6 +9,8 @@ app:
     repository: jdbc
   enterprise:
     repository: jdbc
+  consent:
+    repository: jdbc
   identity:
     repository: jdbc
   enrollment:

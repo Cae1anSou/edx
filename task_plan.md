@@ -110,7 +110,15 @@ Phase 4
 - [x] Implement `/enterprise/api/v1/enterprise-learner/` in Spring
 - [x] Add enterprise repository/service/controller + migration + tests
 - [x] Re-run contract freeze and verify unmatched count decreases
-- [ ] Commit phase-15 changes
+- [x] Commit phase-15 changes
+- **Status:** complete
+
+### Phase 16: Unmatched Consent API Migration
+- [x] Implement `/consent/api/v1/data_sharing_consent` in Spring
+- [x] Add consent repository/service/controller + migration + tests
+- [x] Add enterprise/consent root API endpoints for legacy root paths
+- [x] Re-run contract freeze and verify unmatched count decreases
+- [ ] Commit phase-16 changes
 - **Status:** in_progress
 
 ## Key Questions

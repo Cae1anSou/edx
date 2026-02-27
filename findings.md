@@ -137,6 +137,10 @@
 - 未覆盖 API 家族继续收敛：
   - 已实现 `/enterprise/api/v1/enterprise-learner/`（upsert/get/list）
   - 契约对账结果更新为 `matched=3/unmatched=5`
+- 未覆盖 API 家族继续收敛（第二波）：
+  - 已实现 `/consent/api/v1/data_sharing_consent`（upsert/get）
+  - 已补 `/enterprise/api/v1` 与 `/consent/api/v1` 根路径探活接口
+  - 契约对账结果更新为 `matched=5/unmatched=3`
 
 ## Resources
 - `/machine/Learning/Code/edx/setup.py`

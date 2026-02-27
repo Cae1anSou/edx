@@ -1,0 +1,21 @@
+# backend-java
+
+Open edX 后端 Java 重构的 Phase 0 基础工程。
+
+## 当前包含
+- Spring Boot 基础工程
+- 统一错误响应与 `X-Request-Id` 追踪
+- 健康检查接口
+- 通知偏好示例域（内存实现）
+- OpenAPI 文档 (`/swagger-ui.html`)
+
+## 本地运行
+```bash
+cd backend-java
+mvn spring-boot:run
+```
+
+## 关键接口
+- `GET /api/v1/health`
+- `GET /api/v1/notification-preferences/{userId}`
+- `PUT /api/v1/notification-preferences/{userId}`

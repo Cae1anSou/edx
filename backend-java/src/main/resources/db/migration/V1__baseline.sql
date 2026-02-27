@@ -1,0 +1,2 @@
+-- Baseline migration placeholder for phase-0.
+-- Flyway is disabled by default in application.yml and can be enabled in env-specific config.

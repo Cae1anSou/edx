@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 @RestController
 @RequestMapping("/api/legacy/users/{userId}/notification-preferences")
@@ -28,9 +29,15 @@ public class LegacyNotificationPreferenceController {
     @PutMapping
     public LegacyNotificationPreferenceResponse update(
             @PathVariable String userId,
+            @RequestHeader(value = "X-Idempotency-Key", required = false) String idempotencyKey,
             @Valid @RequestBody LegacyNotificationPreferenceRequest request
     ) {
-        NotificationPreference updated = service.upsert(userId, request.emailEnabled(), request.smsEnabled());
+        NotificationPreference updated = service.upsert(
+                userId,
+                request.emailEnabled(),
+                request.smsEnabled(),
+                idempotencyKey
+        );
         return toLegacyResponse(updated);
     }
 

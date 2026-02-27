@@ -31,3 +31,7 @@ mvn spring-boot:run -Dspring-boot.run.profiles=jdbc
 ## 配置说明
 - `app.notification.repository=inmemory`（默认）
 - `app.notification.repository=jdbc`（`jdbc` profile 自动设置）
+
+## 约定
+- `PUT` 接口支持请求头 `X-Idempotency-Key`，用于幂等更新。
+- 通知偏好更新后会产生日志事件（后续可替换为 Kafka publisher）。

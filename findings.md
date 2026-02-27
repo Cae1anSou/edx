@@ -73,6 +73,11 @@
     - `jdbc`（`application-jdbc.yml` + Flyway 表结构）
   - 新增兼容接口路径：`/api/legacy/users/{userId}/notification-preferences`
   - 测试扩展到标准路径和兼容路径读写
+- Wave-2 基础能力已补齐：
+  - `RFC-002` 灰度路由与回退机制文档
+  - `PUT` 接口支持 `X-Idempotency-Key`
+  - 新增幂等仓储（inmemory/jdbc 对应实现）
+  - 新增领域事件抽象 `DomainEventPublisher` 与通知偏好变更事件模型
 
 ## Resources
 - `/machine/Learning/Code/edx/setup.py`

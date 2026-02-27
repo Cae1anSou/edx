@@ -112,3 +112,12 @@
 | Maven test with default repo | `mvn test` | Build/test executes | Failed writing to `~/.m2` | BLOCKED |
 | Maven test with local repo override | `mvn -Dmaven.repo.local=/tmp/.m2 test` | Build/test executes | Failed to resolve `repo.maven.apache.org` (DNS) | BLOCKED |
 | Maven test after Wave-1 updates | `mvn -Dmaven.repo.local=/tmp/.m2 test` | Build/test executes | Same DNS failure for Maven Central | BLOCKED |
+
+### Phase 4: Wave-2 Foundation
+- **Status:** in_progress
+- Actions taken:
+  - Added `docs/backend-rfc/RFC-002-gateway-routing-and-rollback.md`.
+  - Added idempotency repository abstraction and in-memory/JDBC implementations.
+  - Updated notification write APIs to accept `X-Idempotency-Key`.
+  - Added domain event abstraction and notification changed event model.
+  - Extended tests with idempotency behavior scenario.

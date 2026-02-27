@@ -50,6 +50,36 @@ class BackendApplicationTests {
     }
 
     @Test
+    void notificationPreferenceShouldBeIdempotentByHeaderKey() throws Exception {
+        String key = "idem-001";
+        mockMvc.perform(put("/api/v1/notification-preferences/u-idem")
+                        .header("X-Idempotency-Key", key)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "emailEnabled": true,
+                                  "smsEnabled": false
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.emailEnabled").value(true))
+                .andExpect(jsonPath("$.smsEnabled").value(false));
+
+        mockMvc.perform(put("/api/v1/notification-preferences/u-idem")
+                        .header("X-Idempotency-Key", key)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "emailEnabled": false,
+                                  "smsEnabled": true
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.emailEnabled").value(true))
+                .andExpect(jsonPath("$.smsEnabled").value(false));
+    }
+
+    @Test
     void legacyNotificationPreferenceEndpointShouldMapSnakeCase() throws Exception {
         mockMvc.perform(put("/api/legacy/users/u-legacy/notification-preferences")
                         .contentType(MediaType.APPLICATION_JSON)

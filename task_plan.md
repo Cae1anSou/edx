@@ -28,7 +28,14 @@ Phase 4
 - **Status:** in_progress
 
 ### Phase 4: Handoff
-- [ ] Provide summary, known constraints, and immediate next steps
+- [x] Provide summary, known constraints, and immediate next steps
+- **Status:** complete
+
+### Phase 5: Wave-2 Foundation
+- [x] Add RFC-002 for gateway routing and rollback strategy
+- [x] Add idempotency-key support for write APIs
+- [x] Add domain event publisher abstraction and notification change event
+- [ ] Commit wave-2 foundation changes
 - **Status:** in_progress
 
 ## Key Questions

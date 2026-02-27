@@ -195,3 +195,12 @@
   - Added contract coverage checker script.
   - Added one-shot `freeze-contracts.sh` pipeline script.
   - Added `API_CONTRACT_FREEZE.md` with current mismatch snapshot.
+
+### Phase 13: Unmatched API Family Migration (`coursexs`)
+- **Status:** in_progress
+- Actions taken:
+  - Added `coursex` domain with create/get/list API.
+  - Added in-memory and JDBC repositories.
+  - Added Flyway migration `V6__coursex.sql`.
+  - Added integration tests for `coursexs` flow.
+  - Re-ran contract freeze report and reduced unmatched count by 1.

@@ -96,7 +96,14 @@ Phase 4
 - [x] Add scripts for frontend API discovery
 - [x] Add automated coverage report generation
 - [x] Add contract freeze RFC/checklist doc
-- [ ] Commit phase-13 changes
+- [x] Commit phase-13 changes
+- **Status:** complete
+
+### Phase 14: Unmatched API Family Migration
+- [x] Implement `/api/v1/coursexs/` API family in Spring
+- [x] Add CourseX repository/service/controller + migration + tests
+- [x] Re-run contract freeze and verify unmatched count decreases
+- [ ] Commit phase-14 changes
 - **Status:** in_progress
 
 ## Key Questions

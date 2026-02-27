@@ -1,16 +1,15 @@
 # API Contract Coverage Report
 
-- Spring endpoints indexed: 17
+- Spring endpoints indexed: 19
 - Frontend-discovered API paths: 8
-- Matched: 0
-- Unmatched: 8
+- Matched: 1
+- Unmatched: 7
 
 ## Matched Frontend Paths
-- (none)
+- /api/v1/coursexs/
 
 ## Unmatched Frontend Paths
 - /api/v1
-- /api/v1/coursexs/
 - /api/v2/tickets.json
 - /consent/api/v1/
 - /enterprise/api/v1/

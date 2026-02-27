@@ -22,6 +22,8 @@ server:
 app:
   course:
     repository: inmemory
+  coursex:
+    repository: inmemory
   identity:
     repository: inmemory
   enrollment:

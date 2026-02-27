@@ -5,6 +5,8 @@ spring:
 app:
   course:
     repository: jdbc
+  coursex:
+    repository: jdbc
   identity:
     repository: jdbc
   enrollment:

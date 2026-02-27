@@ -261,6 +261,31 @@ class BackendApplicationTests {
                 .andExpect(jsonPath("$.data").isNumber());
     }
 
+    @Test
+    void courseXShouldSupportCreateGetAndList() throws Exception {
+        MvcResult result = mockMvc.perform(withAuth(post("/api/v1/coursexs"), "coursex:create", null)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "parentCourseId": "course-v1-demo",
+                                  "displayName": "Course Run A",
+                                  "ownerUserId": "u-owner"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.parentCourseId").value("course-v1-demo"))
+                .andReturn();
+        String courseXId = JsonPath.read(result.getResponse().getContentAsString(), "$.data.courseXId");
+
+        mockMvc.perform(withAuth(get("/api/v1/coursexs/" + courseXId), "coursex:read", null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.courseXId").value(courseXId));
+
+        mockMvc.perform(withAuth(get("/api/v1/coursexs?page=0&size=10"), "coursex:list", null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.total").isNumber());
+    }
+
     private MockHttpServletRequestBuilder withAuth(
             MockHttpServletRequestBuilder builder,
             String permissions,

@@ -47,6 +47,9 @@ cd backend-java
 - `PUT /api/v1/courses/{courseId}`
 - `GET /api/v1/courses/{courseId}`
 - `GET /api/v1/courses/list?page=0&size=20`
+- `POST /api/v1/coursexs`
+- `GET /api/v1/coursexs/{courseXId}`
+- `GET /api/v1/coursexs?page=0&size=20`
 - `PUT /api/v1/courses/{courseId}/enrollments/{userId}`
 - `GET /api/v1/courses/{courseId}/enrollments/{userId}`
 - `DELETE /api/v1/courses/{courseId}/enrollments/{userId}`
@@ -73,6 +76,7 @@ cd backend-java
 - `app.notification.repository=inmemory`（默认）
 - `app.notification.repository=jdbc`（`jdbc` profile 自动设置）
 - `app.course.repository=inmemory|jdbc`
+- `app.coursex.repository=inmemory|jdbc`
 - `app.identity.repository=inmemory|jdbc`
 - `app.enrollment.repository=inmemory|jdbc`
 - `app.learning-progress.repository=inmemory|jdbc`

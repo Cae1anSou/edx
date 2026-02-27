@@ -7,6 +7,8 @@ GET /api/v1/courses/{courseId}/certificates/{userId}
 GET /api/v1/courses/{courseId}/enrollments/{userId}
 GET /api/v1/courses/{courseId}/grades/{userId}
 GET /api/v1/courses/{courseId}/progress/{userId}
+GET /api/v1/coursexs
+GET /api/v1/coursexs/{courseXId}
 GET /api/v1/health
 GET /api/v1/jobs
 GET /api/v1/jobs/{jobId}
@@ -14,6 +16,7 @@ GET /api/v1/notification-preferences/{userId}
 GET /api/v1/users
 GET /api/v1/users/{userId}
 POST /api/v1/courses/{courseId}/certificates/{userId}
+POST /api/v1/coursexs
 POST /api/v1/jobs
 POST /api/v1/users
 PUT /api/legacy/users/{userId}/notification-preferences

@@ -227,12 +227,12 @@ class BackendApplicationTests {
 
     @Test
     void jobOrchestratorShouldSupportSubmitGetAndTransitions() throws Exception {
-        MvcResult result = mockMvc.perform(withAuth(post("/api/v1/jobs"), "job:submit", null)
+                MvcResult result = mockMvc.perform(withAuth(post("/api/v1/jobs"), "job:submit", null)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
                                   "jobType": "GRADE_RECALCULATION",
-                                  "payload": "{\"courseId\":\"course-v1-demo\"}"
+                                  "payload": "{\\\"courseId\\\":\\\"course-v1-demo\\\"}"
                                 }
                                 """))
                 .andExpect(status().isOk())

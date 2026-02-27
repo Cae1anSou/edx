@@ -23,7 +23,7 @@ public class LearnerCurrentJobController {
         this.service = service;
     }
 
-    @GetMapping
+    @GetMapping({"", "/"})
     @RequirePermission("taxonomy:learner-job:read")
     public ApiResponse<?> getOrList(
             @RequestParam(required = false) String username,
@@ -42,7 +42,7 @@ public class LearnerCurrentJobController {
         return ApiResponse.success(mapped);
     }
 
-    @PostMapping
+    @PostMapping({"", "/"})
     @RequirePermission("taxonomy:learner-job:write")
     public ApiResponse<LearnerCurrentJobResponse> upsert(@Valid @RequestBody UpsertLearnerCurrentJobRequest request) {
         return ApiResponse.success(toResponse(

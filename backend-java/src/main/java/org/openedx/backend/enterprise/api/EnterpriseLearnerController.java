@@ -23,7 +23,7 @@ public class EnterpriseLearnerController {
         this.service = service;
     }
 
-    @GetMapping
+    @GetMapping({"", "/"})
     @RequirePermission("enterprise:learner:read")
     public ApiResponse<?> getOrList(
             @RequestParam(required = false) String username,
@@ -43,7 +43,7 @@ public class EnterpriseLearnerController {
         return ApiResponse.success(mapped);
     }
 
-    @PostMapping
+    @PostMapping({"", "/"})
     @RequirePermission("enterprise:learner:write")
     public ApiResponse<EnterpriseLearnerResponse> upsert(@Valid @RequestBody UpsertEnterpriseLearnerRequest request) {
         return ApiResponse.success(toResponse(

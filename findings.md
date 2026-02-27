@@ -151,6 +151,10 @@
   - 已实现 `/api/v2/tickets.json` 兼容代理入口
   - 状态码对齐：字段缺失返回 `400`，限流返回 `429`，未配置 Zendesk 返回 `503`，上游调用返回透传状态码
   - 契约对账结果更新为 `matched=8/unmatched=0`
+- 联网验证已恢复：
+  - `mvn -Dmaven.repo.local=/tmp/.m2 test` 可成功下载依赖并执行测试
+  - 暴露并修复 3 个真实兼容问题：`enterprise/taxonomy` 的尾斜杠路径、`job` 测试 payload JSON 转义
+  - 修复后测试结果：`Tests run: 18, Failures: 0, Errors: 0`
 
 ## Resources
 - `/machine/Learning/Code/edx/setup.py`

@@ -152,3 +152,12 @@
   - Added Flyway migration `V4__grading_certificate.sql`.
   - Updated YAML configs for grading/certificate repository selection.
   - Extended integration tests for grading and certificate workflows.
+
+### Phase 8: Core Domains Expansion (course + job orchestrator)
+- **Status:** in_progress
+- Actions taken:
+  - Added course metadata domain with update/query API and repository implementations.
+  - Added job-orchestrator domain with submit/query/status-transition API and repository implementations.
+  - Added Flyway migration `V5__course_job.sql`.
+  - Updated configs for course/job repository mode selection.
+  - Extended integration tests for course metadata and job workflow.

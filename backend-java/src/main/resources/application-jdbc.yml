@@ -3,6 +3,8 @@ spring:
     enabled: true
 
 app:
+  course:
+    repository: jdbc
   identity:
     repository: jdbc
   enrollment:
@@ -12,6 +14,8 @@ app:
   grading:
     repository: jdbc
   certificate:
+    repository: jdbc
+  job-orchestrator:
     repository: jdbc
   notification:
     repository: jdbc

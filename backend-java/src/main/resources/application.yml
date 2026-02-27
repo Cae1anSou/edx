@@ -20,6 +20,8 @@ server:
   shutdown: graceful
 
 app:
+  course:
+    repository: inmemory
   identity:
     repository: inmemory
   enrollment:
@@ -29,6 +31,8 @@ app:
   grading:
     repository: inmemory
   certificate:
+    repository: inmemory
+  job-orchestrator:
     repository: inmemory
   notification:
     repository: inmemory

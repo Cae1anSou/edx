@@ -101,6 +101,10 @@
   - 新增 `certificate` 域（发放/查询/撤销）
   - 新增 Flyway `V4`：`grade_record` 与 `certificate_record`
   - 读写接口已统一接入 `ApiResponse<T>` 与 AOP 权限注解
+- 全量重构继续推进到课程与任务域：
+  - 新增 `course` 域（课程元数据更新/查询）
+  - 新增 `job-orchestrator` 域（任务提交/查询/状态迁移）
+  - 新增 Flyway `V5`：`course_metadata` 与 `job_record`
 
 ## Resources
 - `/machine/Learning/Code/edx/setup.py`

@@ -197,6 +197,54 @@ class BackendApplicationTests {
                 .andExpect(jsonPath("$.data.status").value("REVOKED"));
     }
 
+    @Test
+    void courseMetadataShouldSupportUpsertAndGet() throws Exception {
+        mockMvc.perform(withAuth(put("/api/v1/courses/course-v1-advanced"), "course:write", null)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "title": "Advanced Spring Backend",
+                                  "status": "PUBLISHED",
+                                  "ownerUserId": "u-owner-1"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.courseId").value("course-v1-advanced"))
+                .andExpect(jsonPath("$.data.status").value("PUBLISHED"));
+
+        mockMvc.perform(withAuth(get("/api/v1/courses/course-v1-advanced"), "course:read", null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.title").value("Advanced Spring Backend"));
+    }
+
+    @Test
+    void jobOrchestratorShouldSupportSubmitGetAndTransitions() throws Exception {
+        MvcResult result = mockMvc.perform(withAuth(post("/api/v1/jobs"), "job:submit", null)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "jobType": "GRADE_RECALCULATION",
+                                  "payload": "{\"courseId\":\"course-v1-demo\"}"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status").value("PENDING"))
+                .andReturn();
+        String jobId = JsonPath.read(result.getResponse().getContentAsString(), "$.data.jobId");
+
+        mockMvc.perform(withAuth(get("/api/v1/jobs/" + jobId), "job:read", null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.jobId").value(jobId));
+
+        mockMvc.perform(withAuth(put("/api/v1/jobs/" + jobId + "/running"), "job:manage", null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status").value("RUNNING"));
+
+        mockMvc.perform(withAuth(put("/api/v1/jobs/" + jobId + "/succeeded"), "job:manage", null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status").value("SUCCEEDED"));
+    }
+
     private MockHttpServletRequestBuilder withAuth(
             MockHttpServletRequestBuilder builder,
             String permissions,

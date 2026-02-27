@@ -59,7 +59,15 @@ Phase 4
 - [x] Add certificate domain (API/service/repository/inmemory+jdbc)
 - [x] Add Flyway schema for grading/certificate
 - [x] Extend integration tests for grading/certificate
-- [ ] Commit phase-8 changes
+- [x] Commit phase-8 changes
+- **Status:** complete
+
+### Phase 9: Course + Job Orchestrator Expansion
+- [x] Add course metadata domain (API/service/repository/inmemory+jdbc)
+- [x] Add job orchestrator domain (submit/query/transition)
+- [x] Add Flyway schema for course/job
+- [x] Extend integration tests for course/job workflows
+- [ ] Commit phase-9 changes
 - **Status:** in_progress
 
 ## Key Questions

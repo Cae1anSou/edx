@@ -15,14 +15,14 @@ cd backend-java
 ```
 
 ## Current Snapshot (2026-02-27)
-- Spring endpoints indexed: 37
-- Frontend-discovered API paths: 8
-- Matched: 8
+- Spring endpoints indexed: 69
+- Frontend-discovered API paths: 42
+- Matched: 42
 - Unmatched: 0
 
 ## Interpretation
 Current frontend-discovered API paths are fully covered by Spring contract surface.  
-Contract freeze can now be used as a regression gate during continued 1:1 behavior migration.
+Contract freeze remains the baseline gate while continuing behavior-level 1:1 migration.
 
 ## Next Actions
 1. Keep `freeze-contracts.sh` in CI and fail build on any new unmatched path.

@@ -6,7 +6,22 @@ from pathlib import Path
 
 
 def normalize_path(path: str) -> str:
-    return path.split("?", 1)[0].rstrip("/")
+    p = path.strip()
+    p = p.split("?", 1)[0]
+    # Normalize JS template vars so route parameters can still match.
+    p = re.sub(r"\$\{[^}]+\}", "placeholder", p)
+    p = p.replace("`", "")
+    # Trim trailing non-path noise from string templates/chaining.
+    p = re.sub(r"[^A-Za-z0-9_/\.\-{},:]+$", "", p)
+    # Handle malformed extracted values where comma-separated IDs were split by "/".
+    p = re.sub(r",[^/]+/[^/]+$", ",placeholder", p)
+    # Handle partially extracted "{id}," style paths from string concatenation.
+    if p.endswith(","):
+        if "/team_membership/" in p or "/topics/" in p:
+            p = p + "placeholder"
+        else:
+            p = p[:-1]
+    return p.rstrip("/")
 
 
 def to_regex(spring_path: str) -> re.Pattern[str]:

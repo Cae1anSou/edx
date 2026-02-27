@@ -4,7 +4,7 @@
 按照 `BACKEND_REFACTOR_PLAN.md` 持续推进后端重构：完成分支与基线提交后，落地可扩展的 Java 后端基础能力，并进入第一波迁移准备（RFC、持久化、兼容路由）。
 
 ## Current Phase
-Phase 24
+Phase 25
 
 ## Phases
 ### Phase 1: Branch & Baseline Commit
@@ -182,7 +182,16 @@ Phase 24
 - [x] Implement `GET /api/toggles/v0/state/` compatibility endpoint
 - [x] Enforce staff-only access semantics (`403` for non-staff)
 - [x] Add integration tests and pass full Maven test suite
-- [ ] Commit phase-24 changes
+- [x] Commit phase-24 changes
+- **Status:** complete
+
+### Phase 25: Legacy/User Compatibility Sweep + Contract Zero-Unmatched
+- [x] Add broad legacy compatibility endpoints for unmatched frontend paths
+- [x] Add user compatibility endpoints (`/api/user/v0|v1/...`)
+- [x] Expand frontend path discovery and normalize template-string artifacts
+- [x] Stabilize tests on JDK 25 via Mockito subclass mock maker
+- [x] Re-run contract freeze to reach unmatched `0`
+- [ ] Commit phase-25 changes
 - **Status:** in_progress
 
 ## Key Questions

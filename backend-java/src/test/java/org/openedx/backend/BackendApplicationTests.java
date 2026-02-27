@@ -579,6 +579,67 @@ class BackendApplicationTests {
                 .andExpect(jsonPath("$.waffle_flags").isArray());
     }
 
+    @Test
+    void userCompatShouldSupportRegistrationSessionAndPreferences() throws Exception {
+        mockMvc.perform(post("/api/user/v1/account/registration/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "username": "student",
+                                  "email": "student@example.com",
+                                  "name": "Student One"
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.username").value("student"));
+
+        mockMvc.perform(withAuth(get("/api/user/v1/accounts/"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].username").value("u-test"));
+
+        mockMvc.perform(withAuth(post("/api/user/v1/account/login_session/"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("u-test"));
+
+        mockMvc.perform(withAuth(post("/api/user/v1/preferences/email_opt_in/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "course_id": "course-v1-demo",
+                                  "email_opt_in": "true"
+                                }
+                                """), null, null))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(withAuth(put("/api/user/v1/preferences/test1/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "value": "abc"
+                                }
+                                """), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.preference_key").value("test1"));
+
+        mockMvc.perform(get("/api/user/v0/accounts/student"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("student"));
+
+        mockMvc.perform(get("/api/user/v0/preferences/student"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/api/user/v1/validation/registration")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "username": "new-user",
+                                  "email": "new-user@example.com"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
+    }
+
     private MockHttpServletRequestBuilder withAuth(
             MockHttpServletRequestBuilder builder,
             String permissions,

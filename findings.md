@@ -193,6 +193,12 @@
   - 已对齐 staff 访问语义：non-staff 返回 `403`
   - 已返回 toggle report 基本结构：`django_settings` + `waffle_flags`
   - 测试结果更新为：`Tests run: 26, Failures: 0, Errors: 0`
+- 兼容面收口（legacy + usercompat + 合同工具）：
+  - 新增 legacy 兼容控制器，覆盖前端发现的剩余 API 家族（commerce/contentstore/courses/team/help_center/uploads 等）
+  - 新增 user compat 端点，覆盖 `/api/user/v0|v1/...` 常用注册、会话、偏好路径
+  - 改进 `discover-frontend-api-paths.sh` 与 `check-contract-coverage.py` 的模板字符串清洗/归一化逻辑
+  - 契约冻结结果更新为：`Spring endpoints=69`, `frontend paths=42`, `matched=42`, `unmatched=0`
+  - 在 JDK 25 环境新增 Mockito 配置 `mock-maker-subclass`，恢复测试稳定执行：`Tests run: 27, Failures: 0, Errors: 0`
 
 ## Resources
 - `/machine/Learning/Code/edx/setup.py`

@@ -318,6 +318,21 @@
 ### Phase 23: Toggle State API Compatibility
 - **Status:** in_progress
 - Actions taken:
+  - Added toggle state compatibility endpoint `GET /api/toggles/v0/state/`.
+  - Enforced staff-only semantics and returned report-compatible payload shape.
+  - Extended integration tests and verified pass.
+
+### Phase 24: Legacy/User Compatibility Sweep + Contract Closure
+- **Status:** in_progress
+- Actions taken:
+  - Added `LegacyCompatibilityController` endpoints for remaining frontend-discovered path families:
+    - commerce/content-staging/contentstore/courses/credit/enrollment/entitlements/financial/profile_images/team/help_center/uploads.
+  - Added `UserCompatController` + service for `/api/user/v0|v1/...` compatibility endpoints.
+  - Updated frontend API discovery script to better handle template string trailing noise.
+  - Updated contract coverage normalization for `${...}` variables and partial concatenation artifacts.
+  - Added `src/test/resources/mockito-extensions/org.mockito.plugins.MockMaker` with `mock-maker-subclass` to fix JDK 25 inline-mock attach failures.
+  - Re-ran contract freeze: `frontend=42`, `matched=42`, `unmatched=0`.
+  - Re-ran `mvn -Dmaven.repo.local=/tmp/.m2 test`: `Tests run: 27, Failures: 0, Errors: 0`.
   - Added compatibility endpoint `GET /api/toggles/v0/state/`.
   - Added staff-only enforcement based on auth roles (`STAFF/ADMIN/GLOBAL_STAFF`).
   - Added response payload shape with `django_settings` and `waffle_flags`.

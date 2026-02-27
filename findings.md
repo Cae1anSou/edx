@@ -176,6 +176,12 @@
     - 列表创建参数非法时 `400`（含 `developer_message/user_message`）
   - 已实现分页返回字段：`count/next/previous/num_pages/current_page/start/results`
   - 测试结果更新为：`Tests run: 22, Failures: 0, Errors: 0`
+- 1:1 行为迁移新增 course_experience/api/v1 域：
+  - 已实现 `POST /api/course_experience/v1/reset_course_deadlines`
+  - 已实现 `POST /api/course_experience/v1/reset_all_course_deadlines/`
+  - 已实现 `GET /api/course_experience/v1/course_deadlines_info/{courseKey}`
+  - 为 `reset_all` 新增 enrollment 仓储按用户查询能力（inmemory + jdbc）
+  - 测试结果更新为：`Tests run: 24, Failures: 0, Errors: 0`
 
 ## Resources
 - `/machine/Learning/Code/edx/setup.py`

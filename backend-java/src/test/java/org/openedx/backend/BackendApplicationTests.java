@@ -481,6 +481,61 @@ class BackendApplicationTests {
                 .andExpect(jsonPath("$.user_message").value("Invalid usage_id: i4x."));
     }
 
+    @Test
+    void courseExperienceResetDeadlinesShouldSupportCoreFlows() throws Exception {
+        mockMvc.perform(withAuth(post("/api/course_experience/v1/reset_course_deadlines")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"), null, null))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value("'course_key' is required."));
+
+        mockMvc.perform(withAuth(post("/api/course_experience/v1/reset_course_deadlines")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "course_key": "course-v1-demo"
+                                }
+                                """), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Deadlines successfully reset."));
+
+        mockMvc.perform(withAuth(put("/api/v1/courses/course-v1-demo/enrollments/u-test"), "enrollment:write", "teaching"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(withAuth(post("/api/course_experience/v1/reset_all_course_deadlines/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success_course_keys[0]").value("course-v1-demo"));
+    }
+
+    @Test
+    void courseExperienceMobileDeadlinesShouldReturn401And404And200() throws Exception {
+        mockMvc.perform(get("/api/course_experience/v1/course_deadlines_info/course-v1-demo"))
+                .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(withAuth(get("/api/course_experience/v1/course_deadlines_info/course-v1-unknown"), null, null))
+                .andExpect(status().isNotFound());
+
+        mockMvc.perform(withAuth(put("/api/v1/courses/course-v1-mobile"), "course:write", null)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "title": "Mobile Course",
+                                  "status": "DRAFT",
+                                  "ownerUserId": "u-test"
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(withAuth(get("/api/course_experience/v1/course_deadlines_info/course-v1-mobile"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.dates_banner_info.missed_deadlines").exists())
+                .andExpect(jsonPath("$.dates_banner_info.missed_gated_content").exists())
+                .andExpect(jsonPath("$.dates_banner_info.content_type_gating_enabled").exists())
+                .andExpect(jsonPath("$.dates_banner_info.verified_upgrade_link").exists());
+    }
+
     private MockHttpServletRequestBuilder withAuth(
             MockHttpServletRequestBuilder builder,
             String permissions,

@@ -284,6 +284,22 @@
   - Fixed NPE in list response caused by `Map.of` with nullable `next/previous`.
   - Re-ran Maven tests and contract freeze successfully.
 
+### Phase 21: Course Experience API v1 Migration
+- **Status:** in_progress
+- Actions taken:
+  - Added course experience service and compatibility controller for:
+    - `POST /api/course_experience/v1/reset_course_deadlines`
+    - `POST /api/course_experience/v1/reset_all_course_deadlines/`
+    - `GET /api/course_experience/v1/course_deadlines_info/{courseKey}`
+  - Added enrollment repository `findByUser` for reset-all workflow (inmemory + jdbc).
+  - Added integration tests for:
+    - reset deadlines required param validation (`400`)
+    - reset deadlines success (`200`)
+    - reset-all success response
+    - mobile deadlines unauthorized (`401`), unknown course (`404`), known course (`200`)
+  - Fixed test regression (wrong HTTP method on enrollment setup call).
+  - Re-ran Maven tests and contract freeze successfully.
+
 ## Test Results (Latest)
 | Test | Input | Expected | Actual | Status |
 |------|-------|----------|--------|--------|
@@ -291,3 +307,4 @@
 | Maven tests (rerun) | `cd backend-java && mvn -Dmaven.repo.local=/tmp/.m2 test` | Spring tests execute | `Tests run: 18, Failures: 0, Errors: 0` | PASS |
 | Maven tests (agreements) | `cd backend-java && mvn -Dmaven.repo.local=/tmp/.m2 test` | New agreements tests pass | `Tests run: 20, Failures: 0, Errors: 0` | PASS |
 | Maven tests (bookmarks) | `cd backend-java && mvn -Dmaven.repo.local=/tmp/.m2 test` | New bookmarks tests pass | `Tests run: 22, Failures: 0, Errors: 0` | PASS |
+| Maven tests (course_experience) | `cd backend-java && mvn -Dmaven.repo.local=/tmp/.m2 test` | New course_experience tests pass | `Tests run: 24, Failures: 0, Errors: 0` | PASS |

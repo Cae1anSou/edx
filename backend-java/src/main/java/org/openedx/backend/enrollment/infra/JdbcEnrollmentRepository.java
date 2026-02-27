@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
+import java.util.List;
 
 import org.openedx.backend.enrollment.domain.EnrollmentRecord;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -31,6 +32,12 @@ public class JdbcEnrollmentRepository implements EnrollmentRepository {
             VALUES (:user_id, :course_id, :status, :enrolled_at, :updated_at)
             """;
 
+    private static final String SELECT_BY_USER_SQL = """
+            SELECT user_id, course_id, status, enrolled_at, updated_at
+            FROM enrollment_record
+            WHERE user_id = :user_id
+            """;
+
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     public JdbcEnrollmentRepository(NamedParameterJdbcTemplate jdbcTemplate) {
@@ -45,6 +52,15 @@ public class JdbcEnrollmentRepository implements EnrollmentRepository {
                         this::mapRow
                 ).stream()
                 .findFirst();
+    }
+
+    @Override
+    public List<EnrollmentRecord> findByUser(String userId) {
+        return jdbcTemplate.query(
+                SELECT_BY_USER_SQL,
+                Map.of("user_id", userId),
+                this::mapRow
+        );
     }
 
     @Override

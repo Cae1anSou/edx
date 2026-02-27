@@ -1,6 +1,8 @@
 package org.openedx.backend.enrollment.infra;
 
 import java.util.Optional;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -17,6 +19,17 @@ public class InMemoryEnrollmentRepository implements EnrollmentRepository {
     @Override
     public Optional<EnrollmentRecord> find(String userId, String courseId) {
         return Optional.ofNullable(store.get(key(userId, courseId)));
+    }
+
+    @Override
+    public List<EnrollmentRecord> findByUser(String userId) {
+        List<EnrollmentRecord> out = new ArrayList<>();
+        for (EnrollmentRecord row : store.values()) {
+            if (row.userId().equals(userId)) {
+                out.add(row);
+            }
+        }
+        return out;
     }
 
     @Override

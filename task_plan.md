@@ -4,7 +4,7 @@
 按照 `BACKEND_REFACTOR_PLAN.md` 持续推进后端重构：完成分支与基线提交后，落地可扩展的 Java 后端基础能力，并进入第一波迁移准备（RFC、持久化、兼容路由）。
 
 ## Current Phase
-Phase 21
+Phase 22
 
 ## Phases
 ### Phase 1: Branch & Baseline Commit
@@ -159,7 +159,16 @@ Phase 21
 - [x] Align major error semantics (`400/401/403/404`) and developer/user message format
 - [x] Add pagination response fields (`count/next/previous/num_pages/current_page/start/results`)
 - [x] Extend integration tests and pass full Maven test suite
-- [ ] Commit phase-21 changes
+- [x] Commit phase-21 changes
+- **Status:** complete
+
+### Phase 22: Course Experience API v1 Migration
+- [x] Implement `POST /api/course_experience/v1/reset_course_deadlines`
+- [x] Implement `POST /api/course_experience/v1/reset_all_course_deadlines/`
+- [x] Implement `GET /api/course_experience/v1/course_deadlines_info/{courseKey}`
+- [x] Add enrollment repository query support for reset-all aggregation
+- [x] Extend integration tests and pass full Maven test suite
+- [ ] Commit phase-22 changes
 - **Status:** in_progress
 
 ## Key Questions

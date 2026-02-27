@@ -15,7 +15,7 @@ cd backend-java
 ```
 
 ## Current Snapshot (2026-02-27)
-- Spring endpoints indexed: 32
+- Spring endpoints indexed: 35
 - Frontend-discovered API paths: 8
 - Matched: 8
 - Unmatched: 0

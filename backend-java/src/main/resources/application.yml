@@ -24,6 +24,8 @@ app:
     repository: inmemory
   coursex:
     repository: inmemory
+  enterprise:
+    repository: inmemory
   identity:
     repository: inmemory
   enrollment:

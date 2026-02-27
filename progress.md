@@ -204,3 +204,12 @@
   - Added Flyway migration `V6__coursex.sql`.
   - Added integration tests for `coursexs` flow.
   - Re-ran contract freeze report and reduced unmatched count by 1.
+
+### Phase 14: Unmatched API Family Migration (`enterprise-learner`)
+- **Status:** in_progress
+- Actions taken:
+  - Added enterprise learner domain and `/enterprise/api/v1/enterprise-learner/` API.
+  - Added in-memory and JDBC repositories.
+  - Added Flyway migration `V7__enterprise_learner.sql`.
+  - Added integration test for enterprise learner upsert/query flow.
+  - Re-ran contract freeze report and reduced unmatched count to 5.

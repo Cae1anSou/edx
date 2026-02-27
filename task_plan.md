@@ -103,7 +103,14 @@ Phase 4
 - [x] Implement `/api/v1/coursexs/` API family in Spring
 - [x] Add CourseX repository/service/controller + migration + tests
 - [x] Re-run contract freeze and verify unmatched count decreases
-- [ ] Commit phase-14 changes
+- [x] Commit phase-14 changes
+- **Status:** complete
+
+### Phase 15: Unmatched Enterprise API Migration
+- [x] Implement `/enterprise/api/v1/enterprise-learner/` in Spring
+- [x] Add enterprise repository/service/controller + migration + tests
+- [x] Re-run contract freeze and verify unmatched count decreases
+- [ ] Commit phase-15 changes
 - **Status:** in_progress
 
 ## Key Questions

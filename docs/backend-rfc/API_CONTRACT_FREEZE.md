@@ -15,15 +15,15 @@ cd backend-java
 ```
 
 ## Current Snapshot (2026-02-27)
-- Spring endpoints indexed: 19
+- Spring endpoints indexed: 20
 - Frontend-discovered API paths: 8
-- Matched: 1
-- Unmatched: 7
+- Matched: 3
+- Unmatched: 5
 
 Key unmatched examples:
-- `/enterprise/api/v1/...`
 - `/consent/api/v1/...`
 - `/taxonomy/api/v1/learners-current-job/...`
+- `/enterprise/api/v1/` (root style)
 
 ## Interpretation
 The current unmatched paths indicate remaining legacy API families not yet implemented in Spring contract surface.  

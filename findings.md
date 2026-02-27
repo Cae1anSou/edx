@@ -134,6 +134,9 @@
 - 未覆盖 API 家族迁移已开始：
   - 已实现 `/api/v1/coursexs/`（create/get/list）
   - 契约对账结果从 `matched=0/unmatched=8` 更新为 `matched=1/unmatched=7`
+- 未覆盖 API 家族继续收敛：
+  - 已实现 `/enterprise/api/v1/enterprise-learner/`（upsert/get/list）
+  - 契约对账结果更新为 `matched=3/unmatched=5`
 
 ## Resources
 - `/machine/Learning/Code/edx/setup.py`

@@ -286,6 +286,25 @@ class BackendApplicationTests {
                 .andExpect(jsonPath("$.data.total").isNumber());
     }
 
+    @Test
+    void enterpriseLearnerShouldSupportUpsertAndQueryByUsername() throws Exception {
+        mockMvc.perform(withAuth(post("/enterprise/api/v1/enterprise-learner"), "enterprise:learner:write", null)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "username": "test-learner",
+                                  "enterpriseId": "ent-01",
+                                  "active": true
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.username").value("test-learner"));
+
+        mockMvc.perform(withAuth(get("/enterprise/api/v1/enterprise-learner/?username=test-learner"), "enterprise:learner:read", null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.enterpriseId").value("ent-01"));
+    }
+
     private MockHttpServletRequestBuilder withAuth(
             MockHttpServletRequestBuilder builder,
             String permissions,

@@ -15,10 +15,12 @@ GET /api/v1/jobs/{jobId}
 GET /api/v1/notification-preferences/{userId}
 GET /api/v1/users
 GET /api/v1/users/{userId}
+GET /enterprise/api/v1/enterprise-learner
 POST /api/v1/courses/{courseId}/certificates/{userId}
 POST /api/v1/coursexs
 POST /api/v1/jobs
 POST /api/v1/users
+POST /enterprise/api/v1/enterprise-learner
 PUT /api/legacy/users/{userId}/notification-preferences
 PUT /api/v1/courses/{courseId}
 PUT /api/v1/courses/{courseId}/enrollments/{userId}

@@ -1,9 +1,9 @@
 # Django API Coverage Report
 
-- Spring endpoints indexed: 75
+- Spring endpoints indexed: 83
 - Django-discovered API paths: 51
-- Matched: 16
-- Unmatched: 35
+- Matched: 19
+- Unmatched: 32
 
 ## Unmatched Django Paths (Top 200)
 - /api/bulk_enroll/v1
@@ -31,12 +31,9 @@
 - /api/libraries/v2
 - /api/mobile/{api_version})
 - /api/modulestore_migrator
-- /api/notifications
 - /api/olx-export/v1
 - /api/ora_staff_grader
 - /api/organizations
-- /api/support
-- /api/tasks/v0
 - /api/third_party_auth
 - /api/val/v0
 - /api/xblock/v2

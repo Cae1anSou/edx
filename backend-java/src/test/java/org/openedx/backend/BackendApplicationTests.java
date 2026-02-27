@@ -756,6 +756,82 @@ class BackendApplicationTests {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void legacyNotificationsSupportAndTasksShouldSupportCoreFlows() throws Exception {
+        mockMvc.perform(get("/api/notifications/"))
+                .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(withAuth(get("/api/notifications/"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.count").isNumber());
+
+        mockMvc.perform(withAuth(get("/api/notifications/count/"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.show_notifications_tray").value(true));
+
+        mockMvc.perform(withAuth(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch("/api/notifications/read/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "app_name": "discussion"
+                                }
+                                """), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Notifications marked read."));
+
+        mockMvc.perform(get("/api/notifications/v2/configurations/"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.version").value("v2"));
+
+        mockMvc.perform(get("/api/notifications/preferences/update/hash-user/"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result").value("success"));
+
+        mockMvc.perform(withAuth(get("/api/support/v1/manage_course_team/"), null, null))
+                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(withAuth(get("/api/support/v1/manage_course_team/?email=u@example.com"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].course_id").value("course-v1:edX+DemoX+2025_T1"));
+
+        mockMvc.perform(withAuth(put("/api/support/v1/manage_course_team/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "email": "u@example.com",
+                                  "bulk_role_operations": [
+                                    {
+                                      "course_id": "course-v1:edX+DemoX+2025_T1",
+                                      "role": "instructor",
+                                      "action": "assign"
+                                    }
+                                  ]
+                                }
+                                """), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.results[0].status").value("success"));
+
+        mockMvc.perform(withAuth(get("/api/tasks/v0/"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.results").isArray());
+
+        MvcResult taskResult = mockMvc.perform(withAuth(post("/api/tasks/v0/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "task_type": "grade-export"
+                                }
+                                """), null, null))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.state").value("PENDING"))
+                .andReturn();
+        Integer taskId = JsonPath.read(taskResult.getResponse().getContentAsString(), "$.id");
+
+        mockMvc.perform(withAuth(get("/api/tasks/v0/" + taskId + "/"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.task_type").value("grade-export"));
+    }
+
     private MockHttpServletRequestBuilder withAuth(
             MockHttpServletRequestBuilder builder,
             String permissions,

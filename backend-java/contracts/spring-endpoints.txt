@@ -19,6 +19,14 @@ GET /api/end_point/v1
 GET /api/entitlements/v1/entitlements/
 GET /api/legacy/users/{userId}/notification-preferences
 GET /api/mfe_config/v1
+GET /api/notifications/
+GET /api/notifications/count/
+GET /api/notifications/preferences/update/{username}/
+GET /api/notifications/v2/configurations/
+GET /api/notifications/v3/configurations/
+GET /api/support/v1/manage_course_team/
+GET /api/tasks/v0/
+GET /api/tasks/v0/{taskId}/
 GET /api/team/v0/team_membership/{teamId},{username}
 GET /api/team/v0/team_memberships/
 GET /api/team/v0/teams/
@@ -70,8 +78,10 @@ POST /api/course_experience/v1/reset_course_deadlines
 POST /api/course_experience/v1/reset_course_deadlines/
 POST /api/enrollment/v1/enrollment
 POST /api/financial/v1/assistance
+POST /api/notifications/preferences/update/{username}/
 POST /api/profile_images/v0/staff/remove
 POST /api/profile_images/v0/staff/upload
+POST /api/tasks/v0/
 POST /api/user/v1/account/login_session/
 POST /api/user/v1/account/registration/
 POST /api/user/v1/accounts/deactivate_logout/
@@ -92,6 +102,7 @@ POST /update_lang/
 POST /zendesk_proxy/v0
 POST /zendesk_proxy/v1
 PUT /api/legacy/users/{userId}/notification-preferences
+PUT /api/support/v1/manage_course_team/
 PUT /api/user/v1/preferences/{prefKey}/
 PUT /api/user_tours/v1/discussions/{tourId}
 PUT /api/v1/courses/{courseId}

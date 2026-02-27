@@ -15,7 +15,7 @@ cd backend-java
 ```
 
 ## Current Snapshot (2026-02-27)
-- Spring endpoints indexed: 75
+- Spring endpoints indexed: 83
 - Frontend-discovered API paths: 42
 - Matched: 42
 - Unmatched: 0
@@ -26,8 +26,8 @@ Contract freeze remains the baseline gate while continuing behavior-level 1:1 mi
 
 Additional backend-wide baseline (`django-api-paths.txt`):
 - Django-discovered API prefixes: 51
-- Spring matched: 16
-- Unmatched: 35
+- Spring matched: 19
+- Unmatched: 32
 
 ## Next Actions
 1. Keep `freeze-contracts.sh` in CI and fail build on any new unmatched path.

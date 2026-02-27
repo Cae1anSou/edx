@@ -7,6 +7,7 @@ GET /api/bookmarks/v1/bookmarks
 GET /api/bookmarks/v1/bookmarks/
 GET /api/bookmarks/v1/bookmarks/{username},{usageId:.+}
 GET /api/bookmarks/v1/bookmarks/{username},{usageId:.+}/
+GET /api/branding/v1/footer
 GET /api/commerce/v0/baskets/
 GET /api/content-staging/v1/clipboard/
 GET /api/contentstore/v2/downstreams/
@@ -17,6 +18,7 @@ GET /api/credit/v1/providers/
 GET /api/end_point/v1
 GET /api/entitlements/v1/entitlements/
 GET /api/legacy/users/{userId}/notification-preferences
+GET /api/mfe_config/v1
 GET /api/team/v0/team_membership/{teamId},{username}
 GET /api/team/v0/team_memberships/
 GET /api/team/v0/teams/
@@ -28,6 +30,8 @@ GET /api/toggles/v0/state/
 GET /api/user/v0/accounts/{username}
 GET /api/user/v0/preferences/{username}
 GET /api/user/v1/accounts/
+GET /api/user_tours/v1/discussions/
+GET /api/user_tours/v1/{username}
 GET /api/v1
 GET /api/v1/bookmarks/
 GET /api/v1/courses/list
@@ -89,6 +93,7 @@ POST /zendesk_proxy/v0
 POST /zendesk_proxy/v1
 PUT /api/legacy/users/{userId}/notification-preferences
 PUT /api/user/v1/preferences/{prefKey}/
+PUT /api/user_tours/v1/discussions/{tourId}
 PUT /api/v1/courses/{courseId}
 PUT /api/v1/courses/{courseId}/enrollments/{userId}
 PUT /api/v1/courses/{courseId}/grades/{userId}

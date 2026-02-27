@@ -694,6 +694,68 @@ class BackendApplicationTests {
                 .andExpect(jsonPath("$.results[0].title").value("Account setup guide"));
     }
 
+    @Test
+    void legacyMfeBrandingAndUserToursShouldSupportCoreFlows() throws Exception {
+        mockMvc.perform(get("/api/mfe_config/v1?mfe=learning"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.BASE_URL").value("http://localhost:2000/learning"));
+
+        mockMvc.perform(get("/api/branding/v1/footer").header("Accept", "application/json"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.navigation_links[0].name").value("about"));
+
+        mockMvc.perform(get("/api/user_tours/v1/u-test"))
+                .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(withAuth(get("/api/user_tours/v1/u-test"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.course_home_tour_status").value("not_started"));
+
+        mockMvc.perform(withAuth(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch("/api/user_tours/v1/u-test")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "course_home_tour_status": "dismissed",
+                                  "show_courseware_tour": false
+                                }
+                                """), null, null))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(withAuth(get("/api/user_tours/v1/u-test"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.course_home_tour_status").value("dismissed"))
+                .andExpect(jsonPath("$.show_courseware_tour").value(false));
+
+        mockMvc.perform(withAuth(get("/api/user_tours/v1/other-user"), null, null))
+                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(withAuthWithUserAndRoles(get("/api/user_tours/v1/other-user"), "u-staff", "STAFF", null, null))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(withAuth(get("/api/user_tours/v1/discussions/"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1));
+
+        mockMvc.perform(withAuth(put("/api/user_tours/v1/discussions/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "show_tour": false
+                                }
+                                """), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.show_tour").value(false));
+
+        mockMvc.perform(withAuth(put("/api/user_tours/v1/discussions/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "show_tour": false
+                                }
+                                """), null, null))
+                .andExpect(status().isNotFound());
+    }
+
     private MockHttpServletRequestBuilder withAuth(
             MockHttpServletRequestBuilder builder,
             String permissions,

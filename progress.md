@@ -231,3 +231,22 @@
   - Added Flyway migration `V9__learner_current_job.sql`.
   - Added `/api/v1` root compatibility endpoint.
   - Re-ran contract freeze report and reduced unmatched count to 1 (external endpoint only).
+
+### Phase 17: 1:1 Compatibility Closure (`zendesk`)
+- **Status:** in_progress
+- Actions taken:
+  - Added zendesk compatibility domain:
+    - `POST /zendesk_proxy/v0`
+    - `POST /zendesk_proxy/v1`
+    - `POST /api/v2/tickets.json`
+  - Added compatibility service with payload shape validation and status-code aligned behavior.
+  - Added lightweight in-memory rate limiter (50 requests/hour window).
+  - Added configuration entries for Zendesk URL/OAuth token.
+  - Added integration tests for invalid payload (`400`) and unconfigured upstream (`503`).
+  - Re-ran `backend-java/scripts/freeze-contracts.sh` and reached `matched=8/unmatched=0`.
+
+## Test Results (Latest)
+| Test | Input | Expected | Actual | Status |
+|------|-------|----------|--------|--------|
+| Contract freeze | `backend-java/scripts/freeze-contracts.sh` | API coverage refreshed | `matched=8/unmatched=0` | PASS |
+| Maven tests | `cd backend-java && mvn -Dmaven.repo.local=/tmp/.m2 test` | Spring tests execute | DNS failure for `repo.maven.apache.org` | BLOCKED |

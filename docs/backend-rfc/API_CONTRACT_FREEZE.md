@@ -15,19 +15,16 @@ cd backend-java
 ```
 
 ## Current Snapshot (2026-02-27)
-- Spring endpoints indexed: 25
+- Spring endpoints indexed: 28
 - Frontend-discovered API paths: 8
-- Matched: 7
-- Unmatched: 1
-
-Key unmatched examples:
-- `/api/v2/tickets.json`
+- Matched: 8
+- Unmatched: 0
 
 ## Interpretation
-The current unmatched paths indicate remaining legacy API families not yet implemented in Spring contract surface.  
-These should be migrated or explicitly retired before Django runtime decommission.
+Current frontend-discovered API paths are fully covered by Spring contract surface.  
+Contract freeze can now be used as a regression gate during continued 1:1 behavior migration.
 
 ## Next Actions
-1. Prioritize unmatched families by business criticality (`enterprise`, `consent`, `taxonomy`, `coursexs`).
-2. Add Spring controller modules for each required family.
-3. Re-run contract freeze and require unmatched count trend to decrease in CI.
+1. Keep `freeze-contracts.sh` in CI and fail build on any new unmatched path.
+2. Continue deep behavior-level migration (payload semantics, status codes, edge-case parity), not just path presence.
+3. Expand frontend path discovery scope (runtime logs + JS bundles) to reduce static-scan blind spots.

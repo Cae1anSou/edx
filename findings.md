@@ -145,6 +145,12 @@
   - 已实现 `/taxonomy/api/v1/learners-current-job`（upsert/list）
   - 已补 `/api/v1` 根路径探活接口
   - 契约对账结果更新为 `matched=7/unmatched=1`（剩余外部 `/api/v2/tickets.json`）
+- 1:1 行为迁移继续推进（zendesk 兼容）：
+  - 已实现 `/zendesk_proxy/v0`（兼容旧 payload，限流 50/h）
+  - 已实现 `/zendesk_proxy/v1`（兼容新 payload，支持 `X-User-Id`/`X-User-Email` 回填 requester，限流 50/h）
+  - 已实现 `/api/v2/tickets.json` 兼容代理入口
+  - 状态码对齐：字段缺失返回 `400`，限流返回 `429`，未配置 Zendesk 返回 `503`，上游调用返回透传状态码
+  - 契约对账结果更新为 `matched=8/unmatched=0`
 
 ## Resources
 - `/machine/Learning/Code/edx/setup.py`

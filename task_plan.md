@@ -4,7 +4,7 @@
 按照 `BACKEND_REFACTOR_PLAN.md` 持续推进后端重构：完成分支与基线提交后，落地可扩展的 Java 后端基础能力，并进入第一波迁移准备（RFC、持久化、兼容路由）。
 
 ## Current Phase
-Phase 4
+Phase 18
 
 ## Phases
 ### Phase 1: Branch & Baseline Commit
@@ -126,7 +126,15 @@ Phase 4
 - [x] Add taxonomy repository/service/controller + migration + tests
 - [x] Add `/api/v1` root endpoint compatibility
 - [x] Re-run contract freeze and reduce unmatched to external-only
-- [ ] Commit phase-17 changes
+- [x] Commit phase-17 changes
+- **Status:** complete
+
+### Phase 18: Zendesk 1:1 Compatibility Closure
+- [x] Implement Spring-compatible endpoints for `/zendesk_proxy/v0` and `/zendesk_proxy/v1`
+- [x] Implement compatibility endpoint `/api/v2/tickets.json`
+- [x] Add status-code aligned behavior (400/429/503/proxy status)
+- [x] Re-run contract freeze and achieve unmatched=0
+- [ ] Commit phase-18 changes
 - **Status:** in_progress
 
 ## Key Questions
@@ -146,3 +154,4 @@ Phase 4
 |-------|---------|------------|
 | `mvn test` failed writing `~/.m2` | 1 | Switched to `-Dmaven.repo.local=/tmp/.m2` |
 | Maven dependency resolution failed (`repo.maven.apache.org` DNS) | 2 | Proceeded with code changes, mark tests as blocked by network |
+| Maven dependency resolution failed (`repo.maven.apache.org` DNS) | 3 | Re-validated after zendesk migration; keep tests blocked until network-enabled CI |

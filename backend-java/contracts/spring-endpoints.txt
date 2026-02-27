@@ -25,9 +25,12 @@ POST /api/v1/courses/{courseId}/certificates/{userId}
 POST /api/v1/coursexs
 POST /api/v1/jobs
 POST /api/v1/users
+POST /api/v2/tickets.json
 POST /consent/api/v1/data_sharing_consent
 POST /enterprise/api/v1/enterprise-learner
 POST /taxonomy/api/v1/learners-current-job
+POST /zendesk_proxy/v0
+POST /zendesk_proxy/v1
 PUT /api/legacy/users/{userId}/notification-preferences
 PUT /api/v1/courses/{courseId}
 PUT /api/v1/courses/{courseId}/enrollments/{userId}

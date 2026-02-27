@@ -342,6 +342,36 @@ class BackendApplicationTests {
                 .andExpect(jsonPath("$.data.total").isNumber());
     }
 
+    @Test
+    void zendeskProxyV1ShouldReturnBadRequestOnInvalidPayload() throws Exception {
+        mockMvc.perform(post("/zendesk_proxy/v1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "subject": "",
+                                  "comment": {}
+                                }
+                                """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void zendeskApiV2ShouldReturnServiceUnavailableWhenZendeskNotConfigured() throws Exception {
+        mockMvc.perform(post("/api/v2/tickets.json")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "ticket": {
+                                    "subject": "Need help",
+                                    "comment": {
+                                      "body": "details"
+                                    }
+                                  }
+                                }
+                                """))
+                .andExpect(status().isServiceUnavailable());
+    }
+
     private MockHttpServletRequestBuilder withAuth(
             MockHttpServletRequestBuilder builder,
             String permissions,

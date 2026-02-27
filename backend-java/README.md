@@ -15,7 +15,19 @@ cd backend-java
 mvn spring-boot:run
 ```
 
+### JDBC 模式（开启 Flyway）
+```bash
+cd backend-java
+mvn spring-boot:run -Dspring-boot.run.profiles=jdbc
+```
+
 ## 关键接口
 - `GET /api/v1/health`
 - `GET /api/v1/notification-preferences/{userId}`
 - `PUT /api/v1/notification-preferences/{userId}`
+- `GET /api/legacy/users/{userId}/notification-preferences`
+- `PUT /api/legacy/users/{userId}/notification-preferences`
+
+## 配置说明
+- `app.notification.repository=inmemory`（默认）
+- `app.notification.repository=jdbc`（`jdbc` profile 自动设置）

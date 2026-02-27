@@ -67,3 +67,48 @@
 | What's the goal? | Decide backend rewrite language based on this repo evidence |
 | What have I learned? | Repo is large Django monolith with plugin-heavy architecture |
 | What have I done? | Created planning artifacts and initial repo scan |
+
+## Session: 2026-02-27 (Refactor Kickoff)
+
+### Phase 1: Branch & Baseline Commit
+- **Status:** complete
+- Actions taken:
+  - Created branch `refactor/backend-java-kickoff`.
+  - Committed planning and strategy artifacts.
+- Files created/modified:
+  - BACKEND_REFACTOR_PLAN.md (committed)
+  - findings.md (committed)
+  - progress.md (committed)
+  - task_plan.md (committed)
+
+### Phase 2: Phase-0 Java Foundation
+- **Status:** complete
+- Actions taken:
+  - Created `backend-java` module with Maven + Spring Boot.
+  - Added shared error handling, request-id propagation, and health endpoint.
+  - Added first sample migration domain: notification preferences.
+  - Added initial Spring test.
+  - Committed all bootstrap files.
+- Files created/modified:
+  - backend-java/pom.xml
+  - backend-java/src/main/java/org/openedx/backend/**/*
+  - backend-java/src/main/resources/application.yml
+  - backend-java/src/main/resources/db/migration/V1__baseline.sql
+  - backend-java/src/test/java/org/openedx/backend/BackendApplicationTests.java
+
+### Phase 3: Wave-1 Hardening
+- **Status:** in_progress
+- Actions taken:
+  - Session catchup executed and planning files refreshed.
+  - Added RFC `docs/backend-rfc/RFC-001-domain-boundary-wave1.md`.
+  - Upgraded notification preference repository to property-driven `inmemory/jdbc`.
+  - Added Flyway table migration SQL and `jdbc` profile config.
+  - Added legacy-compatible adapter endpoints with snake_case contracts.
+  - Extended MockMvc tests for v1 and legacy paths.
+
+## Test Results (Kickoff)
+| Test | Input | Expected | Actual | Status |
+|------|-------|----------|--------|--------|
+| Maven test with default repo | `mvn test` | Build/test executes | Failed writing to `~/.m2` | BLOCKED |
+| Maven test with local repo override | `mvn -Dmaven.repo.local=/tmp/.m2 test` | Build/test executes | Failed to resolve `repo.maven.apache.org` (DNS) | BLOCKED |
+| Maven test after Wave-1 updates | `mvn -Dmaven.repo.local=/tmp/.m2 test` | Build/test executes | Same DNS failure for Maven Central | BLOCKED |

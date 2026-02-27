@@ -1,2 +1,6 @@
--- Baseline migration placeholder for phase-0.
--- Flyway is disabled by default in application.yml and can be enabled in env-specific config.
+CREATE TABLE IF NOT EXISTS notification_preference (
+    user_id VARCHAR(128) PRIMARY KEY,
+    email_enabled BOOLEAN NOT NULL,
+    sms_enabled BOOLEAN NOT NULL,
+    updated_at TIMESTAMP NOT NULL
+);

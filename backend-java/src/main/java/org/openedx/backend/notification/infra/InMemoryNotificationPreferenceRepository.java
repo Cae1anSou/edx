@@ -5,9 +5,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.openedx.backend.notification.domain.NotificationPreference;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@ConditionalOnProperty(name = "app.notification.repository", havingValue = "inmemory", matchIfMissing = true)
 public class InMemoryNotificationPreferenceRepository implements NotificationPreferenceRepository {
 
     private final ConcurrentMap<String, NotificationPreference> store = new ConcurrentHashMap<>();

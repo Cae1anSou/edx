@@ -1,5 +1,12 @@
 # Findings & Decisions
 
+## Current Task (Kickoff Implementation)
+- 用户要求按 `BACKEND_REFACTOR_PLAN.md` 开始实际重构，先完成分支与提交，然后持续推进。
+- 已完成：
+  - 分支 `refactor/backend-java-kickoff`
+  - 基线文档提交（方案与规划文件）
+  - Java 后端 Phase-0 工程骨架提交
+
 ## Requirements
 - 用户要求基于当前项目检查后确定后端重写语言（Go 或 Java）。
 - 需要给出可执行建议，而非泛化对比。
@@ -31,6 +38,8 @@
 | Continue deep static inspection before language recommendation | Need evidence-backed decision specific to this repo |
 | Favor migration-risk-first criteria | Repository shows deep framework and ecosystem coupling |
 | Recommend Java (Spring Boot ecosystem) over Go for full backend rewrite | Plugin-heavy architecture, large migration surface, async/event/ORM/admin/config complexity favor mature enterprise stack parity |
+| Start migration with a standalone `backend-java` module | Minimize interference with existing Django runtime while enabling incremental rollout |
+| Use "sample domain first" (notification preference) | Establish reusable migration pattern for subsequent domains |
 
 ### Go vs Java Weighted Scoring (repo-specific)
 | Criterion (weight) | Go | Java | Why it matters here |
@@ -47,6 +56,23 @@
 | Issue | Resolution |
 |-------|------------|
 | planning skill docs mention `templates/` but actual path is `assets/templates/` | Switched to actual path and continued |
+| Maven cannot resolve external artifacts in current environment | Marked runtime/test verification as blocked by network; continue implementing code and docs |
+
+## Implementation Findings
+- `backend-java` 已具备最小可运行工程结构：
+  - Spring Boot application entry
+  - global exception handling
+  - request id filter
+  - `/api/v1/health`
+  - notification preference sample APIs
+- 当前测试阻塞点不是代码编译错误，而是依赖下载受限（`repo.maven.apache.org` DNS 失败）。
+- Wave-1 已完成增强：
+  - 新增 `RFC-001`：`docs/backend-rfc/RFC-001-domain-boundary-wave1.md`
+  - 通知偏好仓储改为可切换：
+    - `inmemory`（默认）
+    - `jdbc`（`application-jdbc.yml` + Flyway 表结构）
+  - 新增兼容接口路径：`/api/legacy/users/{userId}/notification-preferences`
+  - 测试扩展到标准路径和兼容路径读写
 
 ## Resources
 - `/machine/Learning/Code/edx/setup.py`
@@ -56,6 +82,8 @@
 - `/machine/Learning/Code/edx/lms/envs/common.py`
 - `/machine/Learning/Code/edx/cms/envs/common.py`
 - `/machine/Learning/Code/edx/openedx/envs/common.py`
+- `/machine/Learning/Code/edx/BACKEND_REFACTOR_PLAN.md`
+- `/machine/Learning/Code/edx/backend-java`
 
 ## Visual/Browser Findings
 - N/A (no browser/image operations)

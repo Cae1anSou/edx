@@ -1,54 +1,50 @@
-# Task Plan: Backend Rewrite Language Decision (Go vs Java)
+# Task Plan: Java Backend Refactor Kickoff
 
 ## Goal
-基于当前仓库的真实技术结构与耦合复杂度，给出后端重写应选 Go 还是 Java 的结论与迁移策略。
+按照 `BACKEND_REFACTOR_PLAN.md` 持续推进后端重构：完成分支与基线提交后，落地可扩展的 Java 后端基础能力，并进入第一波迁移准备（RFC、持久化、兼容路由）。
 
 ## Current Phase
-Phase 5
+Phase 4
 
 ## Phases
-### Phase 1: Requirements & Discovery
-- [x] Understand user intent
-- [x] Identify constraints and requirements
-- [x] Document findings in findings.md
+### Phase 1: Branch & Baseline Commit
+- [x] Create dedicated refactor branch
+- [x] Commit existing uncommitted planning artifacts
 - **Status:** complete
 
-### Phase 2: Architecture Evidence Collection
-- [x] Quantify Django coupling and plugin surface
-- [x] Inspect background jobs, data stores, and integration points
-- [x] Identify migration risk hotspots
+### Phase 2: Phase-0 Java Foundation
+- [x] Bootstrap Spring Boot project
+- [x] Add global error/request-id foundation
+- [x] Add health endpoint and notification-preference sample domain
+- [x] Commit bootstrap changes
 - **Status:** complete
 
-### Phase 3: Decision Framework
-- [x] Build weighted decision criteria for Go vs Java
-- [x] Score options with repository evidence
-- [x] Draft recommendation and rationale
-- **Status:** complete
+### Phase 3: Wave-1 Hardening
+- [x] Write `RFC-001` for domain boundary and wave-1 APIs
+- [x] Upgrade sample domain to JDBC + Flyway (switchable repository)
+- [x] Add legacy-compatible API adapter endpoint
+- [x] Extend tests and docs
+- [ ] Commit wave-1 hardening changes
+- **Status:** in_progress
 
-### Phase 4: Verification
-- [x] Cross-check assumptions against actual files
-- [x] Identify unknowns and residual risks
-- [x] Ensure recommendation is actionable
-- **Status:** complete
-
-### Phase 5: Delivery
-- [x] Provide final recommendation to user
-- [x] Include practical migration path and first milestones
-- **Status:** complete
+### Phase 4: Handoff
+- [ ] Provide summary, known constraints, and immediate next steps
+- **Status:** in_progress
 
 ## Key Questions
-1. 当前项目是典型 CRUD 还是高度插件化、事件化、异构数据后端？
-2. 迁移最重的成本在业务代码本身，还是框架生态（Django app、插件、管理后台、任务系统）？
-3. 以最小迁移风险为目标，Go 与 Java 哪个更匹配当前复杂度？
+1. 如何把第一批 Java 代码变成可复制的迁移模板，而不是一次性 demo？
+2. 如何在不影响现网的前提下支持新旧接口并行（兼容路径 + 可回退）？
+3. 在当前网络受限环境下，哪些验证可本地完成，哪些需在有外网 CI 执行？
 
 ## Decisions Made
 | Decision | Rationale |
 |----------|-----------|
-| Use planning-with-files skill artifacts | Task requires many tool calls and evidence tracking |
-| Use repository-driven evidence rather than generic language comparison | User requested project-specific recommendation |
-| Choose Java over Go for full backend rewrite | Lower migration risk for this repo's complexity and integration surface |
+| Continue using planning-with-files artifacts | Multi-step implementation needs persistent state |
+| Keep default repo type as in-memory, JDBC via property switch | Allow no-DB local startup while enabling migration-ready path |
+| Implement compatibility adapter endpoint in Java service | Prepare for gateway-level Strangler routing without immediate frontend changes |
 
 ## Errors Encountered
 | Error | Attempt | Resolution |
 |-------|---------|------------|
-| planning-with-files template path mismatch (`templates/` not found) | 1 | Used `assets/templates/` in skill directory |
+| `mvn test` failed writing `~/.m2` | 1 | Switched to `-Dmaven.repo.local=/tmp/.m2` |
+| Maven dependency resolution failed (`repo.maven.apache.org` DNS) | 2 | Proceeded with code changes, mark tests as blocked by network |

@@ -825,6 +825,23 @@ class BackendApplicationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.results[0].status").value("success"));
 
+        mockMvc.perform(withAuth(put("/api/support/v1/manage_course_team/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "email": "u@example.com",
+                                  "bulk_role_operations": [
+                                    {
+                                      "course_id": "course-v1:edX+DemoX+2025_T2",
+                                      "role": "invalid-role",
+                                      "action": "assign"
+                                    }
+                                  ]
+                                }
+                                """), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.results[0].status").value("failed"));
+
         mockMvc.perform(withAuth(get("/api/tasks/v0/"), null, null))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.results").isArray());
@@ -871,9 +888,25 @@ class BackendApplicationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.version").value("v1"));
 
+        mockMvc.perform(get("/api/instructor/v1/"))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(withAuth(get("/api/instructor/v1/"), null, null))
+                .andExpect(status().isBadRequest());
+        mockMvc.perform(withAuth(get("/api/instructor/v1/?course_id=course-v1:edX+DemoX+2025_T1"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.course_id").value("course-v1:edX+DemoX+2025_T1"));
+
         mockMvc.perform(get("/api/instructor/v2/"))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(withAuth(get("/api/instructor/v2/"), null, null))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.results").isArray());
+        mockMvc.perform(withAuth(get("/api/instructor/v2/courses/course-v1:edX+DemoX+2025_T1"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.course_id").value("course-v1:edX+DemoX+2025_T1"));
+        mockMvc.perform(withAuth(get("/api/instructor/v2/courses/course-v1:edX+DemoX+2025_T1/instructor_tasks"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.course_id").value("course-v1:edX+DemoX+2025_T1"));
 
         mockMvc.perform(get("/api/youtube/courses/course-v1-demo/edx-video-ids"))
                 .andExpect(status().isOk())

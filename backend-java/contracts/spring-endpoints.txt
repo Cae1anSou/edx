@@ -35,6 +35,8 @@ GET /api/entitlements/v1/entitlements/
 GET /api/experiments/v1/
 GET /api/instructor/v1/
 GET /api/instructor/v2/
+GET /api/instructor/v2/courses/{courseId}
+GET /api/instructor/v2/courses/{courseId}/instructor_tasks
 GET /api/instructor_task/v1/
 GET /api/learner_home/
 GET /api/learning_sequences/v1/

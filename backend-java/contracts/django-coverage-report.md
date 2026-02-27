@@ -1,6 +1,6 @@
 # Django API Coverage Report
 
-- Spring endpoints indexed: 115
+- Spring endpoints indexed: 117
 - Django-discovered API paths: 51
 - Matched: 51
 - Unmatched: 0

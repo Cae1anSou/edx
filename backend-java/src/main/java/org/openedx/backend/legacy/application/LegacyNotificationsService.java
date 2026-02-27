@@ -51,6 +51,18 @@ public class LegacyNotificationsService {
         return Map.of("message", "Notifications marked read.");
     }
 
+    public Map<String, Object> markSeen(String user, String appName) {
+        if (appName == null || appName.isBlank()) {
+            throw new ValidationException("Invalid app name.");
+        }
+        for (NotificationItem item : userItems(user)) {
+            if (appName.equals(item.appName())) {
+                item.setLastSeen(Instant.now());
+            }
+        }
+        return Map.of("message", "Notifications marked as seen.");
+    }
+
     public Map<String, Object> preferencesV2() {
         return Map.of("status", "ok", "version", "v2", "apps", List.of("discussion"));
     }
@@ -110,6 +122,7 @@ public class LegacyNotificationsService {
         public Instant lastRead() { return lastRead; }
         public Instant lastSeen() { return lastSeen; }
         public void setLastRead(Instant lastRead) { this.lastRead = lastRead; }
+        public void setLastSeen(Instant lastSeen) { this.lastSeen = lastSeen; }
     }
 
     public static final class ValidationException extends RuntimeException {

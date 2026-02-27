@@ -46,6 +46,7 @@ GET /api/modulestore_migrator/v1/
 GET /api/notifications/
 GET /api/notifications/count/
 GET /api/notifications/preferences/update/{username}/
+GET /api/notifications/preferences/update/{username}/{patch}/
 GET /api/notifications/v2/configurations/
 GET /api/notifications/v3/configurations/
 GET /api/olx-export/v1/
@@ -111,6 +112,7 @@ POST /api/course_experience/v1/reset_course_deadlines/
 POST /api/enrollment/v1/enrollment
 POST /api/financial/v1/assistance
 POST /api/notifications/preferences/update/{username}/
+POST /api/notifications/preferences/update/{username}/{patch}/
 POST /api/profile_images/v0/staff/remove
 POST /api/profile_images/v0/staff/upload
 POST /api/tasks/v0/
@@ -134,6 +136,7 @@ POST /update_lang/
 POST /zendesk_proxy/v0
 POST /zendesk_proxy/v1
 PUT /api/legacy/users/{userId}/notification-preferences
+PUT /api/notifications/mark-seen/{appName}/
 PUT /api/support/v1/manage_course_team/
 PUT /api/user/v1/preferences/{prefKey}/
 PUT /api/user_tours/v1/discussions/{tourId}

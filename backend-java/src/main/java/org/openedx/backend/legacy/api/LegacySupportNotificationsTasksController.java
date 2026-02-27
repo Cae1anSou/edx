@@ -69,13 +69,32 @@ public class LegacySupportNotificationsTasksController {
         }
     }
 
+    @PutMapping("/api/notifications/mark-seen/{appName}/")
+    public ResponseEntity<?> markNotificationSeen(HttpServletRequest request, @PathVariable String appName) {
+        String user = currentUser(request);
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+        try {
+            return ResponseEntity.ok(notificationsService.markSeen(user, appName));
+        } catch (LegacyNotificationsService.ValidationException ex) {
+            return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+        }
+    }
+
     @GetMapping("/api/notifications/v2/configurations/")
-    public ResponseEntity<?> notificationConfigV2() {
+    public ResponseEntity<?> notificationConfigV2(HttpServletRequest request) {
+        if (currentUser(request) == null) {
+            return ResponseEntity.status(401).build();
+        }
         return ResponseEntity.ok(notificationsService.preferencesV2());
     }
 
     @GetMapping("/api/notifications/v3/configurations/")
-    public ResponseEntity<?> notificationConfigV3() {
+    public ResponseEntity<?> notificationConfigV3(HttpServletRequest request) {
+        if (currentUser(request) == null) {
+            return ResponseEntity.status(401).build();
+        }
         return ResponseEntity.ok(notificationsService.preferencesV3());
     }
 
@@ -86,6 +105,16 @@ public class LegacySupportNotificationsTasksController {
 
     @PostMapping("/api/notifications/preferences/update/{username}/")
     public ResponseEntity<?> notificationPreferenceUpdatePost(@PathVariable String username) {
+        return ResponseEntity.ok(notificationsService.oneClickUpdate(username));
+    }
+
+    @GetMapping("/api/notifications/preferences/update/{username}/{patch}/")
+    public ResponseEntity<?> notificationPreferenceUpdateGetWithPatch(@PathVariable String username, @PathVariable String patch) {
+        return ResponseEntity.ok(notificationsService.oneClickUpdate(username));
+    }
+
+    @PostMapping("/api/notifications/preferences/update/{username}/{patch}/")
+    public ResponseEntity<?> notificationPreferenceUpdatePostWithPatch(@PathVariable String username, @PathVariable String patch) {
         return ResponseEntity.ok(notificationsService.oneClickUpdate(username));
     }
 

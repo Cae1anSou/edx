@@ -779,11 +779,25 @@ class BackendApplicationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("Notifications marked read."));
 
+        mockMvc.perform(withAuth(put("/api/notifications/mark-seen/discussion/"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Notifications marked as seen."));
+
+        mockMvc.perform(withAuth(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch("/api/notifications/read/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"), null, null))
+                .andExpect(status().isBadRequest());
+
         mockMvc.perform(get("/api/notifications/v2/configurations/"))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(withAuth(get("/api/notifications/v2/configurations/"), null, null))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.version").value("v2"));
 
         mockMvc.perform(get("/api/notifications/preferences/update/hash-user/"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result").value("success"));
+        mockMvc.perform(get("/api/notifications/preferences/update/hash-user/patch-token/"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result").value("success"));
 
@@ -830,6 +844,9 @@ class BackendApplicationTests {
         mockMvc.perform(withAuth(get("/api/tasks/v0/" + taskId + "/"), null, null))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.task_type").value("grade-export"));
+
+        mockMvc.perform(withAuth(get("/api/tasks/v0/999999/"), null, null))
+                .andExpect(status().isNotFound());
     }
 
     @Test

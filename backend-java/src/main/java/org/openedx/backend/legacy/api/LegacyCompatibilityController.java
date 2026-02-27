@@ -3,6 +3,10 @@ package org.openedx.backend.legacy.api;
 import jakarta.servlet.http.HttpServletRequest;
 import org.openedx.backend.bookmarks.application.BookmarksService;
 import org.openedx.backend.bookmarks.domain.BookmarkRecord;
+import org.openedx.backend.legacy.application.LegacyContentstoreService;
+import org.openedx.backend.legacy.application.LegacyHelpCenterService;
+import org.openedx.backend.legacy.application.LegacyTeamService;
+import org.openedx.backend.legacy.application.LegacyUploadService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,21 +16,30 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 public class LegacyCompatibilityController {
 
     private final BookmarksService bookmarksService;
-    private final ConcurrentHashMap<String, String> uploadFilesByToken = new ConcurrentHashMap<>();
-    private final AtomicLong uploadSeq = new AtomicLong(1);
+    private final LegacyContentstoreService contentstoreService;
+    private final LegacyTeamService teamService;
+    private final LegacyHelpCenterService helpCenterService;
+    private final LegacyUploadService uploadService;
 
-    public LegacyCompatibilityController(BookmarksService bookmarksService) {
+    public LegacyCompatibilityController(
+            BookmarksService bookmarksService,
+            LegacyContentstoreService contentstoreService,
+            LegacyTeamService teamService,
+            LegacyHelpCenterService helpCenterService,
+            LegacyUploadService uploadService
+    ) {
         this.bookmarksService = bookmarksService;
+        this.contentstoreService = contentstoreService;
+        this.teamService = teamService;
+        this.helpCenterService = helpCenterService;
+        this.uploadService = uploadService;
     }
 
     @GetMapping("/api/v1/bookmarks/")
@@ -56,12 +69,12 @@ public class LegacyCompatibilityController {
 
     @GetMapping("/api/contentstore/v2/downstreams/")
     public ResponseEntity<?> downstreams() {
-        return ResponseEntity.ok(Map.of("results", List.of()));
+        return ResponseEntity.ok(Map.of("results", contentstoreService.listDownstreams()));
     }
 
     @PostMapping("/api/contentstore/v2/downstreams/{downstreamBlockId}/sync")
     public ResponseEntity<?> downstreamSync(@PathVariable String downstreamBlockId) {
-        return ResponseEntity.ok(Map.of("downstream_block_id", downstreamBlockId, "status", "SYNCED"));
+        return ResponseEntity.ok(contentstoreService.sync(downstreamBlockId));
     }
 
     @GetMapping("/api/courses/v1/blocks/")
@@ -111,51 +124,48 @@ public class LegacyCompatibilityController {
 
     @GetMapping("/api/team/v0/team_memberships/")
     public ResponseEntity<?> teamMemberships() {
-        return ResponseEntity.ok(Map.of("results", List.of(Map.of(
-                "team_id", "test-team",
-                "username", "u-test",
-                "admin", false
-        ))));
+        return ResponseEntity.ok(Map.of("results", teamService.listMemberships()));
     }
 
     @GetMapping("/api/team/v0/team_membership/{teamId},{username}")
     public ResponseEntity<?> teamMembership(@PathVariable String teamId, @PathVariable String username, @RequestParam(required = false) Boolean admin) {
-        if (!"test-team".equals(teamId)) {
-            return ResponseEntity.status(404).body(Map.of("detail", "Team not found"));
+        try {
+            return ResponseEntity.ok(teamService.getMembership(teamId, username, admin != null && admin));
+        } catch (LegacyTeamService.NotFoundException ex) {
+            return ResponseEntity.status(404).body(Map.of("detail", ex.getMessage()));
         }
-        return ResponseEntity.ok(Map.of("team_id", teamId, "username", username, "admin", admin != null && admin));
     }
 
     @GetMapping("/api/team/v0/teams/")
     public ResponseEntity<?> teams() {
-        return ResponseEntity.ok(Map.of("results", List.of(Map.of(
-                "id", "test-team",
-                "name", "Test Team"
-        ))));
+        return ResponseEntity.ok(Map.of("results", teamService.listTeams()));
     }
 
     @GetMapping("/api/team/v0/teams/{teamId}")
     public ResponseEntity<?> team(@PathVariable String teamId, @RequestParam(required = false) String expand) {
-        if (!"test-team".equals(teamId) && !"team_id".equals(teamId)) {
-            return ResponseEntity.status(404).body(Map.of("detail", "Team not found"));
+        try {
+            return ResponseEntity.ok(teamService.getTeam(teamId, expand));
+        } catch (LegacyTeamService.NotFoundException ex) {
+            return ResponseEntity.status(404).body(Map.of("detail", ex.getMessage()));
         }
-        return ResponseEntity.ok(Map.of("team_id", teamId, "expand", expand == null ? "" : expand));
     }
 
     @GetMapping("/api/team/v0/teams/{teamId}/assignments")
     public ResponseEntity<?> teamAssignments(@PathVariable String teamId) {
-        if (!"test-team".equals(teamId) && !"team_id".equals(teamId)) {
-            return ResponseEntity.status(404).body(Map.of("detail", "Team not found"));
+        try {
+            return ResponseEntity.ok(teamService.getTeamAssignments(teamId));
+        } catch (LegacyTeamService.NotFoundException ex) {
+            return ResponseEntity.status(404).body(Map.of("detail", ex.getMessage()));
         }
-        return ResponseEntity.ok(Map.of("team_id", teamId, "assignments", List.of()));
     }
 
     @GetMapping("/api/team/v0/topics/{topicId},{courseId}")
     public ResponseEntity<?> teamTopics(@PathVariable String topicId, @PathVariable String courseId) {
-        if (topicId.startsWith("no_such")) {
-            return ResponseEntity.status(404).body(Map.of("detail", "Topic not found"));
+        try {
+            return ResponseEntity.ok(teamService.getTopic(topicId, courseId));
+        } catch (LegacyTeamService.NotFoundException ex) {
+            return ResponseEntity.status(404).body(Map.of("detail", ex.getMessage()));
         }
-        return ResponseEntity.ok(Map.of("topic_id", topicId, "course_id", courseId));
     }
 
     @GetMapping("/api/team/v0/topics/{topicId},{coursePrefix}/{courseSuffix}")
@@ -164,35 +174,34 @@ public class LegacyCompatibilityController {
             @PathVariable String coursePrefix,
             @PathVariable String courseSuffix
     ) {
-        if (topicId.startsWith("no_such")) {
-            return ResponseEntity.status(404).body(Map.of("detail", "Topic not found"));
+        try {
+            return ResponseEntity.ok(teamService.getTopic(topicId, coursePrefix + "/" + courseSuffix));
+        } catch (LegacyTeamService.NotFoundException ex) {
+            return ResponseEntity.status(404).body(Map.of("detail", ex.getMessage()));
         }
-        return ResponseEntity.ok(Map.of("topic_id", topicId, "course_id", coursePrefix + "/" + courseSuffix));
     }
 
     @GetMapping("/api/v2/help_center/articles/search.json")
     public ResponseEntity<?> helpCenterSearch(@RequestParam(required = false) String query) {
-        return ResponseEntity.ok(Map.of("results", List.of(), "query", query == null ? "" : query));
+        try {
+            return ResponseEntity.ok(Map.of("results", helpCenterService.search(query), "query", query == null ? "" : query));
+        } catch (LegacyHelpCenterService.ValidationException ex) {
+            return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+        }
     }
 
     @PostMapping("/api/v2/uploads.json")
     public ResponseEntity<?> uploads(@RequestParam(required = false) String filename) {
-        String token = "up-token-" + uploadSeq.getAndIncrement();
-        uploadFilesByToken.put(token, filename == null ? "" : filename);
-        return ResponseEntity.ok(Map.of("upload", Map.of("token", token, "attachment", uploadFilesByToken.get(token))));
+        return ResponseEntity.ok(Map.of("upload", uploadService.createUpload(filename)));
     }
 
     @GetMapping("/api/v2/uploads/{fileToken}.json")
     public ResponseEntity<?> uploadStatus(@PathVariable String fileToken) {
-        String attachment = uploadFilesByToken.get(fileToken);
-        if (attachment == null) {
-            return ResponseEntity.status(404).body(Map.of("upload", Map.of("token", fileToken, "status", "not_found")));
+        try {
+            return ResponseEntity.ok(Map.of("upload", uploadService.getUpload(fileToken)));
+        } catch (LegacyUploadService.NotFoundException ex) {
+            return ResponseEntity.status(404).body(Map.of("upload", Map.of("token", ex.token(), "status", "not_found")));
         }
-        LinkedHashMap<String, Object> upload = new LinkedHashMap<>();
-        upload.put("token", fileToken);
-        upload.put("status", "uploaded");
-        upload.put("attachment", attachment);
-        return ResponseEntity.ok(Map.of("upload", upload));
     }
 
     private String currentUser(HttpServletRequest request) {

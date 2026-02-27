@@ -642,6 +642,20 @@ class BackendApplicationTests {
 
     @Test
     void legacyCompatibilityShouldSupportTeamAndUploadFlows() throws Exception {
+        mockMvc.perform(withAuth(get("/api/contentstore/v2/downstreams/"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.results").isArray());
+
+        mockMvc.perform(withAuth(post("/api/contentstore/v2/downstreams/block-v1-sync/sync"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.downstream_block_id").value("block-v1-sync"))
+                .andExpect(jsonPath("$.status").value("SYNCED"))
+                .andExpect(jsonPath("$.synced_at").exists());
+
+        mockMvc.perform(withAuth(get("/api/contentstore/v2/downstreams/"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.results[0].downstream_block_id").value("block-v1-sync"));
+
         mockMvc.perform(withAuth(get("/api/team/v0/teams/"), null, null))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.results[0].id").value("test-team"));
@@ -670,6 +684,14 @@ class BackendApplicationTests {
         mockMvc.perform(get("/api/v2/uploads/not-exists.json"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.upload.status").value("not_found"));
+
+        mockMvc.perform(get("/api/v2/help_center/articles/search.json"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("query is required"));
+
+        mockMvc.perform(get("/api/v2/help_center/articles/search.json?query=account"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.results[0].title").value("Account setup guide"));
     }
 
     private MockHttpServletRequestBuilder withAuth(

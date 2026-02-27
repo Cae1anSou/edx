@@ -323,6 +323,25 @@ class BackendApplicationTests {
                 .andExpect(jsonPath("$.data.username").value("test-learner"));
     }
 
+    @Test
+    void taxonomyLearnerCurrentJobShouldSupportUpsertAndList() throws Exception {
+        mockMvc.perform(withAuth(post("/taxonomy/api/v1/learners-current-job"), "taxonomy:learner-job:write", null)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "username": "test-learner",
+                                  "company": "Open Learning Inc",
+                                  "jobTitle": "Learning Engineer"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.company").value("Open Learning Inc"));
+
+        mockMvc.perform(withAuth(get("/taxonomy/api/v1/learners-current-job/?page_size=1000"), "taxonomy:learner-job:read", null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.total").isNumber());
+    }
+
     private MockHttpServletRequestBuilder withAuth(
             MockHttpServletRequestBuilder builder,
             String permissions,

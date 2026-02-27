@@ -1,6 +1,7 @@
 DELETE /api/v1/courses/{courseId}/certificates/{userId}
 DELETE /api/v1/courses/{courseId}/enrollments/{userId}
 GET /api/legacy/users/{userId}/notification-preferences
+GET /api/v1
 GET /api/v1/courses/list
 GET /api/v1/courses/{courseId}
 GET /api/v1/courses/{courseId}/certificates/{userId}
@@ -19,12 +20,14 @@ GET /consent/api/v1
 GET /consent/api/v1/data_sharing_consent
 GET /enterprise/api/v1
 GET /enterprise/api/v1/enterprise-learner
+GET /taxonomy/api/v1/learners-current-job
 POST /api/v1/courses/{courseId}/certificates/{userId}
 POST /api/v1/coursexs
 POST /api/v1/jobs
 POST /api/v1/users
 POST /consent/api/v1/data_sharing_consent
 POST /enterprise/api/v1/enterprise-learner
+POST /taxonomy/api/v1/learners-current-job
 PUT /api/legacy/users/{userId}/notification-preferences
 PUT /api/v1/courses/{courseId}
 PUT /api/v1/courses/{courseId}/enrollments/{userId}

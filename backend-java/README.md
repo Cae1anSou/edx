@@ -57,6 +57,8 @@ cd backend-java
 - `POST /consent/api/v1/data_sharing_consent`
 - `GET /consent/api/v1/data_sharing_consent?username={username}`
 - `GET /consent/api/v1`
+- `POST /taxonomy/api/v1/learners-current-job`
+- `GET /taxonomy/api/v1/learners-current-job/?page_size=1000`
 - `PUT /api/v1/courses/{courseId}/enrollments/{userId}`
 - `GET /api/v1/courses/{courseId}/enrollments/{userId}`
 - `DELETE /api/v1/courses/{courseId}/enrollments/{userId}`
@@ -86,6 +88,7 @@ cd backend-java
 - `app.coursex.repository=inmemory|jdbc`
 - `app.enterprise.repository=inmemory|jdbc`
 - `app.consent.repository=inmemory|jdbc`
+- `app.taxonomy.repository=inmemory|jdbc`
 - `app.identity.repository=inmemory|jdbc`
 - `app.enrollment.repository=inmemory|jdbc`
 - `app.learning-progress.repository=inmemory|jdbc`

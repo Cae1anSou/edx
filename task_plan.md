@@ -118,7 +118,15 @@ Phase 4
 - [x] Add consent repository/service/controller + migration + tests
 - [x] Add enterprise/consent root API endpoints for legacy root paths
 - [x] Re-run contract freeze and verify unmatched count decreases
-- [ ] Commit phase-16 changes
+- [x] Commit phase-16 changes
+- **Status:** complete
+
+### Phase 17: Unmatched Taxonomy API Migration
+- [x] Implement `/taxonomy/api/v1/learners-current-job` in Spring
+- [x] Add taxonomy repository/service/controller + migration + tests
+- [x] Add `/api/v1` root endpoint compatibility
+- [x] Re-run contract freeze and reduce unmatched to external-only
+- [ ] Commit phase-17 changes
 - **Status:** in_progress
 
 ## Key Questions

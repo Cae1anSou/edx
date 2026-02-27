@@ -15,13 +15,12 @@ cd backend-java
 ```
 
 ## Current Snapshot (2026-02-27)
-- Spring endpoints indexed: 23
+- Spring endpoints indexed: 25
 - Frontend-discovered API paths: 8
-- Matched: 5
-- Unmatched: 3
+- Matched: 7
+- Unmatched: 1
 
 Key unmatched examples:
-- `/taxonomy/api/v1/learners-current-job/...`
 - `/api/v2/tickets.json`
 
 ## Interpretation

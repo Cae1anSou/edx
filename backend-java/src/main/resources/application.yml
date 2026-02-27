@@ -28,6 +28,8 @@ app:
     repository: inmemory
   consent:
     repository: inmemory
+  taxonomy:
+    repository: inmemory
   identity:
     repository: inmemory
   enrollment:

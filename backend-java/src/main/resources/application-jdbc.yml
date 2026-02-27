@@ -11,6 +11,8 @@ app:
     repository: jdbc
   consent:
     repository: jdbc
+  taxonomy:
+    repository: jdbc
   identity:
     repository: jdbc
   enrollment:

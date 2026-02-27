@@ -141,6 +141,10 @@
   - 已实现 `/consent/api/v1/data_sharing_consent`（upsert/get）
   - 已补 `/enterprise/api/v1` 与 `/consent/api/v1` 根路径探活接口
   - 契约对账结果更新为 `matched=5/unmatched=3`
+- 未覆盖 API 家族继续收敛（第三波）：
+  - 已实现 `/taxonomy/api/v1/learners-current-job`（upsert/list）
+  - 已补 `/api/v1` 根路径探活接口
+  - 契约对账结果更新为 `matched=7/unmatched=1`（剩余外部 `/api/v2/tickets.json`）
 
 ## Resources
 - `/machine/Learning/Code/edx/setup.py`

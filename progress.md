@@ -222,3 +222,12 @@
   - Added Flyway migration `V8__data_sharing_consent.sql`.
   - Added enterprise/consent root API endpoints for legacy root path compatibility.
   - Re-ran contract freeze report and reduced unmatched count to 3.
+
+### Phase 16: Unmatched API Family Migration (`taxonomy`)
+- **Status:** in_progress
+- Actions taken:
+  - Added taxonomy learner current job domain and API.
+  - Added in-memory and JDBC repositories.
+  - Added Flyway migration `V9__learner_current_job.sql`.
+  - Added `/api/v1` root compatibility endpoint.
+  - Re-ran contract freeze report and reduced unmatched count to 1 (external endpoint only).

@@ -1,6 +1,6 @@
 # API Contract Coverage Report
 
-- Spring endpoints indexed: 35
+- Spring endpoints indexed: 36
 - Frontend-discovered API paths: 8
 - Matched: 8
 - Unmatched: 0

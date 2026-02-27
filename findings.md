@@ -182,6 +182,12 @@
   - 已实现 `GET /api/course_experience/v1/course_deadlines_info/{courseKey}`
   - 为 `reset_all` 新增 enrollment 仓储按用户查询能力（inmemory + jdbc）
   - 测试结果更新为：`Tests run: 24, Failures: 0, Errors: 0`
+- 1:1 行为迁移新增语言偏好域：
+  - 已实现 `PATCH /lang_pref/update_language`
+  - 已实现 `GET/POST /update_lang/`（预览语言兼容入口）
+  - `update_language` 返回 `Set-Cookie` 更新语言偏好
+  - `update_lang` 未认证返回 `401`，POST 动作返回 `302` 重定向至 `/update_lang/`
+  - 测试结果更新为：`Tests run: 25, Failures: 0, Errors: 0`
 
 ## Resources
 - `/machine/Learning/Code/edx/setup.py`

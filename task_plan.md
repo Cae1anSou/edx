@@ -4,7 +4,7 @@
 按照 `BACKEND_REFACTOR_PLAN.md` 持续推进后端重构：完成分支与基线提交后，落地可扩展的 Java 后端基础能力，并进入第一波迁移准备（RFC、持久化、兼容路由）。
 
 ## Current Phase
-Phase 22
+Phase 23
 
 ## Phases
 ### Phase 1: Branch & Baseline Commit
@@ -168,7 +168,14 @@ Phase 22
 - [x] Implement `GET /api/course_experience/v1/course_deadlines_info/{courseKey}`
 - [x] Add enrollment repository query support for reset-all aggregation
 - [x] Extend integration tests and pass full Maven test suite
-- [ ] Commit phase-22 changes
+- [x] Commit phase-22 changes
+- **Status:** complete
+
+### Phase 23: Language Preference / Dark Lang Compatibility
+- [x] Implement `PATCH /lang_pref/update_language` cookie update endpoint
+- [x] Implement `GET/POST /update_lang/` compatibility endpoint
+- [x] Add integration tests and pass full Maven test suite
+- [ ] Commit phase-23 changes
 - **Status:** in_progress
 
 ## Key Questions

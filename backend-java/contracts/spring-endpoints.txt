@@ -32,6 +32,7 @@ GET /enterprise/api/v1/enterprise-learner
 GET /enterprise/api/v1/enterprise-learner/
 GET /taxonomy/api/v1/learners-current-job
 GET /taxonomy/api/v1/learners-current-job/
+GET /update_lang/
 POST /api/agreements/v1/integrity_signature/{courseId}
 POST /api/agreements/v1/lti_pii_signature/{courseId}
 POST /api/bookmarks/v1/bookmarks
@@ -50,6 +51,7 @@ POST /enterprise/api/v1/enterprise-learner
 POST /enterprise/api/v1/enterprise-learner/
 POST /taxonomy/api/v1/learners-current-job
 POST /taxonomy/api/v1/learners-current-job/
+POST /update_lang/
 POST /zendesk_proxy/v0
 POST /zendesk_proxy/v1
 PUT /api/legacy/users/{userId}/notification-preferences

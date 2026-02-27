@@ -17,6 +17,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -534,6 +535,37 @@ class BackendApplicationTests {
                 .andExpect(jsonPath("$.dates_banner_info.missed_gated_content").exists())
                 .andExpect(jsonPath("$.dates_banner_info.content_type_gating_enabled").exists())
                 .andExpect(jsonPath("$.dates_banner_info.verified_upgrade_link").exists());
+    }
+
+    @Test
+    void languagePreferenceShouldSupportPatchAndPreviewLangEndpoints() throws Exception {
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch("/lang_pref/update_language")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "pref-lang": "eo"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Set-Cookie", org.hamcrest.Matchers.containsString("openedx-language-preference=eo")));
+
+        mockMvc.perform(get("/update_lang/"))
+                .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(withAuth(get("/update_lang/"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Preview Language Administration")));
+
+        mockMvc.perform(withAuth(post("/update_lang/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "action": "set_preview_language",
+                                  "preview_language": "fr"
+                                }
+                                """), null, null))
+                .andExpect(status().isFound())
+                .andExpect(header().string("Location", "/update_lang/"));
     }
 
     private MockHttpServletRequestBuilder withAuth(

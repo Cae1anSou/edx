@@ -55,3 +55,5 @@ app:
     enable-lti-pii-acknowledgement: true
   bookmarks:
     max-per-course: 100
+  lang-pref:
+    default-language: en

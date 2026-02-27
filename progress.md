@@ -300,6 +300,21 @@
   - Fixed test regression (wrong HTTP method on enrollment setup call).
   - Re-ran Maven tests and contract freeze successfully.
 
+### Phase 22: Language Preference Compatibility
+- **Status:** in_progress
+- Actions taken:
+  - Added language preference service/controller:
+    - `PATCH /lang_pref/update_language`
+    - `GET/POST /update_lang/`
+  - Added cookie update behavior for language preference endpoint (`Set-Cookie`).
+  - Added preview language in-memory state for `update_lang` compatibility.
+  - Added integration tests for:
+    - language patch response cookie
+    - update_lang unauthenticated (`401`)
+    - update_lang authenticated GET (`200`)
+    - update_lang set action POST redirect (`302`)
+  - Re-ran Maven tests and contract freeze successfully.
+
 ## Test Results (Latest)
 | Test | Input | Expected | Actual | Status |
 |------|-------|----------|--------|--------|
@@ -308,3 +323,4 @@
 | Maven tests (agreements) | `cd backend-java && mvn -Dmaven.repo.local=/tmp/.m2 test` | New agreements tests pass | `Tests run: 20, Failures: 0, Errors: 0` | PASS |
 | Maven tests (bookmarks) | `cd backend-java && mvn -Dmaven.repo.local=/tmp/.m2 test` | New bookmarks tests pass | `Tests run: 22, Failures: 0, Errors: 0` | PASS |
 | Maven tests (course_experience) | `cd backend-java && mvn -Dmaven.repo.local=/tmp/.m2 test` | New course_experience tests pass | `Tests run: 24, Failures: 0, Errors: 0` | PASS |
+| Maven tests (lang_pref/dark_lang compat) | `cd backend-java && mvn -Dmaven.repo.local=/tmp/.m2 test` | New language compatibility tests pass | `Tests run: 25, Failures: 0, Errors: 0` | PASS |

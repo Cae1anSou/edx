@@ -120,6 +120,17 @@
 - Django 运行下线准备：
   - 新增 `RFC-004-django-runtime-decommission.md`
   - 新增 `backend-java/scripts/smoke-spring-only.sh` 用于上线前最小链路验证
+- 契约冻结与覆盖对账能力已落地：
+  - 新增脚本：
+    - `backend-java/scripts/export-spring-endpoint-index.py`
+    - `backend-java/scripts/discover-frontend-api-paths.sh`
+    - `backend-java/scripts/check-contract-coverage.py`
+    - `backend-java/scripts/freeze-contracts.sh`
+  - 产物：
+    - `backend-java/contracts/spring-endpoints.txt`
+    - `backend-java/contracts/frontend-api-paths.txt`
+    - `backend-java/contracts/coverage-report.md`
+  - 新增 `API_CONTRACT_FREEZE.md` 记录当前覆盖差距和收敛策略
 
 ## Resources
 - `/machine/Learning/Code/edx/setup.py`

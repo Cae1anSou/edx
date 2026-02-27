@@ -102,3 +102,14 @@ cd backend-java
 ```
 
 输出目录：`backend-java/contracts/`
+
+## 冻结合约与覆盖对账
+```bash
+cd backend-java
+./scripts/freeze-contracts.sh
+```
+
+输出：
+- `contracts/spring-endpoints.txt`
+- `contracts/frontend-api-paths.txt`
+- `contracts/coverage-report.md`

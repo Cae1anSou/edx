@@ -186,3 +186,12 @@
 - Actions taken:
   - Added RFC `RFC-004-django-runtime-decommission.md`.
   - Added `smoke-spring-only.sh` for pre-cutover runtime validation.
+
+### Phase 12: Contract Freeze & Coverage
+- **Status:** in_progress
+- Actions taken:
+  - Added Spring endpoint index exporter script.
+  - Added frontend API path discovery script.
+  - Added contract coverage checker script.
+  - Added one-shot `freeze-contracts.sh` pipeline script.
+  - Added `API_CONTRACT_FREEZE.md` with current mismatch snapshot.

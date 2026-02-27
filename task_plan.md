@@ -88,7 +88,15 @@ Phase 4
 ### Phase 12: Django Runtime Decommission Readiness
 - [x] Add Django runtime decommission RFC
 - [x] Add Spring-only smoke validation script
-- [ ] Commit phase-12 changes
+- [x] Commit phase-12 changes
+- **Status:** complete
+
+### Phase 13: Contract Freeze & Frontend Coverage
+- [x] Add scripts for Spring endpoint index export
+- [x] Add scripts for frontend API discovery
+- [x] Add automated coverage report generation
+- [x] Add contract freeze RFC/checklist doc
+- [ ] Commit phase-13 changes
 - **Status:** in_progress
 
 ## Key Questions

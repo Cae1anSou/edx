@@ -315,6 +315,15 @@
     - update_lang set action POST redirect (`302`)
   - Re-ran Maven tests and contract freeze successfully.
 
+### Phase 23: Toggle State API Compatibility
+- **Status:** in_progress
+- Actions taken:
+  - Added compatibility endpoint `GET /api/toggles/v0/state/`.
+  - Added staff-only enforcement based on auth roles (`STAFF/ADMIN/GLOBAL_STAFF`).
+  - Added response payload shape with `django_settings` and `waffle_flags`.
+  - Added integration tests for non-staff forbidden and staff success.
+  - Re-ran Maven tests and contract freeze successfully.
+
 ## Test Results (Latest)
 | Test | Input | Expected | Actual | Status |
 |------|-------|----------|--------|--------|
@@ -324,3 +333,4 @@
 | Maven tests (bookmarks) | `cd backend-java && mvn -Dmaven.repo.local=/tmp/.m2 test` | New bookmarks tests pass | `Tests run: 22, Failures: 0, Errors: 0` | PASS |
 | Maven tests (course_experience) | `cd backend-java && mvn -Dmaven.repo.local=/tmp/.m2 test` | New course_experience tests pass | `Tests run: 24, Failures: 0, Errors: 0` | PASS |
 | Maven tests (lang_pref/dark_lang compat) | `cd backend-java && mvn -Dmaven.repo.local=/tmp/.m2 test` | New language compatibility tests pass | `Tests run: 25, Failures: 0, Errors: 0` | PASS |
+| Maven tests (toggles compat) | `cd backend-java && mvn -Dmaven.repo.local=/tmp/.m2 test` | New toggle-state tests pass | `Tests run: 26, Failures: 0, Errors: 0` | PASS |

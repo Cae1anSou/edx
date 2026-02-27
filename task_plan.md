@@ -4,7 +4,7 @@
 按照 `BACKEND_REFACTOR_PLAN.md` 持续推进后端重构：完成分支与基线提交后，落地可扩展的 Java 后端基础能力，并进入第一波迁移准备（RFC、持久化、兼容路由）。
 
 ## Current Phase
-Phase 23
+Phase 24
 
 ## Phases
 ### Phase 1: Branch & Baseline Commit
@@ -175,7 +175,14 @@ Phase 23
 - [x] Implement `PATCH /lang_pref/update_language` cookie update endpoint
 - [x] Implement `GET/POST /update_lang/` compatibility endpoint
 - [x] Add integration tests and pass full Maven test suite
-- [ ] Commit phase-23 changes
+- [x] Commit phase-23 changes
+- **Status:** complete
+
+### Phase 24: Toggle State API Compatibility
+- [x] Implement `GET /api/toggles/v0/state/` compatibility endpoint
+- [x] Enforce staff-only access semantics (`403` for non-staff)
+- [x] Add integration tests and pass full Maven test suite
+- [ ] Commit phase-24 changes
 - **Status:** in_progress
 
 ## Key Questions

@@ -10,6 +10,7 @@ GET /api/bookmarks/v1/bookmarks/{username},{usageId:.+}/
 GET /api/course_experience/v1/course_deadlines_info/{courseKey:.+}
 GET /api/course_experience/v1/course_deadlines_info/{courseKey:.+}/
 GET /api/legacy/users/{userId}/notification-preferences
+GET /api/toggles/v0/state/
 GET /api/v1
 GET /api/v1/courses/list
 GET /api/v1/courses/{courseId}

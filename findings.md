@@ -188,6 +188,11 @@
   - `update_language` 返回 `Set-Cookie` 更新语言偏好
   - `update_lang` 未认证返回 `401`，POST 动作返回 `302` 重定向至 `/update_lang/`
   - 测试结果更新为：`Tests run: 25, Failures: 0, Errors: 0`
+- 1:1 行为迁移新增 toggles 域：
+  - 已实现 `GET /api/toggles/v0/state/`
+  - 已对齐 staff 访问语义：non-staff 返回 `403`
+  - 已返回 toggle report 基本结构：`django_settings` + `waffle_flags`
+  - 测试结果更新为：`Tests run: 26, Failures: 0, Errors: 0`
 
 ## Resources
 - `/machine/Learning/Code/edx/setup.py`

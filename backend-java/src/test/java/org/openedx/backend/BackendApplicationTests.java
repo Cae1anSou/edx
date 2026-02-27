@@ -568,6 +568,17 @@ class BackendApplicationTests {
                 .andExpect(header().string("Location", "/update_lang/"));
     }
 
+    @Test
+    void toggleStateShouldEnforceStaffAndReturnReportShape() throws Exception {
+        mockMvc.perform(withAuth(get("/api/toggles/v0/state/"), null, null))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(withAuthWithUserAndRoles(get("/api/toggles/v0/state/"), "u-staff", "STAFF", null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.django_settings[0].name").value("FEATURES['MILESTONES_APP']"))
+                .andExpect(jsonPath("$.waffle_flags").isArray());
+    }
+
     private MockHttpServletRequestBuilder withAuth(
             MockHttpServletRequestBuilder builder,
             String permissions,

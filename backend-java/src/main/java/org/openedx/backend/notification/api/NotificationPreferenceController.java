@@ -1,6 +1,9 @@
 package org.openedx.backend.notification.api;
 
 import jakarta.validation.Valid;
+import org.openedx.backend.common.api.ApiResponse;
+import org.openedx.backend.common.security.annotation.RequireLogin;
+import org.openedx.backend.common.security.annotation.RequirePermission;
 import org.openedx.backend.notification.application.NotificationPreferenceService;
 import org.openedx.backend.notification.domain.NotificationPreference;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,12 +25,15 @@ public class NotificationPreferenceController {
     }
 
     @GetMapping("/{userId}")
-    public NotificationPreferenceResponse getByUserId(@PathVariable String userId) {
-        return toResponse(service.getByUserId(userId));
+    @RequireLogin
+    @RequirePermission("notification:read")
+    public ApiResponse<NotificationPreferenceResponse> getByUserId(@PathVariable String userId) {
+        return ApiResponse.success(toResponse(service.getByUserId(userId)));
     }
 
     @PutMapping("/{userId}")
-    public NotificationPreferenceResponse update(
+    @RequirePermission("notification:write")
+    public ApiResponse<NotificationPreferenceResponse> update(
             @PathVariable String userId,
             @RequestHeader(value = "X-Idempotency-Key", required = false) String idempotencyKey,
             @Valid @RequestBody UpdateNotificationPreferenceRequest request
@@ -38,7 +44,7 @@ public class NotificationPreferenceController {
                 request.smsEnabled(),
                 idempotencyKey
         );
-        return toResponse(updated);
+        return ApiResponse.success(toResponse(updated));
     }
 
     private NotificationPreferenceResponse toResponse(NotificationPreference preference) {

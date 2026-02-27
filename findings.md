@@ -84,6 +84,18 @@
     - `identity`：用户注册/查询
     - `enrollment`：选课/查询/退课
   - 新增 Flyway `V2` 迁移：`user_profile` 与 `enrollment_record`
+- 平台层基础能力已升级：
+  - 统一返回结构 `ApiResponse<T>`（`code/message/data/error`）
+  - 全局异常处理器支持业务异常、验证异常、未知异常统一包装
+  - AOP 鉴权注解：
+    - `@RequireLogin`
+    - `@RequireRole`
+    - `@RequirePermission`
+    - `@RequireResearchGroup`
+  - 请求头上下文解析：`X-User-Id` / `X-Roles` / `X-Permissions` / `X-Research-Groups`
+- 全量重构继续推进：
+  - 新增 `learning-progress` 域（查询/更新）及 JDBC+内存双仓储
+  - 新增 Flyway `V3`：`learning_progress` 表
 
 ## Resources
 - `/machine/Learning/Code/edx/setup.py`

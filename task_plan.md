@@ -43,7 +43,15 @@ Phase 4
 - [x] Add core domains in Spring (identity + enrollment)
 - [x] Add Flyway schema for new domains
 - [x] Add RFC-003 big-bang cutover doc
-- [ ] Commit direct-cutover changes
+- [x] Commit direct-cutover changes
+- **Status:** complete
+
+### Phase 7: Platform Foundation + Ongoing Full Rewrite
+- [x] Add unified response model and enhanced global exception handler
+- [x] Add reusable AOP access-control annotations (login/role/permission/research)
+- [x] Wire annotations into existing controllers
+- [x] Continue full rewrite with learning-progress domain
+- [ ] Commit phase-7 changes
 - **Status:** in_progress
 
 ## Key Questions

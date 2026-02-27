@@ -1,6 +1,9 @@
 package org.openedx.backend.identity.api;
 
 import jakarta.validation.Valid;
+import org.openedx.backend.common.api.ApiResponse;
+import org.openedx.backend.common.security.annotation.RequireLogin;
+import org.openedx.backend.common.security.annotation.RequirePermission;
 import org.openedx.backend.identity.application.UserProfileService;
 import org.openedx.backend.identity.domain.UserProfile;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,13 +24,15 @@ public class UserProfileController {
     }
 
     @PostMapping
-    public UserProfileResponse register(@Valid @RequestBody RegisterUserRequest request) {
-        return toResponse(service.register(request.email(), request.displayName()));
+    @RequirePermission("identity:user:create")
+    public ApiResponse<UserProfileResponse> register(@Valid @RequestBody RegisterUserRequest request) {
+        return ApiResponse.success(toResponse(service.register(request.email(), request.displayName())));
     }
 
     @GetMapping("/{userId}")
-    public UserProfileResponse getByUserId(@PathVariable String userId) {
-        return toResponse(service.getByUserId(userId));
+    @RequireLogin
+    public ApiResponse<UserProfileResponse> getByUserId(@PathVariable String userId) {
+        return ApiResponse.success(toResponse(service.getByUserId(userId)));
     }
 
     private UserProfileResponse toResponse(UserProfile profile) {

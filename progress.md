@@ -131,3 +131,15 @@
   - Added Flyway V2 schema for identity/enrollment core tables.
   - Added RFC `docs/backend-rfc/RFC-003-bigbang-cutover.md`.
   - Updated README and integration tests for new endpoints.
+
+### Phase 6: Platform Foundation + Full Rewrite Continuation
+- **Status:** in_progress
+- Actions taken:
+  - Added base response model `ApiResponse<T>`.
+  - Upgraded global exception handler to unified failure payloads with request path/details.
+  - Added AOP access-control annotations and aspect-based enforcement.
+  - Added request-header-based auth context resolver.
+  - Applied permissions/research checks on core controllers.
+  - Added `learning-progress` domain (API/service/repository) with in-memory/JDBC implementations.
+  - Added Flyway migration `V3__learning_progress.sql`.
+  - Updated tests to assert wrapped response format and auth checks.

@@ -7,5 +7,7 @@ app:
     repository: jdbc
   enrollment:
     repository: jdbc
+  learning-progress:
+    repository: jdbc
   notification:
     repository: jdbc

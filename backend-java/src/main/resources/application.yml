@@ -24,5 +24,7 @@ app:
     repository: inmemory
   enrollment:
     repository: inmemory
+  learning-progress:
+    repository: inmemory
   notification:
     repository: inmemory

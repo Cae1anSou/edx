@@ -1,5 +1,8 @@
 package org.openedx.backend.enrollment.api;
 
+import org.openedx.backend.common.api.ApiResponse;
+import org.openedx.backend.common.security.annotation.RequirePermission;
+import org.openedx.backend.common.security.annotation.RequireResearchGroup;
 import org.openedx.backend.enrollment.application.EnrollmentService;
 import org.openedx.backend.enrollment.domain.EnrollmentRecord;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,18 +23,23 @@ public class EnrollmentController {
     }
 
     @PutMapping
-    public EnrollmentResponse enroll(@PathVariable String courseId, @PathVariable String userId) {
-        return toResponse(service.enroll(userId, courseId));
+    @RequirePermission("enrollment:write")
+    @RequireResearchGroup("teaching")
+    public ApiResponse<EnrollmentResponse> enroll(@PathVariable String courseId, @PathVariable String userId) {
+        return ApiResponse.success(toResponse(service.enroll(userId, courseId)));
     }
 
     @GetMapping
-    public EnrollmentResponse get(@PathVariable String courseId, @PathVariable String userId) {
-        return toResponse(service.get(userId, courseId));
+    @RequirePermission("enrollment:read")
+    public ApiResponse<EnrollmentResponse> get(@PathVariable String courseId, @PathVariable String userId) {
+        return ApiResponse.success(toResponse(service.get(userId, courseId)));
     }
 
     @DeleteMapping
-    public EnrollmentResponse unenroll(@PathVariable String courseId, @PathVariable String userId) {
-        return toResponse(service.unenroll(userId, courseId));
+    @RequirePermission("enrollment:write")
+    @RequireResearchGroup("teaching")
+    public ApiResponse<EnrollmentResponse> unenroll(@PathVariable String courseId, @PathVariable String userId) {
+        return ApiResponse.success(toResponse(service.unenroll(userId, courseId)));
     }
 
     private EnrollmentResponse toResponse(EnrollmentRecord record) {

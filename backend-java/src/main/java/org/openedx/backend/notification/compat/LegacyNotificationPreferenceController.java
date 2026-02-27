@@ -1,6 +1,8 @@
 package org.openedx.backend.notification.compat;
 
 import jakarta.validation.Valid;
+import org.openedx.backend.common.api.ApiResponse;
+import org.openedx.backend.common.security.annotation.RequirePermission;
 import org.openedx.backend.notification.application.NotificationPreferenceService;
 import org.openedx.backend.notification.domain.NotificationPreference;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,12 +24,14 @@ public class LegacyNotificationPreferenceController {
     }
 
     @GetMapping
-    public LegacyNotificationPreferenceResponse getByUserId(@PathVariable String userId) {
-        return toLegacyResponse(service.getByUserId(userId));
+    @RequirePermission("notification:read")
+    public ApiResponse<LegacyNotificationPreferenceResponse> getByUserId(@PathVariable String userId) {
+        return ApiResponse.success(toLegacyResponse(service.getByUserId(userId)));
     }
 
     @PutMapping
-    public LegacyNotificationPreferenceResponse update(
+    @RequirePermission("notification:write")
+    public ApiResponse<LegacyNotificationPreferenceResponse> update(
             @PathVariable String userId,
             @RequestHeader(value = "X-Idempotency-Key", required = false) String idempotencyKey,
             @Valid @RequestBody LegacyNotificationPreferenceRequest request
@@ -38,7 +42,7 @@ public class LegacyNotificationPreferenceController {
                 request.smsEnabled(),
                 idempotencyKey
         );
-        return toLegacyResponse(updated);
+        return ApiResponse.success(toLegacyResponse(updated));
     }
 
     private LegacyNotificationPreferenceResponse toLegacyResponse(NotificationPreference preference) {

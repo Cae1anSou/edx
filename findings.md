@@ -105,6 +105,10 @@
   - 新增 `course` 域（课程元数据更新/查询）
   - 新增 `job-orchestrator` 域（任务提交/查询/状态迁移）
   - 新增 Flyway `V5`：`course_metadata` 与 `job_record`
+- 合同与可运维能力继续增强：
+  - 新增分页列表接口（users/courses/jobs），统一 `PageResponse` 结构
+  - 新增 OpenAPI 分组配置（platform / identity-course / learning）
+  - 新增 job scheduler 骨架（定时扫描 pending job 并推进状态）
 
 ## Resources
 - `/machine/Learning/Code/edx/setup.py`

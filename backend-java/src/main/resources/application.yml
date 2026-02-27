@@ -34,5 +34,8 @@ app:
     repository: inmemory
   job-orchestrator:
     repository: inmemory
+    scheduler:
+      enabled: true
+      fixed-delay-ms: 5000
   notification:
     repository: inmemory

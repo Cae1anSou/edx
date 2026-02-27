@@ -3,6 +3,7 @@ package org.openedx.backend.identity.application;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.openedx.backend.common.api.PageResponse;
 import org.openedx.backend.common.api.DomainNotFoundException;
 import org.openedx.backend.common.event.DomainEventPublisher;
 import org.openedx.backend.identity.domain.UserProfile;
@@ -37,5 +38,14 @@ public class UserProfileService {
         repository.save(created);
         eventPublisher.publish("UserRegistered userId=" + created.userId());
         return created;
+    }
+
+    public PageResponse<UserProfile> list(int page, int size) {
+        return new PageResponse<>(
+                repository.list(page, size),
+                page,
+                size,
+                repository.count()
+        );
     }
 }

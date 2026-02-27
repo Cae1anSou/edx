@@ -17,5 +17,8 @@ app:
     repository: jdbc
   job-orchestrator:
     repository: jdbc
+    scheduler:
+      enabled: true
+      fixed-delay-ms: 5000
   notification:
     repository: jdbc

@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -28,6 +29,23 @@ public class JdbcJobRepository implements JobRepository {
             MERGE INTO job_record (job_id, job_type, payload, status, created_at, updated_at)
             KEY(job_id)
             VALUES (:job_id, :job_type, :payload, :status, :created_at, :updated_at)
+            """;
+
+    private static final String LIST_SQL = """
+            SELECT job_id, job_type, payload, status, created_at, updated_at
+            FROM job_record
+            ORDER BY created_at DESC
+            LIMIT :limit OFFSET :offset
+            """;
+
+    private static final String COUNT_SQL = "SELECT COUNT(1) FROM job_record";
+
+    private static final String FIND_BY_STATUS_SQL = """
+            SELECT job_id, job_type, payload, status, created_at, updated_at
+            FROM job_record
+            WHERE status = :status
+            ORDER BY created_at ASC
+            LIMIT :limit
             """;
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -53,6 +71,30 @@ public class JdbcJobRepository implements JobRepository {
                 .addValue("updated_at", Timestamp.from(jobRecord.updatedAt()));
         jdbcTemplate.update(UPSERT_SQL, params);
         return jobRecord;
+    }
+
+    @Override
+    public List<JobRecord> list(int page, int size) {
+        return jdbcTemplate.query(
+                LIST_SQL,
+                Map.of("limit", size, "offset", page * size),
+                this::mapRow
+        );
+    }
+
+    @Override
+    public long count() {
+        Long count = jdbcTemplate.getJdbcTemplate().queryForObject(COUNT_SQL, Long.class);
+        return count == null ? 0L : count;
+    }
+
+    @Override
+    public List<JobRecord> findByStatus(String status, int limit) {
+        return jdbcTemplate.query(
+                FIND_BY_STATUS_SQL,
+                Map.of("status", status, "limit", limit),
+                this::mapRow
+        );
     }
 
     private JobRecord mapRow(ResultSet rs, int rowNum) throws SQLException {

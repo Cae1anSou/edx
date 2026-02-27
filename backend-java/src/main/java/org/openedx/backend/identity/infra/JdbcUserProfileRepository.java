@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -29,6 +30,15 @@ public class JdbcUserProfileRepository implements UserProfileRepository {
             KEY(user_id)
             VALUES (:user_id, :email, :display_name, :created_at, :updated_at)
             """;
+
+    private static final String LIST_SQL = """
+            SELECT user_id, email, display_name, created_at, updated_at
+            FROM user_profile
+            ORDER BY created_at DESC
+            LIMIT :limit OFFSET :offset
+            """;
+
+    private static final String COUNT_SQL = "SELECT COUNT(1) FROM user_profile";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -57,6 +67,21 @@ public class JdbcUserProfileRepository implements UserProfileRepository {
                 .addValue("updated_at", Timestamp.from(userProfile.updatedAt()));
         jdbcTemplate.update(UPSERT_SQL, params);
         return userProfile;
+    }
+
+    @Override
+    public List<UserProfile> list(int page, int size) {
+        return jdbcTemplate.query(
+                LIST_SQL,
+                Map.of("limit", size, "offset", page * size),
+                this::mapRow
+        );
+    }
+
+    @Override
+    public long count() {
+        Long count = jdbcTemplate.getJdbcTemplate().queryForObject(COUNT_SQL, Long.class);
+        return count == null ? 0L : count;
     }
 
     private UserProfile mapRow(ResultSet rs, int rowNum) throws SQLException {

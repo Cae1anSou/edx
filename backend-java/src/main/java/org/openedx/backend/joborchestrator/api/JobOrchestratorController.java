@@ -2,6 +2,7 @@ package org.openedx.backend.joborchestrator.api;
 
 import jakarta.validation.Valid;
 import org.openedx.backend.common.api.ApiResponse;
+import org.openedx.backend.common.api.PageResponse;
 import org.openedx.backend.common.security.annotation.RequirePermission;
 import org.openedx.backend.common.security.annotation.RequireRole;
 import org.openedx.backend.joborchestrator.application.JobOrchestratorService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/v1/jobs")
@@ -37,6 +39,22 @@ public class JobOrchestratorController {
         return ApiResponse.success(toResponse(service.get(jobId)));
     }
 
+    @GetMapping
+    @RequirePermission("job:list")
+    public ApiResponse<PageResponse<JobResponse>> list(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        PageResponse<JobRecord> jobs = service.list(page, size);
+        PageResponse<JobResponse> mapped = new PageResponse<>(
+                jobs.items().stream().map(this::toResponse).toList(),
+                jobs.page(),
+                jobs.size(),
+                jobs.total()
+        );
+        return ApiResponse.success(mapped);
+    }
+
     @PutMapping("/{jobId}/running")
     @RequirePermission("job:manage")
     public ApiResponse<JobResponse> markRunning(@PathVariable String jobId) {
@@ -53,6 +71,12 @@ public class JobOrchestratorController {
     @RequirePermission("job:manage")
     public ApiResponse<JobResponse> markFailed(@PathVariable String jobId) {
         return ApiResponse.success(toResponse(service.markFailed(jobId)));
+    }
+
+    @PutMapping("/run-once")
+    @RequirePermission("job:manage")
+    public ApiResponse<Integer> runOnce() {
+        return ApiResponse.success(service.executePendingBatch(20));
     }
 
     private JobResponse toResponse(JobRecord record) {

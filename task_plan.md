@@ -67,7 +67,14 @@ Phase 4
 - [x] Add job orchestrator domain (submit/query/transition)
 - [x] Add Flyway schema for course/job
 - [x] Extend integration tests for course/job workflows
-- [ ] Commit phase-9 changes
+- [x] Commit phase-9 changes
+- **Status:** complete
+
+### Phase 10: Full Rewrite Contract & Operability Hardening
+- [x] Add list endpoints with `PageResponse` for users/courses/jobs
+- [x] Add OpenAPI grouped configuration for versioned contracts
+- [x] Add job executor scheduler skeleton for async flow replacement
+- [ ] Commit phase-10 changes
 - **Status:** in_progress
 
 ## Key Questions

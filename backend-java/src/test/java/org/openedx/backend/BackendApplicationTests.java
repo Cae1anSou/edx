@@ -122,6 +122,10 @@ class BackendApplicationTests {
         mockMvc.perform(withAuth(get("/api/v1/users/" + userId), "identity:user:read", null))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.displayName").value("Student One"));
+
+        mockMvc.perform(withAuth(get("/api/v1/users?page=0&size=10"), "identity:user:list", null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.total").isNumber());
     }
 
     @Test
@@ -215,6 +219,10 @@ class BackendApplicationTests {
         mockMvc.perform(withAuth(get("/api/v1/courses/course-v1-advanced"), "course:read", null))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.title").value("Advanced Spring Backend"));
+
+        mockMvc.perform(withAuth(get("/api/v1/courses/list?page=0&size=10"), "course:list", null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.total").isNumber());
     }
 
     @Test
@@ -236,6 +244,10 @@ class BackendApplicationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.jobId").value(jobId));
 
+        mockMvc.perform(withAuth(get("/api/v1/jobs?page=0&size=10"), "job:list", null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.total").isNumber());
+
         mockMvc.perform(withAuth(put("/api/v1/jobs/" + jobId + "/running"), "job:manage", null))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.status").value("RUNNING"));
@@ -243,6 +255,10 @@ class BackendApplicationTests {
         mockMvc.perform(withAuth(put("/api/v1/jobs/" + jobId + "/succeeded"), "job:manage", null))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.status").value("SUCCEEDED"));
+
+        mockMvc.perform(withAuth(put("/api/v1/jobs/run-once"), "job:manage", null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isNumber());
     }
 
     private MockHttpServletRequestBuilder withAuth(

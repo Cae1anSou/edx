@@ -1,6 +1,8 @@
 package org.openedx.backend.identity.infra;
 
 import java.util.Optional;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -23,5 +25,19 @@ public class InMemoryUserProfileRepository implements UserProfileRepository {
     public UserProfile save(UserProfile userProfile) {
         store.put(userProfile.userId(), userProfile);
         return userProfile;
+    }
+
+    @Override
+    public List<UserProfile> list(int page, int size) {
+        return store.values().stream()
+                .sorted(Comparator.comparing(UserProfile::createdAt).reversed())
+                .skip((long) page * size)
+                .limit(size)
+                .toList();
+    }
+
+    @Override
+    public long count() {
+        return store.size();
     }
 }

@@ -1,12 +1,14 @@
 package org.openedx.backend.joborchestrator.application;
 
 import org.openedx.backend.common.api.DomainNotFoundException;
+import org.openedx.backend.common.api.PageResponse;
 import org.openedx.backend.common.event.DomainEventPublisher;
 import org.openedx.backend.joborchestrator.domain.JobRecord;
 import org.openedx.backend.joborchestrator.infra.JobRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -50,6 +52,24 @@ public class JobOrchestratorService {
 
     public JobRecord markFailed(String jobId) {
         return transition(jobId, "FAILED");
+    }
+
+    public PageResponse<JobRecord> list(int page, int size) {
+        return new PageResponse<>(
+                repository.list(page, size),
+                page,
+                size,
+                repository.count()
+        );
+    }
+
+    public int executePendingBatch(int batchSize) {
+        List<JobRecord> pending = repository.findByStatus("PENDING", batchSize);
+        for (JobRecord job : pending) {
+            transition(job.jobId(), "RUNNING");
+            transition(job.jobId(), "SUCCEEDED");
+        }
+        return pending.size();
     }
 
     private JobRecord transition(String jobId, String status) {

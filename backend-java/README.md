@@ -25,8 +25,10 @@ mvn spring-boot:run -Dspring-boot.run.profiles=jdbc
 - `GET /api/v1/health`
 - `POST /api/v1/users`
 - `GET /api/v1/users/{userId}`
+- `GET /api/v1/users?page=0&size=20`
 - `PUT /api/v1/courses/{courseId}`
 - `GET /api/v1/courses/{courseId}`
+- `GET /api/v1/courses/list?page=0&size=20`
 - `PUT /api/v1/courses/{courseId}/enrollments/{userId}`
 - `GET /api/v1/courses/{courseId}/enrollments/{userId}`
 - `DELETE /api/v1/courses/{courseId}/enrollments/{userId}`
@@ -39,9 +41,11 @@ mvn spring-boot:run -Dspring-boot.run.profiles=jdbc
 - `DELETE /api/v1/courses/{courseId}/certificates/{userId}`
 - `POST /api/v1/jobs`
 - `GET /api/v1/jobs/{jobId}`
+- `GET /api/v1/jobs?page=0&size=20`
 - `PUT /api/v1/jobs/{jobId}/running`
 - `PUT /api/v1/jobs/{jobId}/succeeded`
 - `PUT /api/v1/jobs/{jobId}/failed`
+- `PUT /api/v1/jobs/run-once`
 - `GET /api/v1/notification-preferences/{userId}`
 - `PUT /api/v1/notification-preferences/{userId}`
 - `GET /api/legacy/users/{userId}/notification-preferences`
@@ -68,3 +72,7 @@ mvn spring-boot:run -Dspring-boot.run.profiles=jdbc
   - `X-Roles`（逗号分隔）
   - `X-Permissions`（逗号分隔）
   - `X-Research-Groups`（逗号分隔）
+- OpenAPI 分组：
+  - `platform`
+  - `identity-course`
+  - `learning`

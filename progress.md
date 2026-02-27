@@ -161,3 +161,11 @@
   - Added Flyway migration `V5__course_job.sql`.
   - Updated configs for course/job repository mode selection.
   - Extended integration tests for course metadata and job workflow.
+
+### Phase 9: Contract & Operability Hardening
+- **Status:** in_progress
+- Actions taken:
+  - Added paged list endpoints for users, courses, and jobs.
+  - Added OpenAPI grouped configuration for API contract organization.
+  - Added scheduler skeleton to process pending jobs in batches.
+  - Added manual run-once job execution endpoint for operational control.

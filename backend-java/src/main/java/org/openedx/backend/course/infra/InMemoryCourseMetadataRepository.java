@@ -5,6 +5,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -23,5 +25,19 @@ public class InMemoryCourseMetadataRepository implements CourseMetadataRepositor
     public CourseMetadata save(CourseMetadata metadata) {
         store.put(metadata.courseId(), metadata);
         return metadata;
+    }
+
+    @Override
+    public List<CourseMetadata> list(int page, int size) {
+        return store.values().stream()
+                .sorted(Comparator.comparing(CourseMetadata::updatedAt).reversed())
+                .skip((long) page * size)
+                .limit(size)
+                .toList();
+    }
+
+    @Override
+    public long count() {
+        return store.size();
     }
 }

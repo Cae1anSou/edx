@@ -2,6 +2,7 @@ package org.openedx.backend.course.application;
 
 import org.openedx.backend.common.api.DomainNotFoundException;
 import org.openedx.backend.common.event.DomainEventPublisher;
+import org.openedx.backend.common.api.PageResponse;
 import org.openedx.backend.course.domain.CourseMetadata;
 import org.openedx.backend.course.infra.CourseMetadataRepository;
 import org.springframework.stereotype.Service;
@@ -29,5 +30,14 @@ public class CourseMetadataService {
         repository.save(metadata);
         eventPublisher.publish("CourseMetadataUpdated courseId=" + courseId + " status=" + status);
         return metadata;
+    }
+
+    public PageResponse<CourseMetadata> list(int page, int size) {
+        return new PageResponse<>(
+                repository.list(page, size),
+                page,
+                size,
+                repository.count()
+        );
     }
 }

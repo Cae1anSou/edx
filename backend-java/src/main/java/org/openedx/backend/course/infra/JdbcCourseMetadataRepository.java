@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -29,6 +30,15 @@ public class JdbcCourseMetadataRepository implements CourseMetadataRepository {
             KEY(course_id)
             VALUES (:course_id, :title, :status, :owner_user_id, :updated_at)
             """;
+
+    private static final String LIST_SQL = """
+            SELECT course_id, title, status, owner_user_id, updated_at
+            FROM course_metadata
+            ORDER BY updated_at DESC
+            LIMIT :limit OFFSET :offset
+            """;
+
+    private static final String COUNT_SQL = "SELECT COUNT(1) FROM course_metadata";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -52,6 +62,21 @@ public class JdbcCourseMetadataRepository implements CourseMetadataRepository {
                 .addValue("updated_at", Timestamp.from(metadata.updatedAt()));
         jdbcTemplate.update(UPSERT_SQL, params);
         return metadata;
+    }
+
+    @Override
+    public List<CourseMetadata> list(int page, int size) {
+        return jdbcTemplate.query(
+                LIST_SQL,
+                Map.of("limit", size, "offset", page * size),
+                this::mapRow
+        );
+    }
+
+    @Override
+    public long count() {
+        Long count = jdbcTemplate.getJdbcTemplate().queryForObject(COUNT_SQL, Long.class);
+        return count == null ? 0L : count;
     }
 
     private CourseMetadata mapRow(ResultSet rs, int rowNum) throws SQLException {

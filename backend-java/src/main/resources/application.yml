@@ -53,3 +53,5 @@ app:
   agreements:
     enable-integrity-signature: true
     enable-lti-pii-acknowledgement: true
+  bookmarks:
+    max-per-course: 100

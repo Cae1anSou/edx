@@ -271,9 +271,23 @@
   - Ran full Maven tests successfully.
   - Fixed contract endpoint exporter to parse array-style mapping annotations (e.g. `@GetMapping({"", "/"})`) and regenerated coverage artifacts.
 
+### Phase 20: Bookmarks API Migration
+- **Status:** in_progress
+- Actions taken:
+  - Added bookmarks domain with in-memory repository and service.
+  - Added compatibility endpoints:
+    - `GET/POST /api/bookmarks/v1/bookmarks/`
+    - `GET/DELETE /api/bookmarks/v1/bookmarks/{username},{usage_id}/`
+  - Added compatibility error payload for bookmark-specific failures (`developer_message/user_message`).
+  - Added list pagination response fields and basic filtering (`course_id`, `fields`, `page_size`, `page`).
+  - Added integration tests for create/list/get/delete and invalid input paths.
+  - Fixed NPE in list response caused by `Map.of` with nullable `next/previous`.
+  - Re-ran Maven tests and contract freeze successfully.
+
 ## Test Results (Latest)
 | Test | Input | Expected | Actual | Status |
 |------|-------|----------|--------|--------|
 | Contract freeze | `backend-java/scripts/freeze-contracts.sh` | API coverage refreshed | `matched=8/unmatched=0` | PASS |
 | Maven tests (rerun) | `cd backend-java && mvn -Dmaven.repo.local=/tmp/.m2 test` | Spring tests execute | `Tests run: 18, Failures: 0, Errors: 0` | PASS |
 | Maven tests (agreements) | `cd backend-java && mvn -Dmaven.repo.local=/tmp/.m2 test` | New agreements tests pass | `Tests run: 20, Failures: 0, Errors: 0` | PASS |
+| Maven tests (bookmarks) | `cd backend-java && mvn -Dmaven.repo.local=/tmp/.m2 test` | New bookmarks tests pass | `Tests run: 22, Failures: 0, Errors: 0` | PASS |

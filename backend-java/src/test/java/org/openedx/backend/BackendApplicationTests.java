@@ -419,6 +419,68 @@ class BackendApplicationTests {
                 .andExpect(jsonPath("$.lti_tools.first_lti_tool").value("Tool A"));
     }
 
+    @Test
+    void bookmarksShouldSupportCreateListGetAndDelete() throws Exception {
+        String usageId = "block-v1:OpenedX+Demo+2026+type@vertical+block@v1";
+
+        mockMvc.perform(withAuth(post("/api/bookmarks/v1/bookmarks/"), null, null)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "usage_id": "block-v1:OpenedX+Demo+2026+type@vertical+block@v1"
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.usage_id").value(usageId))
+                .andExpect(jsonPath("$.display_name").value("v1"))
+                .andExpect(jsonPath("$.path[0].usage_id").value(usageId));
+
+        mockMvc.perform(withAuth(get("/api/bookmarks/v1/bookmarks/?course_id=block-v1:OpenedX+Demo+2026"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.count").value(1))
+                .andExpect(jsonPath("$.num_pages").value(1))
+                .andExpect(jsonPath("$.results[0].usage_id").value(usageId));
+
+        mockMvc.perform(withAuth(get("/api/bookmarks/v1/bookmarks/u-test," + usageId + "/?fields=display_name,path"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.usage_id").value(usageId))
+                .andExpect(jsonPath("$.display_name").value("v1"))
+                .andExpect(jsonPath("$.path[0].display_name").value("v1"));
+
+        mockMvc.perform(withAuthWithUserAndRoles(get("/api/bookmarks/v1/bookmarks/other-user," + usageId + "/"), "u-test", "LEARNER", null, null))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(withAuth(delete("/api/bookmarks/v1/bookmarks/u-test," + usageId + "/"), null, null))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(withAuth(get("/api/bookmarks/v1/bookmarks/u-test," + usageId + "/"), null, null))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.developer_message").value("Bookmark with usage_id: " + usageId + " does not exist."));
+    }
+
+    @Test
+    void bookmarksShouldReturnExpectedErrorsForInvalidInput() throws Exception {
+        mockMvc.perform(withAuth(post("/api/bookmarks/v1/bookmarks/"), null, null)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.developer_message").value("No data provided."));
+
+        mockMvc.perform(withAuth(post("/api/bookmarks/v1/bookmarks/"), null, null)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "usage_id": "i4x"
+                                }
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.developer_message").value("Invalid usage_id: i4x."));
+
+        mockMvc.perform(withAuth(get("/api/bookmarks/v1/bookmarks/u-test,i4x/"), null, null))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.user_message").value("Invalid usage_id: i4x."));
+    }
+
     private MockHttpServletRequestBuilder withAuth(
             MockHttpServletRequestBuilder builder,
             String permissions,

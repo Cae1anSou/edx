@@ -166,6 +166,16 @@
 - 修复契约工具链问题：
   - `export-spring-endpoint-index.py` 现支持 `@GetMapping({"", "/"})` 这类数组注解
   - 覆盖报告恢复为 `matched=8/unmatched=0`
+- 1:1 行为迁移新增 bookmarks 域：
+  - 已实现 `GET/POST /api/bookmarks/v1/bookmarks/`
+  - 已实现 `GET/DELETE /api/bookmarks/v1/bookmarks/{username},{usage_id}/`
+  - 已对齐关键行为：
+    - 匿名 `401`
+    - 跨用户访问 `403`
+    - 详情 `usage_id` 非法时 `404`
+    - 列表创建参数非法时 `400`（含 `developer_message/user_message`）
+  - 已实现分页返回字段：`count/next/previous/num_pages/current_page/start/results`
+  - 测试结果更新为：`Tests run: 22, Failures: 0, Errors: 0`
 
 ## Resources
 - `/machine/Learning/Code/edx/setup.py`

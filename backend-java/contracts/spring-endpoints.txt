@@ -1,6 +1,12 @@
+DELETE /api/bookmarks/v1/bookmarks/{username},{usageId:.+}
+DELETE /api/bookmarks/v1/bookmarks/{username},{usageId:.+}/
 DELETE /api/v1/courses/{courseId}/certificates/{userId}
 DELETE /api/v1/courses/{courseId}/enrollments/{userId}
 GET /api/agreements/v1/integrity_signature/{courseId}
+GET /api/bookmarks/v1/bookmarks
+GET /api/bookmarks/v1/bookmarks/
+GET /api/bookmarks/v1/bookmarks/{username},{usageId:.+}
+GET /api/bookmarks/v1/bookmarks/{username},{usageId:.+}/
 GET /api/legacy/users/{userId}/notification-preferences
 GET /api/v1
 GET /api/v1/courses/list
@@ -26,6 +32,8 @@ GET /taxonomy/api/v1/learners-current-job
 GET /taxonomy/api/v1/learners-current-job/
 POST /api/agreements/v1/integrity_signature/{courseId}
 POST /api/agreements/v1/lti_pii_signature/{courseId}
+POST /api/bookmarks/v1/bookmarks
+POST /api/bookmarks/v1/bookmarks/
 POST /api/v1/courses/{courseId}/certificates/{userId}
 POST /api/v1/coursexs
 POST /api/v1/jobs

@@ -4,7 +4,7 @@
 按照 `BACKEND_REFACTOR_PLAN.md` 持续推进后端重构：完成分支与基线提交后，落地可扩展的 Java 后端基础能力，并进入第一波迁移准备（RFC、持久化、兼容路由）。
 
 ## Current Phase
-Phase 20
+Phase 21
 
 ## Phases
 ### Phase 1: Branch & Baseline Commit
@@ -150,7 +150,16 @@ Phase 20
 - [x] Add behavior-compatible status handling (403/404/500 branches)
 - [x] Extend integration tests and pass full Maven test suite
 - [x] Fix contract endpoint index parser for array-style mapping annotations
-- [ ] Commit phase-20 changes
+- [x] Commit phase-20 changes
+- **Status:** complete
+
+### Phase 21: Bookmarks API 1:1 Migration
+- [x] Implement `/api/bookmarks/v1/bookmarks/` (GET/POST)
+- [x] Implement `/api/bookmarks/v1/bookmarks/{username},{usage_id}/` (GET/DELETE)
+- [x] Align major error semantics (`400/401/403/404`) and developer/user message format
+- [x] Add pagination response fields (`count/next/previous/num_pages/current_page/start/results`)
+- [x] Extend integration tests and pass full Maven test suite
+- [ ] Commit phase-21 changes
 - **Status:** in_progress
 
 ## Key Questions

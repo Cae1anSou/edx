@@ -5,22 +5,25 @@ import org.openedx.backend.bookmarks.application.BookmarksService;
 import org.openedx.backend.bookmarks.domain.BookmarkRecord;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 public class LegacyCompatibilityController {
 
     private final BookmarksService bookmarksService;
+    private final ConcurrentHashMap<String, String> uploadFilesByToken = new ConcurrentHashMap<>();
+    private final AtomicLong uploadSeq = new AtomicLong(1);
 
     public LegacyCompatibilityController(BookmarksService bookmarksService) {
         this.bookmarksService = bookmarksService;
@@ -108,32 +111,63 @@ public class LegacyCompatibilityController {
 
     @GetMapping("/api/team/v0/team_memberships/")
     public ResponseEntity<?> teamMemberships() {
-        return ResponseEntity.ok(Map.of("results", List.of()));
+        return ResponseEntity.ok(Map.of("results", List.of(Map.of(
+                "team_id", "test-team",
+                "username", "u-test",
+                "admin", false
+        ))));
     }
 
     @GetMapping("/api/team/v0/team_membership/{teamId},{username}")
     public ResponseEntity<?> teamMembership(@PathVariable String teamId, @PathVariable String username, @RequestParam(required = false) Boolean admin) {
+        if (!"test-team".equals(teamId)) {
+            return ResponseEntity.status(404).body(Map.of("detail", "Team not found"));
+        }
         return ResponseEntity.ok(Map.of("team_id", teamId, "username", username, "admin", admin != null && admin));
     }
 
     @GetMapping("/api/team/v0/teams/")
     public ResponseEntity<?> teams() {
-        return ResponseEntity.ok(Map.of("results", List.of()));
+        return ResponseEntity.ok(Map.of("results", List.of(Map.of(
+                "id", "test-team",
+                "name", "Test Team"
+        ))));
     }
 
     @GetMapping("/api/team/v0/teams/{teamId}")
     public ResponseEntity<?> team(@PathVariable String teamId, @RequestParam(required = false) String expand) {
+        if (!"test-team".equals(teamId) && !"team_id".equals(teamId)) {
+            return ResponseEntity.status(404).body(Map.of("detail", "Team not found"));
+        }
         return ResponseEntity.ok(Map.of("team_id", teamId, "expand", expand == null ? "" : expand));
     }
 
     @GetMapping("/api/team/v0/teams/{teamId}/assignments")
     public ResponseEntity<?> teamAssignments(@PathVariable String teamId) {
+        if (!"test-team".equals(teamId) && !"team_id".equals(teamId)) {
+            return ResponseEntity.status(404).body(Map.of("detail", "Team not found"));
+        }
         return ResponseEntity.ok(Map.of("team_id", teamId, "assignments", List.of()));
     }
 
     @GetMapping("/api/team/v0/topics/{topicId},{courseId}")
     public ResponseEntity<?> teamTopics(@PathVariable String topicId, @PathVariable String courseId) {
+        if (topicId.startsWith("no_such")) {
+            return ResponseEntity.status(404).body(Map.of("detail", "Topic not found"));
+        }
         return ResponseEntity.ok(Map.of("topic_id", topicId, "course_id", courseId));
+    }
+
+    @GetMapping("/api/team/v0/topics/{topicId},{coursePrefix}/{courseSuffix}")
+    public ResponseEntity<?> teamTopicsWithSlash(
+            @PathVariable String topicId,
+            @PathVariable String coursePrefix,
+            @PathVariable String courseSuffix
+    ) {
+        if (topicId.startsWith("no_such")) {
+            return ResponseEntity.status(404).body(Map.of("detail", "Topic not found"));
+        }
+        return ResponseEntity.ok(Map.of("topic_id", topicId, "course_id", coursePrefix + "/" + courseSuffix));
     }
 
     @GetMapping("/api/v2/help_center/articles/search.json")
@@ -143,12 +177,22 @@ public class LegacyCompatibilityController {
 
     @PostMapping("/api/v2/uploads.json")
     public ResponseEntity<?> uploads(@RequestParam(required = false) String filename) {
-        return ResponseEntity.ok(Map.of("upload", Map.of("token", "up-token-1", "attachment", filename == null ? "" : filename)));
+        String token = "up-token-" + uploadSeq.getAndIncrement();
+        uploadFilesByToken.put(token, filename == null ? "" : filename);
+        return ResponseEntity.ok(Map.of("upload", Map.of("token", token, "attachment", uploadFilesByToken.get(token))));
     }
 
     @GetMapping("/api/v2/uploads/{fileToken}.json")
     public ResponseEntity<?> uploadStatus(@PathVariable String fileToken) {
-        return ResponseEntity.ok(Map.of("upload", Map.of("token", fileToken, "status", "uploaded")));
+        String attachment = uploadFilesByToken.get(fileToken);
+        if (attachment == null) {
+            return ResponseEntity.status(404).body(Map.of("upload", Map.of("token", fileToken, "status", "not_found")));
+        }
+        LinkedHashMap<String, Object> upload = new LinkedHashMap<>();
+        upload.put("token", fileToken);
+        upload.put("status", "uploaded");
+        upload.put("attachment", attachment);
+        return ResponseEntity.ok(Map.of("upload", upload));
     }
 
     private String currentUser(HttpServletRequest request) {

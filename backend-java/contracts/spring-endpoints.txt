@@ -23,6 +23,7 @@ GET /api/team/v0/teams/
 GET /api/team/v0/teams/{teamId}
 GET /api/team/v0/teams/{teamId}/assignments
 GET /api/team/v0/topics/{topicId},{courseId}
+GET /api/team/v0/topics/{topicId},{coursePrefix}/{courseSuffix}
 GET /api/toggles/v0/state/
 GET /api/user/v0/accounts/{username}
 GET /api/user/v0/preferences/{username}

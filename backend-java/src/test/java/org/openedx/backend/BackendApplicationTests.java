@@ -640,6 +640,38 @@ class BackendApplicationTests {
                 .andExpect(jsonPath("$.success").value(true));
     }
 
+    @Test
+    void legacyCompatibilityShouldSupportTeamAndUploadFlows() throws Exception {
+        mockMvc.perform(withAuth(get("/api/team/v0/teams/"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.results[0].id").value("test-team"));
+
+        mockMvc.perform(withAuth(get("/api/team/v0/teams/no_such_team?expand=user"), null, null))
+                .andExpect(status().isNotFound());
+
+        mockMvc.perform(withAuth(get("/api/team/v0/team_membership/test-team,u-test?admin=true"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.admin").value(true));
+
+        mockMvc.perform(withAuth(get("/api/team/v0/topics/no_such_topic,course/1"), null, null))
+                .andExpect(status().isNotFound());
+
+        MvcResult uploadResult = mockMvc.perform(post("/api/v2/uploads.json?filename=test.png"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.upload.token").exists())
+                .andReturn();
+        String token = JsonPath.read(uploadResult.getResponse().getContentAsString(), "$.upload.token");
+
+        mockMvc.perform(get("/api/v2/uploads/" + token + ".json"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.upload.status").value("uploaded"))
+                .andExpect(jsonPath("$.upload.attachment").value("test.png"));
+
+        mockMvc.perform(get("/api/v2/uploads/not-exists.json"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.upload.status").value("not_found"));
+    }
+
     private MockHttpServletRequestBuilder withAuth(
             MockHttpServletRequestBuilder builder,
             String permissions,

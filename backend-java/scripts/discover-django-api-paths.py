@@ -18,6 +18,8 @@ def normalize(route: str) -> str:
     r = re.sub(r"\(\?P<([^>]+)>[^)]+\)", r"{\1}", r)
     r = re.sub(r"\([^)]*\)", "", r)
     r = r.replace("?", "")
+    r = r.replace(")", "").replace("(", "")
+    r = re.sub(r"[^A-Za-z0-9_/{}/\\.-]+$", "", r)
     r = r.replace("//", "/")
     r = r.strip("/")
     if not r:

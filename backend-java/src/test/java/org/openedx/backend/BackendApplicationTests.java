@@ -832,6 +832,37 @@ class BackendApplicationTests {
                 .andExpect(jsonPath("$.task_type").value("grade-export"));
     }
 
+    @Test
+    void legacyAdditionalApiFamiliesShouldExposeDjangoParityPrefixes() throws Exception {
+        mockMvc.perform(post("/api/bulk_enroll/v1/bulk_enroll")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("accepted"));
+
+        mockMvc.perform(get("/api/change_email_settings/"))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(withAuth(get("/api/change_email_settings/"), null, null))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/dashboard/"))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(withAuth(get("/api/dashboard/"), null, null))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/course_home/v1/"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.version").value("v1"));
+
+        mockMvc.perform(get("/api/instructor/v2/"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.results").isArray());
+
+        mockMvc.perform(get("/api/youtube/courses/course-v1-demo/edx-video-ids"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.course_id").value("course-v1-demo"));
+    }
+
     private MockHttpServletRequestBuilder withAuth(
             MockHttpServletRequestBuilder builder,
             String permissions,

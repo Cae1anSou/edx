@@ -32,7 +32,7 @@
 /api/learning_sequences
 /api/libraries/v2
 /api/mfe_config/v1
-/api/mobile/{api_version})
+/api/mobile/{api_version}
 /api/modulestore_migrator
 /api/notifications
 /api/olx-export/v1

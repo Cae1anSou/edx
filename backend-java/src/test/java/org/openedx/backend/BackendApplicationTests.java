@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
-@SpringBootTest
+@SpringBootTest(properties = "app.studio-dashboard.dist-dir=/tmp/studio-dashboard-dist-not-found")
 @AutoConfigureMockMvc
 class BackendApplicationTests {
 
@@ -911,6 +911,28 @@ class BackendApplicationTests {
         mockMvc.perform(get("/api/youtube/courses/course-v1-demo/edx-video-ids"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.course_id").value("course-v1-demo"));
+    }
+
+    @Test
+    void studioDashboardFrontendShouldServeSpaRoutesAndAssets() throws Exception {
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Studio Dashboard")));
+
+        mockMvc.perform(get("/course_rerun/course-v1:edX+DemoX+2026_T1"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("id=\"root\"")));
+
+        mockMvc.perform(get("/notifications-center"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Studio Dashboard")));
+
+        mockMvc.perform(get("/assets/studio-dashboard-placeholder.js"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("fallback shell loaded")));
+
+        mockMvc.perform(get("/assets/not-found.js"))
+                .andExpect(status().isNotFound());
     }
 
     private MockHttpServletRequestBuilder withAuth(

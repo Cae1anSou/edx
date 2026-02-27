@@ -8,9 +8,14 @@ Open edX 后端 Java 重构的 Phase 0 基础工程。
 - 健康检查接口
 - 通知偏好示例域（内存实现）
 - OpenAPI 文档 (`/swagger-ui.html`)
+- Studio Dashboard React 前端承载（`/`, `/course`, `/course_rerun/...` 等）
 
 ## 本地运行
 ```bash
+cd frontend-app-studio-dashboard
+npm install
+npm run build
+
 cd backend-java
 mvn spring-boot:run
 ```
@@ -95,6 +100,7 @@ cd backend-java
 - `app.grading.repository=inmemory|jdbc`
 - `app.certificate.repository=inmemory|jdbc`
 - `app.job-orchestrator.repository=inmemory|jdbc`
+- `app.studio-dashboard.dist-dir=../frontend-app-studio-dashboard/dist`
 
 ## 约定
 - `PUT` 接口支持请求头 `X-Idempotency-Key`，用于幂等更新。

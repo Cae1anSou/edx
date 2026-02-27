@@ -6,6 +6,9 @@ BASE_URL="${1:-http://localhost:8080}"
 echo "[smoke] health"
 curl -fsSL "${BASE_URL}/api/v1/health" >/dev/null
 
+echo "[smoke] studio dashboard frontend"
+curl -fsSL "${BASE_URL}/course" >/dev/null
+
 echo "[smoke] users"
 curl -fsSL \
   -H "X-User-Id: smoke-user" \

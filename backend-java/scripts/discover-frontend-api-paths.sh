@@ -8,9 +8,22 @@ mkdir -p "$(dirname "${OUT_FILE}")"
 
 cd "${REPO_ROOT}"
 
+SEARCH_DIRS=()
+for dir in lms cms common openedx frontend-app-studio-dashboard; do
+  if [[ -d "${dir}" ]]; then
+    SEARCH_DIRS+=("${dir}")
+  fi
+done
+
+if [[ ${#SEARCH_DIRS[@]} -eq 0 ]]; then
+  : > "${OUT_FILE}"
+  echo "Frontend API paths exported to ${OUT_FILE}"
+  exit 0
+fi
+
 rg -o --no-filename \
   "/[^\"' ]*api/[^\"' ]*v[0-9]+[^\"' ]*" \
-  lms cms common openedx \
+  "${SEARCH_DIRS[@]}" \
   --glob "*.{js,jsx,ts,tsx,html,mako}" \
   --glob "!**/vendor/**" \
   --glob "!**/node_modules/**" \

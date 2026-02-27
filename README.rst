@@ -20,3 +20,15 @@ Project notes
 
 - Django runtime, app modules, and settings code have been removed on this branch.
 - Frontend static pipeline config was pruned to remove references to deleted Django app paths.
+
+Studio Dashboard MFE (new)
+--------------------------
+
+A new standalone React + Vite + TypeScript micro-frontend lives in
+``frontend-app-studio-dashboard/``.
+
+Run it with:
+
+::
+
+   npm run studio-dashboard-dev

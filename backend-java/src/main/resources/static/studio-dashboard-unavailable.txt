@@ -1,0 +1,2 @@
+Studio dashboard frontend build not found.
+Run: npm run studio-dashboard-build

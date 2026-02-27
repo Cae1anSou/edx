@@ -57,3 +57,5 @@ app:
     max-per-course: 100
   lang-pref:
     default-language: en
+  studio-dashboard:
+    dist-dir: ../frontend-app-studio-dashboard/dist

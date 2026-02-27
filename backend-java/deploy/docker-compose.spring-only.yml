@@ -33,8 +33,11 @@ services:
       SPRING_DATASOURCE_PASSWORD: openedx
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
       SPRING_FLYWAY_ENABLED: "true"
+      APP_STUDIO_DASHBOARD_DIST_DIR: /app/frontend-app-studio-dashboard/dist
     ports:
       - "8080:8080"
+    volumes:
+      - ../../frontend-app-studio-dashboard/dist:/app/frontend-app-studio-dashboard/dist:ro
 
 volumes:
   pg_data:

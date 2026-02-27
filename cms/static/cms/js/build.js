@@ -19,11 +19,9 @@
         modules: getModulesList([
             'js/factories/asset_index',
             'js/factories/base',
-            'js/factories/course_create_rerun',
             'js/factories/export',
             'js/factories/group_configurations',
             'js/certificates/factories/certificates_page_factory',
-            'js/factories/index',
             'js/factories/manage_users',
             'js/factories/outline',
             'js/factories/settings',

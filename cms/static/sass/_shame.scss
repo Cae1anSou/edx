@@ -3,27 +3,6 @@
 // NOTE: use for any bad-form/orphaned scss that knowingly violate edX FED architecture/standards
 // see - http://csswizardry.com/2013/04/shame-css/
 
-// view - dashboard
-.view-dashboard {
-
-  // elements - authorship controls
-  .wrapper-authorshiprights {
-    .ui-toggle-control {
-      // needed to override general a element transition properties - need to fix.
-      transition-duration: $tmg-f2;
-      transition-timing-function: ease-in-out;
-    }
-
-    .fa-times-circle {
-      // needed to override general a element transition properties - need to fix.
-      transition-duration: $tmg-f2;
-      transition-timing-function: ease-in-out;
-    }
-  }
-}
-
-// ====================
-
 // overriding outline styling for general drag and drop cases
 .outline-section,
 .outline-subsection {
@@ -144,4 +123,3 @@ div.wrapper-comp-editor.is-inactive ~ div.launch-latex-compiler {
 // * font-weight syncing
 // * divorce display: inline-block from base button definitions/placeholders
 // * canned typography class syncing
-

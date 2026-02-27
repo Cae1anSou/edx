@@ -255,8 +255,25 @@
     - Invalid JSON escaping in job orchestrator test payload
   - Re-ran tests and verified all pass.
 
+### Phase 19: Agreements API Migration
+- **Status:** in_progress
+- Actions taken:
+  - Added agreements domain implementation and compatibility API endpoints:
+    - `GET/POST /api/agreements/v1/integrity_signature/{courseId}`
+    - `POST /api/agreements/v1/lti_pii_signature/{courseId}`
+  - Added in-memory repositories and service layer for integrity/lti-pii signatures.
+  - Added feature toggles in config:
+    - `app.agreements.enable-integrity-signature`
+    - `app.agreements.enable-lti-pii-acknowledgement`
+  - Added integration tests for agreements behavior:
+    - self get/post, staff cross-user access, non-staff forbidden
+    - invalid lti payload returns 500, valid payload upsert returns 200
+  - Ran full Maven tests successfully.
+  - Fixed contract endpoint exporter to parse array-style mapping annotations (e.g. `@GetMapping({"", "/"})`) and regenerated coverage artifacts.
+
 ## Test Results (Latest)
 | Test | Input | Expected | Actual | Status |
 |------|-------|----------|--------|--------|
 | Contract freeze | `backend-java/scripts/freeze-contracts.sh` | API coverage refreshed | `matched=8/unmatched=0` | PASS |
 | Maven tests (rerun) | `cd backend-java && mvn -Dmaven.repo.local=/tmp/.m2 test` | Spring tests execute | `Tests run: 18, Failures: 0, Errors: 0` | PASS |
+| Maven tests (agreements) | `cd backend-java && mvn -Dmaven.repo.local=/tmp/.m2 test` | New agreements tests pass | `Tests run: 20, Failures: 0, Errors: 0` | PASS |

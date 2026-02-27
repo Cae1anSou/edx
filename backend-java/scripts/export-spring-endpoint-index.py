@@ -5,29 +5,37 @@ import re
 from pathlib import Path
 
 
+def extract_paths(raw: str | None) -> list[str]:
+    if not raw:
+        return [""]
+    values = re.findall(r'"([^"]*)"', raw)
+    return values or [""]
+
+
 def extract_mapping(path: Path) -> list[str]:
     text = path.read_text(encoding="utf-8")
-    class_match = re.search(r'@RequestMapping\("([^"]+)"\)\s*public class', text, re.MULTILINE)
-    class_base = class_match.group(1) if class_match else ""
+    class_match = re.search(r'@RequestMapping\(([^)]*)\)\s*public class', text, re.MULTILINE | re.DOTALL)
+    class_paths = extract_paths(class_match.group(1) if class_match else None)
+    class_base = class_paths[0] if class_paths else ""
 
     endpoints: list[str] = []
     method_pat = re.compile(
-        r'@(GetMapping|PostMapping|PutMapping|DeleteMapping)(?:\("([^"]*)"\))?\s*'
+        r'@(GetMapping|PostMapping|PutMapping|DeleteMapping)(?:\(([^)]*)\))?\s*'
         r'(?:@\w+(?:\([^)]*\))?\s*)*'
         r'(?:public|private|protected)\s+',
-        re.MULTILINE,
+        re.MULTILINE | re.DOTALL,
     )
     for match in method_pat.finditer(text):
         http = match.group(1).replace("Mapping", "").upper()
-        method_path = match.group(2) or ""
-        if method_path.startswith("/"):
-            full = f"{class_base}{method_path}"
-        elif method_path:
-            full = f"{class_base}/{method_path}"
-        else:
-            full = class_base or "/"
-        full = re.sub(r"//+", "/", full)
-        endpoints.append(f"{http} {full}")
+        for method_path in extract_paths(match.group(2)):
+            if method_path.startswith("/"):
+                full = f"{class_base}{method_path}"
+            elif method_path:
+                full = f"{class_base}/{method_path}"
+            else:
+                full = class_base or "/"
+            full = re.sub(r"//+", "/", full)
+            endpoints.append(f"{http} {full}")
     return endpoints
 
 

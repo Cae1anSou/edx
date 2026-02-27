@@ -372,13 +372,70 @@ class BackendApplicationTests {
                 .andExpect(status().isServiceUnavailable());
     }
 
+    @Test
+    void agreementsIntegritySignatureShouldSupportCreateGetAndStaffAccessRules() throws Exception {
+        mockMvc.perform(withAuth(post("/api/agreements/v1/integrity_signature/course-v1-demo"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("u-test"))
+                .andExpect(jsonPath("$.course_id").value("course-v1-demo"));
+
+        mockMvc.perform(withAuth(get("/api/agreements/v1/integrity_signature/course-v1-demo"), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("u-test"));
+
+        mockMvc.perform(withAuth(get("/api/agreements/v1/integrity_signature/course-v1-demo?username=other-user"), null, null))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.message").value("User does not have permission to view integrity agreement."));
+
+        mockMvc.perform(withAuthWithUserAndRoles(post("/api/agreements/v1/integrity_signature/course-v1-demo"), "other-user", "LEARNER", null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("other-user"));
+
+        mockMvc.perform(withAuthWithUserAndRoles(get("/api/agreements/v1/integrity_signature/course-v1-demo?username=other-user"), "staff-user", "STAFF", null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("other-user"));
+    }
+
+    @Test
+    void agreementsLtiPiiSignatureShouldValidateAndUpsert() throws Exception {
+        mockMvc.perform(withAuth(post("/api/agreements/v1/lti_pii_signature/course-v1-demo"), null, null)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isInternalServerError());
+
+        mockMvc.perform(withAuth(post("/api/agreements/v1/lti_pii_signature/course-v1-demo"), null, null)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "lti_tools": {
+                                    "first_lti_tool": "Tool A",
+                                    "second_lti_tool": "Tool B"
+                                  }
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("u-test"))
+                .andExpect(jsonPath("$.course_id").value("course-v1-demo"))
+                .andExpect(jsonPath("$.lti_tools.first_lti_tool").value("Tool A"));
+    }
+
     private MockHttpServletRequestBuilder withAuth(
             MockHttpServletRequestBuilder builder,
             String permissions,
             String researchGroups
     ) {
-        builder.header("X-User-Id", "u-test");
-        builder.header("X-Roles", "LEARNER,INSTRUCTOR");
+        return withAuthWithUserAndRoles(builder, "u-test", "LEARNER,INSTRUCTOR", permissions, researchGroups);
+    }
+
+    private MockHttpServletRequestBuilder withAuthWithUserAndRoles(
+            MockHttpServletRequestBuilder builder,
+            String userId,
+            String roles,
+            String permissions,
+            String researchGroups
+    ) {
+        builder.header("X-User-Id", userId);
+        builder.header("X-Roles", roles);
         if (permissions != null) {
             builder.header("X-Permissions", permissions);
         }

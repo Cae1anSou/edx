@@ -4,7 +4,7 @@
 按照 `BACKEND_REFACTOR_PLAN.md` 持续推进后端重构：完成分支与基线提交后，落地可扩展的 Java 后端基础能力，并进入第一波迁移准备（RFC、持久化、兼容路由）。
 
 ## Current Phase
-Phase 18
+Phase 20
 
 ## Phases
 ### Phase 1: Branch & Baseline Commit
@@ -141,7 +141,16 @@ Phase 18
 - [x] Run `mvn test` with network-enabled dependency resolution
 - [x] Fix trailing-slash compatibility for enterprise/taxonomy endpoints
 - [x] Fix invalid job payload test input format
-- [ ] Commit phase-19 changes
+- [x] Commit phase-19 changes
+- **Status:** complete
+
+### Phase 20: Agreements API 1:1 Migration
+- [x] Implement `/api/agreements/v1/integrity_signature/{courseId}` (GET/POST)
+- [x] Implement `/api/agreements/v1/lti_pii_signature/{courseId}` (POST)
+- [x] Add behavior-compatible status handling (403/404/500 branches)
+- [x] Extend integration tests and pass full Maven test suite
+- [x] Fix contract endpoint index parser for array-style mapping annotations
+- [ ] Commit phase-20 changes
 - **Status:** in_progress
 
 ## Key Questions

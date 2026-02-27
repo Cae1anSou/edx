@@ -50,3 +50,6 @@ app:
   zendesk:
     url: ""
     oauth-token: ""
+  agreements:
+    enable-integrity-signature: true
+    enable-lti-pii-acknowledgement: true

@@ -155,6 +155,17 @@
   - `mvn -Dmaven.repo.local=/tmp/.m2 test` 可成功下载依赖并执行测试
   - 暴露并修复 3 个真实兼容问题：`enterprise/taxonomy` 的尾斜杠路径、`job` 测试 payload JSON 转义
   - 修复后测试结果：`Tests run: 18, Failures: 0, Errors: 0`
+- 1:1 行为迁移新增 agreements 域：
+  - 已实现 `GET/POST /api/agreements/v1/integrity_signature/{courseId}`
+  - 已实现 `POST /api/agreements/v1/lti_pii_signature/{courseId}`
+  - 对齐关键行为：
+    - 功能关闭返回 `404`
+    - 非 staff 跨用户查 integrity 返回 `403` + message
+    - `lti_tools` 缺失返回 `500`
+  - 新增测试后结果更新为：`Tests run: 20, Failures: 0, Errors: 0`
+- 修复契约工具链问题：
+  - `export-spring-endpoint-index.py` 现支持 `@GetMapping({"", "/"})` 这类数组注解
+  - 覆盖报告恢复为 `matched=8/unmatched=0`
 
 ## Resources
 - `/machine/Learning/Code/edx/setup.py`

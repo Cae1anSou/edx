@@ -30,6 +30,11 @@ mvn spring-boot:run -Dspring-boot.run.profiles=jdbc
 - `DELETE /api/v1/courses/{courseId}/enrollments/{userId}`
 - `PUT /api/v1/courses/{courseId}/progress/{userId}`
 - `GET /api/v1/courses/{courseId}/progress/{userId}`
+- `PUT /api/v1/courses/{courseId}/grades/{userId}`
+- `GET /api/v1/courses/{courseId}/grades/{userId}`
+- `POST /api/v1/courses/{courseId}/certificates/{userId}`
+- `GET /api/v1/courses/{courseId}/certificates/{userId}`
+- `DELETE /api/v1/courses/{courseId}/certificates/{userId}`
 - `GET /api/v1/notification-preferences/{userId}`
 - `PUT /api/v1/notification-preferences/{userId}`
 - `GET /api/legacy/users/{userId}/notification-preferences`
@@ -41,6 +46,8 @@ mvn spring-boot:run -Dspring-boot.run.profiles=jdbc
 - `app.identity.repository=inmemory|jdbc`
 - `app.enrollment.repository=inmemory|jdbc`
 - `app.learning-progress.repository=inmemory|jdbc`
+- `app.grading.repository=inmemory|jdbc`
+- `app.certificate.repository=inmemory|jdbc`
 
 ## 约定
 - `PUT` 接口支持请求头 `X-Idempotency-Key`，用于幂等更新。

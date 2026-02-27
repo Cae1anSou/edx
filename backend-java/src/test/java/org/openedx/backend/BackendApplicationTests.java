@@ -164,6 +164,39 @@ class BackendApplicationTests {
                 .andExpect(jsonPath("$.code").value("FORBIDDEN"));
     }
 
+    @Test
+    void gradingShouldSupportUpdateAndGet() throws Exception {
+        mockMvc.perform(withAuth(put("/api/v1/courses/course-v1-demo/grades/u-500"), "grade:write", null)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "score": 92.5
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.score").value(92.5))
+                .andExpect(jsonPath("$.data.letterGrade").value("A"));
+
+        mockMvc.perform(withAuth(get("/api/v1/courses/course-v1-demo/grades/u-500"), "grade:read", null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.letterGrade").value("A"));
+    }
+
+    @Test
+    void certificateShouldSupportIssueGetAndRevoke() throws Exception {
+        mockMvc.perform(withAuth(post("/api/v1/courses/course-v1-demo/certificates/u-600"), "certificate:write", null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status").value("ISSUED"));
+
+        mockMvc.perform(withAuth(get("/api/v1/courses/course-v1-demo/certificates/u-600"), "certificate:read", null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status").value("ISSUED"));
+
+        mockMvc.perform(withAuth(delete("/api/v1/courses/course-v1-demo/certificates/u-600"), "certificate:write", null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status").value("REVOKED"));
+    }
+
     private MockHttpServletRequestBuilder withAuth(
             MockHttpServletRequestBuilder builder,
             String permissions,

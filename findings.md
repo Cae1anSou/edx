@@ -96,6 +96,11 @@
 - 全量重构继续推进：
   - 新增 `learning-progress` 域（查询/更新）及 JDBC+内存双仓储
   - 新增 Flyway `V3`：`learning_progress` 表
+- 全量重构核心域继续扩展：
+  - 新增 `grading` 域（成绩写入/查询）
+  - 新增 `certificate` 域（发放/查询/撤销）
+  - 新增 Flyway `V4`：`grade_record` 与 `certificate_record`
+  - 读写接口已统一接入 `ApiResponse<T>` 与 AOP 权限注解
 
 ## Resources
 - `/machine/Learning/Code/edx/setup.py`

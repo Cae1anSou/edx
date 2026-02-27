@@ -143,3 +143,12 @@
   - Added `learning-progress` domain (API/service/repository) with in-memory/JDBC implementations.
   - Added Flyway migration `V3__learning_progress.sql`.
   - Updated tests to assert wrapped response format and auth checks.
+
+### Phase 7: Core Domains Expansion (grading + certificate)
+- **Status:** in_progress
+- Actions taken:
+  - Added grading domain with score update/query API and repository implementations.
+  - Added certificate domain with issue/query/revoke API and repository implementations.
+  - Added Flyway migration `V4__grading_certificate.sql`.
+  - Updated YAML configs for grading/certificate repository selection.
+  - Extended integration tests for grading and certificate workflows.

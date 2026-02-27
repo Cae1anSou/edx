@@ -26,5 +26,9 @@ app:
     repository: inmemory
   learning-progress:
     repository: inmemory
+  grading:
+    repository: inmemory
+  certificate:
+    repository: inmemory
   notification:
     repository: inmemory

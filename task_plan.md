@@ -51,7 +51,15 @@ Phase 4
 - [x] Add reusable AOP access-control annotations (login/role/permission/research)
 - [x] Wire annotations into existing controllers
 - [x] Continue full rewrite with learning-progress domain
-- [ ] Commit phase-7 changes
+- [x] Commit phase-7 changes
+- **Status:** complete
+
+### Phase 8: Full Rewrite Core Domains Expansion
+- [x] Add grading domain (API/service/repository/inmemory+jdbc)
+- [x] Add certificate domain (API/service/repository/inmemory+jdbc)
+- [x] Add Flyway schema for grading/certificate
+- [x] Extend integration tests for grading/certificate
+- [ ] Commit phase-8 changes
 - **Status:** in_progress
 
 ## Key Questions

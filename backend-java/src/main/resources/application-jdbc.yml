@@ -9,5 +9,9 @@ app:
     repository: jdbc
   learning-progress:
     repository: jdbc
+  grading:
+    repository: jdbc
+  certificate:
+    repository: jdbc
   notification:
     repository: jdbc

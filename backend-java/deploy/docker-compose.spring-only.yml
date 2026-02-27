@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: backend-java-postgres
+    environment:
+      POSTGRES_DB: openedx
+      POSTGRES_USER: openedx
+      POSTGRES_PASSWORD: openedx
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U openedx -d openedx"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend-java:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: backend-java-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: jdbc
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/openedx
+      SPRING_DATASOURCE_USERNAME: openedx
+      SPRING_DATASOURCE_PASSWORD: openedx
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_FLYWAY_ENABLED: "true"
+    ports:
+      - "8080:8080"
+
+volumes:
+  pg_data:

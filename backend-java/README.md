@@ -21,6 +21,18 @@ cd backend-java
 mvn spring-boot:run -Dspring-boot.run.profiles=jdbc
 ```
 
+## Spring-only 容器化运行
+```bash
+cd backend-java
+./scripts/start-spring-only.sh
+```
+
+停止：
+```bash
+cd backend-java
+./scripts/stop-spring-only.sh
+```
+
 ## 关键接口
 - `GET /api/v1/health`
 - `POST /api/v1/users`
@@ -76,3 +88,11 @@ mvn spring-boot:run -Dspring-boot.run.profiles=jdbc
   - `platform`
   - `identity-course`
   - `learning`
+
+## 导出 OpenAPI 契约
+```bash
+cd backend-java
+./scripts/export-openapi.sh
+```
+
+输出目录：`backend-java/contracts/`

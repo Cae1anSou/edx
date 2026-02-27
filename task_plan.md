@@ -74,7 +74,15 @@ Phase 4
 - [x] Add list endpoints with `PageResponse` for users/courses/jobs
 - [x] Add OpenAPI grouped configuration for versioned contracts
 - [x] Add job executor scheduler skeleton for async flow replacement
-- [ ] Commit phase-10 changes
+- [x] Commit phase-10 changes
+- **Status:** complete
+
+### Phase 11: Spring-only Runtime Packaging
+- [x] Add Spring-only docker compose deployment skeleton
+- [x] Add startup/shutdown scripts for Spring runtime
+- [x] Add OpenAPI contract export script
+- [x] Add Spring-only cutover checklist document
+- [ ] Commit phase-11 changes
 - **Status:** in_progress
 
 ## Key Questions

@@ -169,3 +169,14 @@
   - Added OpenAPI grouped configuration for API contract organization.
   - Added scheduler skeleton to process pending jobs in batches.
   - Added manual run-once job execution endpoint for operational control.
+
+### Phase 10: Spring-only Runtime Packaging
+- **Status:** in_progress
+- Actions taken:
+  - Added `backend-java/Dockerfile` for Spring backend image build.
+  - Added `docker-compose.spring-only.yml` for Spring + PostgreSQL runtime.
+  - Added operational scripts:
+    - `start-spring-only.sh`
+    - `stop-spring-only.sh`
+    - `export-openapi.sh`
+  - Added `SPRING_ONLY_CUTOVER_CHECKLIST.md` runbook.

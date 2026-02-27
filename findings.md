@@ -109,6 +109,14 @@
   - 新增分页列表接口（users/courses/jobs），统一 `PageResponse` 结构
   - 新增 OpenAPI 分组配置（platform / identity-course / learning）
   - 新增 job scheduler 骨架（定时扫描 pending job 并推进状态）
+- Spring-only 运行链路已补齐：
+  - 新增容器构建：`backend-java/Dockerfile`
+  - 新增部署编排：`backend-java/deploy/docker-compose.spring-only.yml`
+  - 新增脚本：
+    - `backend-java/scripts/start-spring-only.sh`
+    - `backend-java/scripts/stop-spring-only.sh`
+    - `backend-java/scripts/export-openapi.sh`
+  - 新增切换检查清单：`docs/backend-rfc/SPRING_ONLY_CUTOVER_CHECKLIST.md`
 
 ## Resources
 - `/machine/Learning/Code/edx/setup.py`

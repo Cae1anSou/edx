@@ -35,7 +35,15 @@ Phase 4
 - [x] Add RFC-002 for gateway routing and rollback strategy
 - [x] Add idempotency-key support for write APIs
 - [x] Add domain event publisher abstraction and notification change event
-- [ ] Commit wave-2 foundation changes
+- [x] Commit wave-2 foundation changes
+- **Status:** complete
+
+### Phase 6: Direct Cutover Enablement
+- [x] Switch strategy to direct replacement (no gray)
+- [x] Add core domains in Spring (identity + enrollment)
+- [x] Add Flyway schema for new domains
+- [x] Add RFC-003 big-bang cutover doc
+- [ ] Commit direct-cutover changes
 - **Status:** in_progress
 
 ## Key Questions

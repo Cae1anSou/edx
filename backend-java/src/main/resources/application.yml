@@ -20,5 +20,9 @@ server:
   shutdown: graceful
 
 app:
+  identity:
+    repository: inmemory
+  enrollment:
+    repository: inmemory
   notification:
     repository: inmemory

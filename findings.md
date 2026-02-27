@@ -78,6 +78,12 @@
   - `PUT` 接口支持 `X-Idempotency-Key`
   - 新增幂等仓储（inmemory/jdbc 对应实现）
   - 新增领域事件抽象 `DomainEventPublisher` 与通知偏好变更事件模型
+- 已按用户要求切换为“直接替换”路径（不做灰度）：
+  - 新增 `RFC-003` 说明 big-bang cutover 的执行与验收条件
+  - Spring 新增核心域骨架：
+    - `identity`：用户注册/查询
+    - `enrollment`：选课/查询/退课
+  - 新增 Flyway `V2` 迁移：`user_profile` 与 `enrollment_record`
 
 ## Resources
 - `/machine/Learning/Code/edx/setup.py`

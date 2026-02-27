@@ -23,6 +23,11 @@ mvn spring-boot:run -Dspring-boot.run.profiles=jdbc
 
 ## 关键接口
 - `GET /api/v1/health`
+- `POST /api/v1/users`
+- `GET /api/v1/users/{userId}`
+- `PUT /api/v1/courses/{courseId}/enrollments/{userId}`
+- `GET /api/v1/courses/{courseId}/enrollments/{userId}`
+- `DELETE /api/v1/courses/{courseId}/enrollments/{userId}`
 - `GET /api/v1/notification-preferences/{userId}`
 - `PUT /api/v1/notification-preferences/{userId}`
 - `GET /api/legacy/users/{userId}/notification-preferences`
@@ -31,7 +36,10 @@ mvn spring-boot:run -Dspring-boot.run.profiles=jdbc
 ## 配置说明
 - `app.notification.repository=inmemory`（默认）
 - `app.notification.repository=jdbc`（`jdbc` profile 自动设置）
+- `app.identity.repository=inmemory|jdbc`
+- `app.enrollment.repository=inmemory|jdbc`
 
 ## 约定
 - `PUT` 接口支持请求头 `X-Idempotency-Key`，用于幂等更新。
 - 通知偏好更新后会产生日志事件（后续可替换为 Kafka publisher）。
+- 当前目标是直接由 Spring 承载核心 API，不再依赖 Django 灰度切流。

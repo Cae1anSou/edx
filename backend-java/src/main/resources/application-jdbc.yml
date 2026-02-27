@@ -3,5 +3,9 @@ spring:
     enabled: true
 
 app:
+  identity:
+    repository: jdbc
+  enrollment:
+    repository: jdbc
   notification:
     repository: jdbc

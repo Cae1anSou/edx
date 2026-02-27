@@ -121,3 +121,13 @@
   - Updated notification write APIs to accept `X-Idempotency-Key`.
   - Added domain event abstraction and notification changed event model.
   - Extended tests with idempotency behavior scenario.
+
+### Phase 5: Direct Cutover Enablement
+- **Status:** in_progress
+- Actions taken:
+  - Switched migration direction to Spring direct replacement (no gray release dependency).
+  - Added identity domain (`/api/v1/users` register/get).
+  - Added enrollment domain (`/api/v1/courses/{courseId}/enrollments/{userId}` put/get/delete).
+  - Added Flyway V2 schema for identity/enrollment core tables.
+  - Added RFC `docs/backend-rfc/RFC-003-bigbang-cutover.md`.
+  - Updated README and integration tests for new endpoints.

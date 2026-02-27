@@ -117,6 +117,9 @@
     - `backend-java/scripts/stop-spring-only.sh`
     - `backend-java/scripts/export-openapi.sh`
   - 新增切换检查清单：`docs/backend-rfc/SPRING_ONLY_CUTOVER_CHECKLIST.md`
+- Django 运行下线准备：
+  - 新增 `RFC-004-django-runtime-decommission.md`
+  - 新增 `backend-java/scripts/smoke-spring-only.sh` 用于上线前最小链路验证
 
 ## Resources
 - `/machine/Learning/Code/edx/setup.py`

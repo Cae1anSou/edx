@@ -82,7 +82,13 @@ Phase 4
 - [x] Add startup/shutdown scripts for Spring runtime
 - [x] Add OpenAPI contract export script
 - [x] Add Spring-only cutover checklist document
-- [ ] Commit phase-11 changes
+- [x] Commit phase-11 changes
+- **Status:** complete
+
+### Phase 12: Django Runtime Decommission Readiness
+- [x] Add Django runtime decommission RFC
+- [x] Add Spring-only smoke validation script
+- [ ] Commit phase-12 changes
 - **Status:** in_progress
 
 ## Key Questions

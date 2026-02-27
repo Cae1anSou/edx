@@ -180,3 +180,9 @@
     - `stop-spring-only.sh`
     - `export-openapi.sh`
   - Added `SPRING_ONLY_CUTOVER_CHECKLIST.md` runbook.
+
+### Phase 11: Django Runtime Decommission Readiness
+- **Status:** in_progress
+- Actions taken:
+  - Added RFC `RFC-004-django-runtime-decommission.md`.
+  - Added `smoke-spring-only.sh` for pre-cutover runtime validation.

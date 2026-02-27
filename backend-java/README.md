@@ -33,6 +33,12 @@ cd backend-java
 ./scripts/stop-spring-only.sh
 ```
 
+Smoke 校验：
+```bash
+cd backend-java
+./scripts/smoke-spring-only.sh
+```
+
 ## 关键接口
 - `GET /api/v1/health`
 - `POST /api/v1/users`

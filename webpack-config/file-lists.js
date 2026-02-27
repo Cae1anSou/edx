@@ -10,8 +10,7 @@ module.exports = {
         path.resolve(__dirname, '../common/static/common/js/components/views/paging_footer.js'),
         path.resolve(__dirname, '../cms/static/js/views/paging.js'),
         path.resolve(__dirname, '../common/static/common/js/components/utils/view_utils.js'),
-        /xmodule\/js\/src/,
-        path.resolve(__dirname, '../openedx/features/course_bookmarks/static/course_bookmarks/js/views/bookmark_button.js')
+        /xmodule\/js\/src/
     ],
 
     // These files are used by RequireJS as well, so we can't remove
@@ -41,25 +40,8 @@ module.exports = {
         path.resolve(__dirname, '../common/static/common/js/components/views/paginated_view.js'),
         path.resolve(__dirname, '../common/static/common/js/components/views/paging_footer.js'),
         path.resolve(__dirname, '../common/static/common/js/components/views/paging_header.js'),
-        path.resolve(__dirname, '../common/static/common/js/components/views/progress_circle_view.js'),
         path.resolve(__dirname, '../common/static/common/js/components/views/search_field.js'),
         path.resolve(__dirname, '../common/static/common/js/components/views/tabbed_view.js'),
-        path.resolve(__dirname, '../lms/djangoapps/discussion/static/discussion/js/views/discussion_board_view.js'),
-        path.resolve(__dirname, '../lms/djangoapps/discussion/static/discussion/js/views/discussion_fake_breadcrumbs.js'),
-        path.resolve(__dirname, '../lms/djangoapps/discussion/static/discussion/js/views/discussion_search_view.js'),
-        path.resolve(__dirname, '../lms/djangoapps/discussion/static/discussion/js/views/discussion_user_profile_view.js'),
-        path.resolve(__dirname, '../lms/djangoapps/support/static/support/js/views/certificates.js'),
-        path.resolve(__dirname, '../lms/djangoapps/support/static/support/js/views/enrollment_modal.js'),
-        path.resolve(__dirname, '../lms/djangoapps/support/static/support/js/views/enrollment.js'),
-        path.resolve(__dirname, '../lms/djangoapps/support/static/support/js/views/manage_user.js'),
-        path.resolve(__dirname, '../lms/djangoapps/teams/static/teams/js/views/edit_team_members.js'),
-        path.resolve(__dirname, '../lms/djangoapps/teams/static/teams/js/views/edit_team.js'),
-        path.resolve(__dirname, '../lms/djangoapps/teams/static/teams/js/views/instructor_tools.js'),
-        path.resolve(__dirname, '../lms/djangoapps/teams/static/teams/js/views/team_card.js'),
-        path.resolve(__dirname, '../lms/djangoapps/teams/static/teams/js/views/team_profile_header_actions.js'),
-        path.resolve(__dirname, '../lms/djangoapps/teams/static/teams/js/views/team_profile.js'),
-        path.resolve(__dirname, '../lms/djangoapps/teams/static/teams/js/views/teams_tab.js'),
-        path.resolve(__dirname, '../lms/djangoapps/teams/static/teams/js/views/topic_teams.js'),
         path.resolve(__dirname, '../lms/static/js/api_admin/views/catalog_preview.js'),
         path.resolve(__dirname, '../lms/static/js/components/card/views/card.js'),
         path.resolve(__dirname, '../lms/static/js/components/header/views/header.js'),
@@ -84,23 +66,6 @@ module.exports = {
         path.resolve(__dirname, '../lms/static/js/views/fields.js'),
         path.resolve(__dirname, '../lms/static/js/views/image_field.js'),
         path.resolve(__dirname, '../lms/static/js/views/message_banner.js'),
-        path.resolve(__dirname, '../openedx/features/course_bookmarks/static/course_bookmarks/js/views/bookmarks_list.js'),
-        path.resolve(__dirname, '../openedx/features/course_search/static/course_search/js/spec/course_search_spec.js'),
-        path.resolve(
-            __dirname,
-            '../openedx/features/course_search/static/course_search/js/views/course_search_results_view.js'
-        ),
-        path.resolve(
-            __dirname,
-            '../openedx/features/course_search/static/course_search/js/views/dashboard_search_results_view.js'
-        ),
-        path.resolve(__dirname, '../openedx/features/course_search/static/course_search/js/views/search_results_view.js'),
-        path.resolve(
-            __dirname,
-            '../openedx/features/learner_profile/static/learner_profile/js/views/learner_profile_fields.js'
-        ),
-        path.resolve(__dirname, '../openedx/features/learner_profile/static/learner_profile/js/views/section_two_tab.js'),
-        path.resolve(__dirname, '../openedx/features/learner_profile/static/learner_profile/js/views/share_modal_view.js'),
         path.resolve(__dirname, '../node_modules/edx-ui-toolkit/src/js/dropdown-menu/dropdown-menu-view.js'),
         path.resolve(__dirname, '../node_modules/edx-ui-toolkit/src/js/breadcrumbs/breadcrumbs-view.js')
     ]

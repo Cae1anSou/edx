@@ -10,8 +10,65 @@
                 enterpriseActivationUrl: '/enterprise/select/active'
             },
 
-            headers: {
-                'X-CSRFToken': $.cookie('csrftoken')
+            buildHeaders: function(username) {
+                var headers = {
+                    'X-CSRFToken': $.cookie('csrftoken')
+                };
+                if (username) {
+                    headers['X-User-Id'] = username;
+                    // Spring enterprise learner API requires this permission header.
+                    headers['X-Permissions'] = 'enterprise:learner:read';
+                }
+                return headers;
+            },
+
+            normalizeLearnerResponse: function(response) {
+                var payload = (response && response.data) ? response.data : response,
+                    items = [],
+                    count = 0;
+
+                if (!payload) {
+                    return {count: 0, results: []};
+                }
+
+                if ($.isArray(payload.results)) {
+                    return payload;
+                }
+
+                if ($.isArray(payload.items)) {
+                    items = payload.items;
+                    count = payload.total || items.length;
+                    return {
+                        count: count,
+                        results: items.map(this.normalizeLearnerItem, this)
+                    };
+                }
+
+                if ($.isArray(payload)) {
+                    return {
+                        count: payload.length,
+                        results: payload.map(this.normalizeLearnerItem, this)
+                    };
+                }
+
+                return {
+                    count: 1,
+                    results: [this.normalizeLearnerItem(payload)]
+                };
+            },
+
+            normalizeLearnerItem: function(item) {
+                if (item && item.enterprise_customer && item.enterprise_customer.uuid) {
+                    return item;
+                }
+                if (item && item.enterpriseId) {
+                    return $.extend({}, item, {
+                        enterprise_customer: {
+                            uuid: item.enterpriseId
+                        }
+                    });
+                }
+                return item;
             },
 
             /**
@@ -24,6 +81,7 @@
                 var view = this;
                 var selectionPageUrl = this.urls.multipleEnterpriseUrl + encodeURIComponent(nextUrl);
                 var username = Utils.userFromEdxUserCookie(edxUserInfoCookieName).username;
+                this.currentUsername = username;
                 var next = nextUrl || '/';
                 var enterpriseInUrl = this.getEnterpriseFromUrl(nextUrl);
                 var userInEnterprise = false;
@@ -32,11 +90,12 @@
                     url: this.urls.learners + '?username=' + username,
                     type: 'GET',
                     contentType: 'application/json; charset=utf-8',
-                    headers: this.headers,
+                    headers: this.buildHeaders(username),
                     context: this
                 }).fail(function() {
                     view.redirect(next);
                 }).done(function(response) {
+                    response = view.normalizeLearnerResponse(response);
                     userWithMultipleEnterprises = (response.count > 1);
                     if (userWithMultipleEnterprises) {
                         if (enterpriseInUrl) {
@@ -67,7 +126,7 @@
                 return $.ajax({
                     url: this.urls.enterpriseActivationUrl,
                     method: 'POST',
-                    headers: {'X-CSRFToken': $.cookie('csrftoken')},
+                    headers: this.buildHeaders(this.currentUsername),
                     data: {enterprise: enterprise}
                 });
             },

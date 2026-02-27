@@ -108,17 +108,10 @@ module.exports = Merge.merge({
             'js/factories/tag_count': './cms/static/js/factories/tag_count.js',
 
             // LMS
-            SingleSupportForm: './lms/static/support/jsx/single_support_form.jsx',
             AlertStatusBar: './lms/static/js/accessible_components/StatusBarAlert.jsx',
-            EntitlementSupportPage: './lms/djangoapps/support/static/support/jsx/entitlements/index.jsx',
-            LinkProgramEnrollmentsSupportPage: './lms/djangoapps/support/static/support/jsx/'
-                                               + 'program_enrollments/index.jsx',
-            ProgramEnrollmentsInspectorPage: './lms/djangoapps/support/static/support/jsx/'
-                                               + 'program_enrollments/inspector.jsx',
             PasswordResetConfirmation: './lms/static/js/student_account/components/PasswordResetConfirmation.jsx',
             StudentAccountDeletion: './lms/static/js/student_account/components/StudentAccountDeletion.jsx',
             StudentAccountDeletionInitializer: './lms/static/js/student_account/StudentAccountDeletionInitializer.js',
-            ProblemBrowser: './lms/djangoapps/instructor/static/instructor/ProblemBrowser/index.jsx',
             EnterpriseLearnerPortalModal: './lms/static/js/learner_dashboard/EnterpriseLearnerPortalModal.jsx',
 
             // Learner Dashboard
@@ -128,9 +121,6 @@ module.exports = Merge.merge({
             ProgramListFactory: './lms/static/js/learner_dashboard/program_list_factory.js',
             UnenrollmentFactory: './lms/static/js/learner_dashboard/unenrollment_factory.js',
             CompletionOnViewService: './lms/static/completion/js/CompletionOnViewService.js',
-
-            // Features
-            Currency: './openedx/features/course_experience/static/course_experience/js/currency.js',
 
             CookiePolicyBanner: './common/static/js/src/CookiePolicyBanner.jsx',
 
@@ -622,10 +612,8 @@ module.exports = Merge.merge({
                 hls: 'hls.js/dist/hls.js'
             },
             modules: [
-                'cms/djangoapps/pipeline_js/js',
                 'cms/static',
                 'cms/static/cms/js',
-                'cms/templates/js',
                 'lms/static',
                 path.resolve(__dirname),
                 'xmodule/js/src',

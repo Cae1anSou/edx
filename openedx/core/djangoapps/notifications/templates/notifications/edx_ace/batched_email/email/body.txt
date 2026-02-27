@@ -1,3 +1,0 @@
-{% load i18n %}
-
-{% trans "Recent activity on" %} {{ platform_name }}

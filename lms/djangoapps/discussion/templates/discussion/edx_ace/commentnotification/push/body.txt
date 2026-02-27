@@ -1,3 +1,0 @@
-{% load i18n %}
-{% blocktrans trimmed %}{{ comment_username }} commented to {{ thread_title }}:{% endblocktrans %}
-{{ comment_body_text }}

@@ -1,6 +1,0 @@
-"""
-Constants
-"""
-
-CONTENT_STAGING_PURPOSE_PREFIX = "modulestore_migrator"
-CONTENT_STAGING_PURPOSE_TEMPLATE = CONTENT_STAGING_PURPOSE_PREFIX + "({source_key})"

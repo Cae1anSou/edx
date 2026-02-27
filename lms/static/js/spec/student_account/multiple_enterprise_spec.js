@@ -131,6 +131,33 @@ function(AjaxHelpers, MultipleEnterpriseInterface, Utils) {
             expect(MultipleEnterpriseInterface.redirect).toHaveBeenCalledWith(NEXT_URL);
         });
 
+        it('supports Spring wrapped learner response shape', function() {
+            var requests = AjaxHelpers.requests(this);
+
+            MultipleEnterpriseInterface.check(NEXT_URL);
+
+            AjaxHelpers.expectRequest(
+                requests,
+                'GET',
+                LEARNER_URL,
+                null
+            );
+
+            AjaxHelpers.respondWithJson(requests, {
+                code: 'OK',
+                message: 'success',
+                data: {
+                    items: [
+                        {username: 'test-learner', enterpriseId: 'ent-1', active: true},
+                        {username: 'test-learner', enterpriseId: 'ent-2', active: true}
+                    ],
+                    total: 2
+                }
+            });
+
+            expect(MultipleEnterpriseInterface.redirect).toHaveBeenCalledWith(REDIRECT_URL);
+        });
+
         it('correctly redirects the user if learner information call fails', function() {
             // Spy on Ajax requests
             var requests = AjaxHelpers.requests(this);

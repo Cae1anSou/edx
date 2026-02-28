@@ -11,6 +11,13 @@ import {
   fetchLearningSequencesV1
 } from '../api/studio';
 
+function apiState(isLoading: boolean, isError: boolean) {
+  if (isLoading) {
+    return 'loading';
+  }
+  return isError ? 'error' : 'ok';
+}
+
 export function LearnerExperiencePage() {
   const params = useParams<{ coursePath?: string }>();
   const location = useLocation();
@@ -47,69 +54,51 @@ export function LearnerExperiencePage() {
   const experimentsQuery = useQuery({ queryKey: ['lx-experiments'], queryFn: fetchExperimentsV1 });
 
   return (
-    <main className="container">
-      <header className="page-header">
-        <h1>Learner Experience</h1>
-        <p>React migration for learner-facing legacy API surfaces.</p>
-        <p>
-          <strong>Current path:</strong> {location.pathname}
-        </p>
-        {location.pathname.startsWith('/notify') ? (
-          <p>
-            <strong>Legacy notify path:</strong> {decodeURIComponent(location.pathname.replace(/^\/notify\/?/, '') || '/')}
-          </p>
-        ) : null}
-        {routeCourse ? (
-          <p>
-            <strong>Legacy route course key:</strong> {routeCourse}
-          </p>
-        ) : null}
-      </header>
-
-      <section className="actions">
-        <Link to="/course/" className="button-link secondary-btn">
-          Back to Dashboard
-        </Link>
+    <main className="container legacy-v1-shell legacy-v1-generic legacy-v1-learner-experience">
+      <section className="legacy-v1-mast">
+        <div>
+          <h1 className="legacy-v1-title-with-sub">
+            <span className="legacy-v1-subtitle">Learner</span>
+            <span>Experience</span>
+          </h1>
+        </div>
+        <nav className="legacy-v1-mast-actions" aria-label="Page Actions">
+          <Link to="/dashboard" className="legacy-v1-link-btn">My Courses</Link>
+          <Link to="/search-commerce" className="legacy-v1-link-btn">Search & Commerce</Link>
+          <Link to="/notifications" className="legacy-v1-link-btn">Notifications</Link>
+        </nav>
       </section>
 
-      <section className="create-form">
-        <h2>Bookmarks</h2>
-        {bookmarksQuery.isLoading ? <p>Loading...</p> : null}
-        {bookmarksQuery.error ? <p className="error-text">Failed to load bookmarks.</p> : null}
-        {bookmarksQuery.data ? <pre>{JSON.stringify(bookmarksQuery.data, null, 2)}</pre> : null}
-      </section>
+      <section className="legacy-v1-layout legacy-v1-layout-mastless">
+        <article className="legacy-v1-main">
+          <section className="create-form">
+            <h2>Course Navigation APIs</h2>
+            <ul className="item-list">
+              <li className="item-card"><h3>Bookmarks</h3><p><strong>Status:</strong> {apiState(bookmarksQuery.isLoading, bookmarksQuery.isError)}</p></li>
+              <li className="item-card"><h3>Course Home</h3><p><strong>Status:</strong> {apiState(courseHomeQuery.isLoading, courseHomeQuery.isError)}</p></li>
+              <li className="item-card"><h3>Course Home v1</h3><p><strong>Status:</strong> {apiState(courseHomeV1Query.isLoading, courseHomeV1Query.isError)}</p></li>
+            </ul>
+          </section>
 
-      <section className="create-form">
-        <h2>Course Home</h2>
-        {courseHomeQuery.isLoading ? <p>Loading...</p> : null}
-        {courseHomeQuery.error ? <p className="error-text">Failed to load course home.</p> : null}
-        {courseHomeQuery.data ? <pre>{JSON.stringify(courseHomeQuery.data, null, 2)}</pre> : null}
-        {courseHomeV1Query.isLoading ? <p>Loading v1...</p> : null}
-        {courseHomeV1Query.error ? <p className="error-text">Failed to load course home v1.</p> : null}
-        {courseHomeV1Query.data ? <pre>{JSON.stringify(courseHomeV1Query.data, null, 2)}</pre> : null}
-      </section>
+          <section className="create-form">
+            <h2>Learner Home and Discussion</h2>
+            <ul className="item-list">
+              <li className="item-card"><h3>Learner Home</h3><p><strong>Status:</strong> {apiState(learnerHomeQuery.isLoading, learnerHomeQuery.isError)}</p></li>
+              <li className="item-card"><h3>Learning Sequences</h3><p><strong>Status:</strong> {apiState(sequencesQuery.isLoading, sequencesQuery.isError)}</p></li>
+              <li className="item-card"><h3>Discussion / Notes / Experiments</h3><p><strong>Status:</strong> {[discussionQuery, notesQuery, experimentsQuery].some((q) => q.isError) ? 'error' : [discussionQuery, notesQuery, experimentsQuery].some((q) => q.isLoading) ? 'loading' : 'ok'}</p></li>
+            </ul>
+          </section>
+        </article>
 
-      <section className="create-form">
-        <h2>Learner Home and Sequences</h2>
-        {learnerHomeQuery.isLoading ? <p>Loading learner home...</p> : null}
-        {learnerHomeQuery.error ? <p className="error-text">Failed to load learner home.</p> : null}
-        {learnerHomeQuery.data ? <pre>{JSON.stringify(learnerHomeQuery.data, null, 2)}</pre> : null}
-        {sequencesQuery.isLoading ? <p>Loading sequences...</p> : null}
-        {sequencesQuery.error ? <p className="error-text">Failed to load learning sequences.</p> : null}
-        {sequencesQuery.data ? <pre>{JSON.stringify(sequencesQuery.data, null, 2)}</pre> : null}
-      </section>
-
-      <section className="create-form">
-        <h2>Discussion, Notes, Experiments</h2>
-        {discussionQuery.isLoading ? <p>Loading discussion...</p> : null}
-        {discussionQuery.error ? <p className="error-text">Failed to load discussion.</p> : null}
-        {discussionQuery.data ? <pre>{JSON.stringify(discussionQuery.data, null, 2)}</pre> : null}
-        {notesQuery.isLoading ? <p>Loading notes...</p> : null}
-        {notesQuery.error ? <p className="error-text">Failed to load notes.</p> : null}
-        {notesQuery.data ? <pre>{JSON.stringify(notesQuery.data, null, 2)}</pre> : null}
-        {experimentsQuery.isLoading ? <p>Loading experiments...</p> : null}
-        {experimentsQuery.error ? <p className="error-text">Failed to load experiments.</p> : null}
-        {experimentsQuery.data ? <pre>{JSON.stringify(experimentsQuery.data, null, 2)}</pre> : null}
+        <aside className="legacy-v1-sidebar" role="complementary">
+          <div className="legacy-v1-side-bit">
+            <h3>Data</h3>
+            <p className="legacy-v1-muted">Path: {location.pathname}</p>
+            {routeCourse ? <p className="legacy-v1-muted">Course: {routeCourse}</p> : null}
+            {learnerHomeQuery.data ? <pre>{JSON.stringify(learnerHomeQuery.data, null, 2)}</pre> : null}
+            {!learnerHomeQuery.data && discussionQuery.data ? <pre>{JSON.stringify(discussionQuery.data, null, 2)}</pre> : null}
+          </div>
+        </aside>
       </section>
     </main>
   );

@@ -6,14 +6,11 @@ import {
   fetchBookmarks,
   fetchCourseBlocks,
   fetchCourseHome,
-  fetchCourseHomeV1,
   fetchDiscussionV1,
   fetchInstructorCourseInfo,
   fetchInstructorSummary,
-  fetchInstructorTasks,
   fetchLearnerHome,
-  fetchLearningProgress,
-  fetchLearningSequencesV1
+  fetchLearningProgress
 } from '../api/studio';
 import { currentUserId } from '../api/client';
 
@@ -21,12 +18,6 @@ type LegacyCourseRoute = {
   courseKey: string;
   subPath: string;
   view: 'about' | 'courseware' | 'progress' | 'instructor' | 'discussion' | 'bookmarks' | 'generic';
-  section?: string;
-  subsection?: string;
-  position?: string;
-  studentId?: string;
-  jumpType?: 'jump_to' | 'jump_to_id';
-  jumpTarget?: string;
 };
 
 function parseLegacyCourseRoute(pathname: string): LegacyCourseRoute {
@@ -44,13 +35,11 @@ function parseLegacyCourseRoute(pathname: string): LegacyCourseRoute {
   let consumed = 1;
   if (segments[0].includes(':')) {
     courseKey = segments[0];
-    consumed = 1;
   } else if (segments.length >= 3) {
     courseKey = segments.slice(0, 3).join('/');
     consumed = 3;
   } else {
     courseKey = segments[0];
-    consumed = 1;
   }
 
   const viewSegments = segments.slice(consumed);
@@ -60,38 +49,19 @@ function parseLegacyCourseRoute(pathname: string): LegacyCourseRoute {
   let view: LegacyCourseRoute['view'] = 'generic';
   if (lower.startsWith('about')) {
     view = 'about';
-  } else if (lower.startsWith('courseware')) {
-    view = 'courseware';
-  } else if (lower.startsWith('jump_to')) {
+  } else if (lower.startsWith('courseware') || lower.startsWith('jump_to')) {
     view = 'courseware';
   } else if (lower.startsWith('progress')) {
     view = 'progress';
   } else if (lower.startsWith('instructor')) {
     view = 'instructor';
-  } else if (lower.startsWith('discussion') || lower.startsWith('course_wiki') || lower.startsWith('wiki')) {
+  } else if (lower.startsWith('discussion') || lower.startsWith('wiki')) {
     view = 'discussion';
   } else if (lower.startsWith('bookmarks')) {
     view = 'bookmarks';
   }
 
-  const parsed: LegacyCourseRoute = { courseKey, subPath, view };
-
-  if (view === 'courseware') {
-    if (viewSegments[0] === 'courseware') {
-      parsed.section = viewSegments[1];
-      parsed.subsection = viewSegments[2];
-      parsed.position = viewSegments[3];
-    } else if (viewSegments[0] === 'jump_to' || viewSegments[0] === 'jump_to_id') {
-      parsed.jumpType = viewSegments[0];
-      parsed.jumpTarget = viewSegments.slice(1).join('/') || undefined;
-    }
-  }
-
-  if (view === 'progress' && viewSegments.length > 1) {
-    parsed.studentId = viewSegments[1];
-  }
-
-  return parsed;
+  return { courseKey, subPath, view };
 }
 
 const VIEW_LABEL: Record<LegacyCourseRoute['view'], string> = {
@@ -101,58 +71,63 @@ const VIEW_LABEL: Record<LegacyCourseRoute['view'], string> = {
   instructor: 'Instructor',
   discussion: 'Discussion',
   bookmarks: 'Bookmarks',
-  generic: 'Generic'
+  generic: 'Course Home'
 };
+
+function dataCount(value: unknown): number {
+  if (!value || typeof value !== 'object') {
+    return 0;
+  }
+  const row = value as Record<string, unknown>;
+  const candidates = ['results', 'courses', 'highlights', 'blocks'];
+  for (const key of candidates) {
+    if (Array.isArray(row[key])) {
+      return row[key].length;
+    }
+  }
+  return 0;
+}
 
 export function LegacyCoursesPage() {
   const location = useLocation();
   const route = useMemo(() => parseLegacyCourseRoute(location.pathname), [location.pathname]);
   const hasCourse = Boolean(route.courseKey);
-
-  const [progressUserId, setProgressUserId] = useState(route.studentId ?? currentUserId());
-  const [problemLocation, setProblemLocation] = useState('');
+  const [progressUserId, setProgressUserId] = useState(currentUserId());
 
   const aboutQuery = useQuery({
     queryKey: ['legacy-courses-about', route.courseKey],
     queryFn: fetchCourseHome,
-    enabled: route.view === 'about' || route.view === 'generic'
+    enabled: hasCourse && (route.view === 'about' || route.view === 'generic')
   });
-  const aboutV1Query = useQuery({
-    queryKey: ['legacy-courses-about-v1', route.courseKey],
-    queryFn: fetchCourseHomeV1,
-    enabled: route.view === 'about' || route.view === 'generic'
-  });
+
   const coursewareBlocksQuery = useQuery({
     queryKey: ['legacy-courses-courseware-blocks', route.courseKey],
     queryFn: () => fetchCourseBlocks(route.courseKey),
     enabled: route.view === 'courseware' && hasCourse
   });
 
-  const learnerHomeQuery = useQuery({
-    queryKey: ['legacy-courses-learner-home', route.courseKey],
-    queryFn: fetchLearnerHome,
-    enabled: route.view === 'progress' || route.view === 'generic'
-  });
-  const sequencesQuery = useQuery({
-    queryKey: ['legacy-courses-sequences', route.courseKey],
-    queryFn: fetchLearningSequencesV1,
-    enabled: route.view === 'progress' || route.view === 'generic'
-  });
   const progressQuery = useQuery({
     queryKey: ['legacy-courses-learning-progress', route.courseKey, progressUserId],
     queryFn: () => fetchLearningProgress(route.courseKey, progressUserId),
-    enabled: route.view === 'progress' && hasCourse && Boolean(progressUserId.trim())
+    enabled: route.view === 'progress' && hasCourse
+  });
+
+  const learnerHomeQuery = useQuery({
+    queryKey: ['legacy-courses-learner-home', route.courseKey],
+    queryFn: fetchLearnerHome,
+    enabled: route.view === 'progress' && hasCourse
   });
 
   const discussionQuery = useQuery({
     queryKey: ['legacy-courses-discussion', route.courseKey],
     queryFn: fetchDiscussionV1,
-    enabled: route.view === 'discussion' || route.view === 'generic'
+    enabled: route.view === 'discussion' && hasCourse
   });
+
   const bookmarksQuery = useQuery({
     queryKey: ['legacy-courses-bookmarks', route.courseKey],
     queryFn: fetchBookmarks,
-    enabled: route.view === 'bookmarks' || route.view === 'generic'
+    enabled: route.view === 'bookmarks' && hasCourse
   });
 
   const instructorSummaryQuery = useQuery({
@@ -160,18 +135,10 @@ export function LegacyCoursesPage() {
     queryFn: () => fetchInstructorSummary(route.courseKey),
     enabled: route.view === 'instructor' && hasCourse
   });
+
   const instructorCourseInfoQuery = useQuery({
     queryKey: ['legacy-courses-instructor-course-info', route.courseKey],
     queryFn: () => fetchInstructorCourseInfo(route.courseKey),
-    enabled: route.view === 'instructor' && hasCourse
-  });
-  const instructorTasksQuery = useQuery({
-    queryKey: ['legacy-courses-instructor-tasks', route.courseKey, problemLocation],
-    queryFn: () =>
-      fetchInstructorTasks({
-        courseId: route.courseKey,
-        problemLocation: problemLocation.trim() || undefined
-      }),
     enabled: route.view === 'instructor' && hasCourse
   });
 
@@ -185,148 +152,124 @@ export function LegacyCoursesPage() {
   };
 
   return (
-    <main className="container">
-      <header className="page-header">
-        <h1>Legacy Courses Router</h1>
-        <p>React migration landing for LMS `/courses/...` legacy paths.</p>
-        <p>
-          <strong>Route:</strong> {location.pathname}
-        </p>
-        <p>
-          <strong>Course key:</strong> {route.courseKey || 'N/A'}
-        </p>
-        <p>
-          <strong>Detected view:</strong> {VIEW_LABEL[route.view]}
-          {route.subPath ? ` (${route.subPath})` : ''}
-        </p>
-      </header>
-
-      <section className="actions">
-        <Link to="/dashboard" className="button-link secondary-btn">
-          LMS Dashboard
-        </Link>
-        <Link to="/course/" className="button-link secondary-btn">
-          Studio Dashboard
-        </Link>
-        <Link to="/learner-experience" className="button-link secondary-btn">
-          Learner Experience
-        </Link>
+    <main className="container legacy-v1-shell legacy-v1-lms legacy-v1-legacy-courses">
+      <section className="legacy-v1-mast">
+        <div>
+          <h1 className="legacy-v1-title-with-sub">
+            <span className="legacy-v1-subtitle">LMS Course</span>
+            <span>{hasCourse ? route.courseKey : 'Course Catalog'}</span>
+          </h1>
+          <p className="legacy-v1-muted">
+            {hasCourse ? `Current view: ${VIEW_LABEL[route.view]}` : 'Open a course route to view legacy course pages.'}
+          </p>
+        </div>
+        <nav className="legacy-v1-mast-actions" aria-label="Page Actions">
+          <Link to="/dashboard" className="legacy-v1-link-btn">My Courses</Link>
+          <Link to="/course/" className="legacy-v1-link-btn">Studio</Link>
+        </nav>
       </section>
 
+      <section className="legacy-v1-subnav">
+        <span>View: {VIEW_LABEL[route.view]}</span>
+        {hasCourse ? <Link to={courseLink('about')}>About</Link> : null}
+        {hasCourse ? <Link to={courseLink('courseware')}>Courseware</Link> : null}
+        {hasCourse ? <Link to={courseLink('progress')}>Progress</Link> : null}
+        {hasCourse ? <Link to={courseLink('discussion')}>Discussion</Link> : null}
+        {hasCourse ? <Link to={courseLink('instructor')}>Instructor</Link> : null}
+        {hasCourse ? <Link to={courseLink('bookmarks')}>Bookmarks</Link> : null}
+      </section>
+
+      {!hasCourse ? (
+        <section className="legacy-v1-empty">Open a course path such as <code>/courses/course-v1:edX+DemoX+2026_T1/about</code>.</section>
+      ) : null}
+
       {hasCourse ? (
-        <section className="actions">
-          <Link to={courseLink('about')} className="button-link secondary-btn">About</Link>
-          <Link to={courseLink('courseware')} className="button-link secondary-btn">Courseware</Link>
-          <Link to={courseLink('progress')} className="button-link secondary-btn">Progress</Link>
-          <Link to={courseLink('instructor')} className="button-link secondary-btn">Instructor</Link>
-          <Link to={courseLink('discussion')} className="button-link secondary-btn">Discussion</Link>
-          <Link to={courseLink('bookmarks')} className="button-link secondary-btn">Bookmarks</Link>
-        </section>
-      ) : null}
+        <section className="legacy-v1-layout legacy-v1-layout-mastless">
+          <div className="legacy-v1-main">
+            <article className="legacy-v1-course-card">
+              <div>
+                <h3>{VIEW_LABEL[route.view]}</h3>
+                <p className="legacy-v1-meta">{route.subPath || 'root'}</p>
+              </div>
+              <div className="legacy-v1-card-actions">
+                <button
+                  type="button"
+                  className="legacy-v1-btn legacy-v1-btn-primary"
+                  disabled={enrollMutation.isPending}
+                  onClick={() => enrollMutation.mutate(route.courseKey)}
+                >
+                  {enrollMutation.isPending ? 'Enrolling...' : 'Enroll Now'}
+                </button>
+              </div>
+            </article>
 
-      {(route.view === 'about' || route.view === 'generic') ? (
-        <section className="create-form">
-          <h2>About</h2>
-          <div className="actions">
-            <button
-              type="button"
-              disabled={!hasCourse || enrollMutation.isPending}
-              onClick={() => {
-                if (hasCourse) {
-                  enrollMutation.mutate(route.courseKey);
-                }
-              }}
-            >
-              {enrollMutation.isPending ? 'Enrolling...' : 'Enroll Current Course'}
-            </button>
+            {route.view === 'about' || route.view === 'generic' ? (
+              <article className="legacy-v1-data-box">
+                <h4>Course Home Data</h4>
+                {aboutQuery.isLoading ? <p className="legacy-v1-muted">Loading...</p> : null}
+                {aboutQuery.error ? <p className="error-text">Failed to load course home.</p> : null}
+                <p>Records: {dataCount(aboutQuery.data)}</p>
+              </article>
+            ) : null}
+
+            {route.view === 'courseware' ? (
+              <article className="legacy-v1-data-box">
+                <h4>Courseware Blocks</h4>
+                {coursewareBlocksQuery.isLoading ? <p className="legacy-v1-muted">Loading...</p> : null}
+                {coursewareBlocksQuery.error ? <p className="error-text">Failed to load blocks.</p> : null}
+                <p>Blocks: {dataCount(coursewareBlocksQuery.data)}</p>
+              </article>
+            ) : null}
+
+            {route.view === 'progress' ? (
+              <article className="legacy-v1-data-box">
+                <h4>Progress</h4>
+                <label className="legacy-v1-inline-field">
+                  User ID
+                  <input value={progressUserId} onChange={(event) => setProgressUserId(event.target.value)} />
+                </label>
+                {progressQuery.error ? <p className="error-text">Failed to load progress.</p> : null}
+                {learnerHomeQuery.error ? <p className="error-text">Failed to load learner home.</p> : null}
+                <p>Progress records: {dataCount(progressQuery.data)}</p>
+                <p>Highlights: {dataCount(learnerHomeQuery.data)}</p>
+              </article>
+            ) : null}
+
+            {route.view === 'discussion' ? (
+              <article className="legacy-v1-data-box">
+                <h4>Discussion</h4>
+                {discussionQuery.error ? <p className="error-text">Failed to load discussion.</p> : null}
+                <p>Threads: {dataCount(discussionQuery.data)}</p>
+              </article>
+            ) : null}
+
+            {route.view === 'bookmarks' ? (
+              <article className="legacy-v1-data-box">
+                <h4>Bookmarks</h4>
+                {bookmarksQuery.error ? <p className="error-text">Failed to load bookmarks.</p> : null}
+                <p>Bookmark count: {dataCount(bookmarksQuery.data)}</p>
+              </article>
+            ) : null}
+
+            {route.view === 'instructor' ? (
+              <article className="legacy-v1-data-box">
+                <h4>Instructor Tools</h4>
+                {instructorSummaryQuery.error ? <p className="error-text">Failed to load instructor summary.</p> : null}
+                {instructorCourseInfoQuery.error ? <p className="error-text">Failed to load instructor details.</p> : null}
+                <p>Summary records: {dataCount(instructorSummaryQuery.data)}</p>
+                <p>Course records: {dataCount(instructorCourseInfoQuery.data)}</p>
+              </article>
+            ) : null}
           </div>
-          {enrollMutation.error ? <p className="error-text">Enrollment failed.</p> : null}
-          {enrollMutation.data ? <pre>{JSON.stringify(enrollMutation.data, null, 2)}</pre> : null}
-          {aboutQuery.isLoading ? <p>Loading course home...</p> : null}
-          {aboutQuery.error ? <p className="error-text">Failed to load course home.</p> : null}
-          {aboutQuery.data ? <pre>{JSON.stringify(aboutQuery.data, null, 2)}</pre> : null}
-          {aboutV1Query.isLoading ? <p>Loading course home v1...</p> : null}
-          {aboutV1Query.error ? <p className="error-text">Failed to load course home v1.</p> : null}
-          {aboutV1Query.data ? <pre>{JSON.stringify(aboutV1Query.data, null, 2)}</pre> : null}
-        </section>
-      ) : null}
 
-      {route.view === 'courseware' ? (
-        <section className="create-form">
-          <h2>Courseware</h2>
-          <p>
-            <strong>section:</strong> {route.section ?? '(root)'}
-          </p>
-          <p>
-            <strong>subsection:</strong> {route.subsection ?? '(none)'}
-          </p>
-          <p>
-            <strong>position:</strong> {route.position ?? '(none)'}
-          </p>
-          {route.jumpType ? (
-            <p>
-              <strong>{route.jumpType}:</strong> {route.jumpTarget ?? '(none)'}
-            </p>
-          ) : null}
-          {coursewareBlocksQuery.isLoading ? <p>Loading course blocks...</p> : null}
-          {coursewareBlocksQuery.error ? <p className="error-text">Failed to load course blocks.</p> : null}
-          {coursewareBlocksQuery.data ? <pre>{JSON.stringify(coursewareBlocksQuery.data, null, 2)}</pre> : null}
-        </section>
-      ) : null}
-
-      {(route.view === 'progress' || route.view === 'generic') ? (
-        <section className="create-form">
-          <h2>Progress</h2>
-          <label>
-            progress user id
-            <input value={progressUserId} onChange={(event) => setProgressUserId(event.target.value)} />
-          </label>
-          {learnerHomeQuery.isLoading ? <p>Loading learner home...</p> : null}
-          {learnerHomeQuery.error ? <p className="error-text">Failed to load learner home.</p> : null}
-          {learnerHomeQuery.data ? <pre>{JSON.stringify(learnerHomeQuery.data, null, 2)}</pre> : null}
-          {sequencesQuery.isLoading ? <p>Loading learning sequences...</p> : null}
-          {sequencesQuery.error ? <p className="error-text">Failed to load learning sequences.</p> : null}
-          {sequencesQuery.data ? <pre>{JSON.stringify(sequencesQuery.data, null, 2)}</pre> : null}
-          {progressQuery.isLoading ? <p>Loading learning progress...</p> : null}
-          {progressQuery.error ? <p className="error-text">Failed to load learning progress.</p> : null}
-          {progressQuery.data ? <pre>{JSON.stringify(progressQuery.data, null, 2)}</pre> : null}
-        </section>
-      ) : null}
-
-      {route.view === 'instructor' ? (
-        <section className="create-form">
-          <h2>Instructor</h2>
-          <label>
-            problem_location_str (optional)
-            <input value={problemLocation} onChange={(event) => setProblemLocation(event.target.value)} />
-          </label>
-          {instructorSummaryQuery.isLoading ? <p>Loading instructor summary...</p> : null}
-          {instructorSummaryQuery.error ? <p className="error-text">Failed to load instructor summary.</p> : null}
-          {instructorSummaryQuery.data ? <pre>{JSON.stringify(instructorSummaryQuery.data, null, 2)}</pre> : null}
-          {instructorCourseInfoQuery.isLoading ? <p>Loading instructor course info...</p> : null}
-          {instructorCourseInfoQuery.error ? <p className="error-text">Failed to load instructor course info.</p> : null}
-          {instructorCourseInfoQuery.data ? <pre>{JSON.stringify(instructorCourseInfoQuery.data, null, 2)}</pre> : null}
-          {instructorTasksQuery.isLoading ? <p>Loading instructor tasks...</p> : null}
-          {instructorTasksQuery.error ? <p className="error-text">Failed to load instructor tasks.</p> : null}
-          {instructorTasksQuery.data ? <pre>{JSON.stringify(instructorTasksQuery.data, null, 2)}</pre> : null}
-        </section>
-      ) : null}
-
-      {(route.view === 'discussion' || route.view === 'generic') ? (
-        <section className="create-form">
-          <h2>Discussion</h2>
-          {discussionQuery.isLoading ? <p>Loading discussion...</p> : null}
-          {discussionQuery.error ? <p className="error-text">Failed to load discussion.</p> : null}
-          {discussionQuery.data ? <pre>{JSON.stringify(discussionQuery.data, null, 2)}</pre> : null}
-        </section>
-      ) : null}
-
-      {(route.view === 'bookmarks' || route.view === 'generic') ? (
-        <section className="create-form">
-          <h2>Bookmarks</h2>
-          {bookmarksQuery.isLoading ? <p>Loading bookmarks...</p> : null}
-          {bookmarksQuery.error ? <p className="error-text">Failed to load bookmarks.</p> : null}
-          {bookmarksQuery.data ? <pre>{JSON.stringify(bookmarksQuery.data, null, 2)}</pre> : null}
+          <aside className="legacy-v1-sidebar">
+            <h2>Context</h2>
+            <p>Path: {location.pathname}</p>
+            <p>Course key: {route.courseKey}</p>
+            <p>Subpath: {route.subPath || '(none)'}</p>
+            {enrollMutation.error ? <p className="error-text">Enrollment failed.</p> : null}
+            {enrollMutation.data ? <p className="legacy-v1-muted">Enrollment submitted.</p> : null}
+          </aside>
         </section>
       ) : null}
     </main>

@@ -54,7 +54,7 @@ export function UploadsPage() {
     return { courseId: '', videoId: '' };
   }, [location.pathname]);
 
-  const [filename, setFilename] = useState(seededCourseKey ? `${seededCourseKey}.mp4` : 'syllabus.pdf');
+  const [filename, setFilename] = useState(seededCourseKey ? `${seededCourseKey}.mp4` : 'intro.mp4');
   const [token, setToken] = useState(params.edxVideoId ? decodeURIComponent(params.edxVideoId) : '');
   const [courseIdInput, setCourseIdInput] = useState(seededCourseKey || 'course-v1:org+num+run');
 
@@ -68,9 +68,7 @@ export function UploadsPage() {
     }
   });
 
-  const statusMutation = useMutation({
-    mutationFn: fetchUpload
-  });
+  const statusMutation = useMutation({ mutationFn: fetchUpload });
   const uploadLinkMutation = useMutation({ mutationFn: fetchGenerateVideoUploadLink });
   const transcriptPreferencesMutation = useMutation({ mutationFn: fetchTranscriptPreferences });
   const transcriptCredentialsMutation = useMutation({ mutationFn: fetchTranscriptCredentials });
@@ -88,139 +86,162 @@ export function UploadsPage() {
     }
   }, [pathSeeds]);
 
-  return (
-    <main className="container">
-      <header className="page-header">
-        <h1>Uploads</h1>
-        <p>React migration of video and transcript upload/status flows.</p>
-        <p>
-          <strong>Current path:</strong> {location.pathname}
-        </p>
-        {params.courseKey ? (
-          <p>
-            <strong>Legacy route course key:</strong> {seededCourseKey}
-          </p>
-        ) : null}
-        {pathSeeds.courseId && !params.courseKey ? (
-          <p>
-            <strong>Detected legacy course key:</strong> {pathSeeds.courseId}
-          </p>
-        ) : null}
-      </header>
+  const latestResponse =
+    statusMutation.data ??
+    createMutation.data ??
+    uploadLinkMutation.data ??
+    transcriptPreferencesMutation.data ??
+    transcriptCredentialsMutation.data ??
+    videoEncodingsMutation.data ??
+    videoFeaturesMutation.data ??
+    videoImagesEnabledMutation.data;
 
-      <section className="actions">
-        <Link to="/course/" className="button-link secondary-btn">
-          Back to Dashboard
-        </Link>
+  return (
+    <main className="container legacy-v1-shell legacy-v1-generic legacy-v1-uploads">
+      <section className="legacy-v1-mast">
+        <div className="video-transcript-settings-wrapper" />
+        <div>
+          <h1 className="legacy-v1-title-with-sub">
+            <span className="legacy-v1-subtitle">Content</span>
+            <span>Video Uploads</span>
+          </h1>
+          <p className="legacy-v1-muted">{location.pathname}</p>
+        </div>
+        <nav className="legacy-v1-mast-actions" aria-label="Page Actions">
+          <button
+            type="button"
+            className="legacy-v1-btn"
+            onClick={() => {
+              if (courseIdInput.trim()) {
+                transcriptPreferencesMutation.mutate(courseIdInput.trim());
+                transcriptCredentialsMutation.mutate(courseIdInput.trim());
+              }
+            }}
+            disabled={transcriptPreferencesMutation.isPending || transcriptCredentialsMutation.isPending}
+          >
+            Course Video Settings
+          </button>
+        </nav>
       </section>
 
-      <form
-        className="create-form"
-        onSubmit={(event) => {
-          event.preventDefault();
-          createMutation.mutate(filename || undefined);
-        }}
-      >
-        <h2>Create Upload</h2>
-        <label>
-          filename
-          <input value={filename} onChange={(event) => setFilename(event.target.value)} />
-        </label>
-        <div className="actions">
-          <button type="submit" disabled={createMutation.isPending}>
-            {createMutation.isPending ? 'Creating...' : 'Create Upload'}
-          </button>
-        </div>
-        {createMutation.error ? <p className="error-text">Failed to create upload.</p> : null}
-        {createMutation.data ? <pre>{JSON.stringify(createMutation.data, null, 2)}</pre> : null}
-      </form>
+      <section className="legacy-v1-layout legacy-v1-layout-mastless">
+        <article className="legacy-v1-main" role="main">
+          <section className="legacy-v1-data-box">
+            <h2>Video Uploads Workspace</h2>
+            <p>This page mirrors the legacy Studio video uploads template and exposes the same upload/status/settings endpoints.</p>
+          </section>
+          <form
+            className="create-form"
+            onSubmit={(event) => {
+              event.preventDefault();
+              createMutation.mutate(filename || undefined);
+            }}
+          >
+            <h2>Upload New Video</h2>
+            <label>
+              Filename
+              <input value={filename} onChange={(event) => setFilename(event.target.value)} placeholder="intro.mp4" />
+            </label>
+            <div className="actions">
+              <button type="submit" disabled={createMutation.isPending}>
+                {createMutation.isPending ? 'Creating...' : 'Create Upload'}
+              </button>
+            </div>
+            {createMutation.error ? <p className="error-text">Failed to create upload.</p> : null}
+          </form>
 
-      <form
-        className="create-form"
-        onSubmit={(event) => {
-          event.preventDefault();
-          if (token.trim()) {
-            statusMutation.mutate(token.trim());
-          }
-        }}
-      >
-        <h2>Upload Status</h2>
-        <label>
-          token
-          <input value={token} onChange={(event) => setToken(event.target.value)} placeholder="up-token-1" />
-        </label>
-        <div className="actions">
-          <button type="submit" disabled={statusMutation.isPending}>
-            {statusMutation.isPending ? 'Loading...' : 'Load Status'}
-          </button>
-        </div>
-        {statusMutation.error ? <p className="error-text">Failed to load upload status.</p> : null}
-        {statusMutation.data ? <pre>{JSON.stringify(statusMutation.data, null, 2)}</pre> : null}
-      </form>
+          <form
+            className="create-form"
+            onSubmit={(event) => {
+              event.preventDefault();
+              if (token.trim()) {
+                statusMutation.mutate(token.trim());
+              }
+            }}
+          >
+            <h2>Active Video Upload</h2>
+            <label>
+              Upload Token
+              <input value={token} onChange={(event) => setToken(event.target.value)} placeholder="up-token-1" />
+            </label>
+            <div className="actions">
+              <button type="submit" disabled={statusMutation.isPending}>
+                {statusMutation.isPending ? 'Loading...' : 'Load Upload Status'}
+              </button>
+            </div>
+            {statusMutation.error ? <p className="error-text">Failed to load upload status.</p> : null}
+          </form>
 
-      <form
-        className="create-form"
-        onSubmit={(event) => {
-          event.preventDefault();
-          if (courseIdInput.trim()) {
-            uploadLinkMutation.mutate(courseIdInput.trim());
-          }
-        }}
-      >
-        <h2>Video Upload Link</h2>
-        <label>
-          course id
-          <input value={courseIdInput} onChange={(event) => setCourseIdInput(event.target.value)} />
-        </label>
-        <div className="actions">
-          <button type="submit" disabled={uploadLinkMutation.isPending}>
-            {uploadLinkMutation.isPending ? 'Loading...' : 'Generate Upload Link'}
-          </button>
-          <button type="button" onClick={() => videoImagesEnabledMutation.mutate()} disabled={videoImagesEnabledMutation.isPending}>
-            {videoImagesEnabledMutation.isPending ? 'Loading...' : 'Video Images Enabled'}
-          </button>
-          <button type="button" onClick={() => videoFeaturesMutation.mutate()} disabled={videoFeaturesMutation.isPending}>
-            {videoFeaturesMutation.isPending ? 'Loading...' : 'Video Features'}
-          </button>
-        </div>
-        {uploadLinkMutation.error ? <p className="error-text">Failed to generate upload link.</p> : null}
-        {uploadLinkMutation.data ? <pre>{JSON.stringify(uploadLinkMutation.data, null, 2)}</pre> : null}
-        {videoImagesEnabledMutation.error ? <p className="error-text">Failed to load video images feature flag.</p> : null}
-        {videoImagesEnabledMutation.data ? <pre>{JSON.stringify(videoImagesEnabledMutation.data, null, 2)}</pre> : null}
-        {videoFeaturesMutation.error ? <p className="error-text">Failed to load video features.</p> : null}
-        {videoFeaturesMutation.data ? <pre>{JSON.stringify(videoFeaturesMutation.data, null, 2)}</pre> : null}
-      </form>
+          <form
+            className="create-form"
+            onSubmit={(event) => {
+              event.preventDefault();
+              if (courseIdInput.trim()) {
+                uploadLinkMutation.mutate(courseIdInput.trim());
+              }
+            }}
+          >
+            <h2>Course Video Endpoints</h2>
+            <label>
+              Course ID
+              <input value={courseIdInput} onChange={(event) => setCourseIdInput(event.target.value)} />
+            </label>
+            <div className="actions">
+              <button type="submit" disabled={uploadLinkMutation.isPending}>
+                {uploadLinkMutation.isPending ? 'Loading...' : 'Generate Video Upload Link'}
+              </button>
+              <button type="button" onClick={() => videoImagesEnabledMutation.mutate()} disabled={videoImagesEnabledMutation.isPending}>
+                Video Images Enabled
+              </button>
+              <button type="button" onClick={() => videoFeaturesMutation.mutate()} disabled={videoFeaturesMutation.isPending}>
+                Video Features
+              </button>
+              <button
+                type="button"
+                onClick={() => courseIdInput.trim() && videoEncodingsMutation.mutate(courseIdInput.trim())}
+                disabled={videoEncodingsMutation.isPending}
+              >
+                Encodings Download
+              </button>
+            </div>
+            <p className="legacy-v1-tip">Use this section to load upload links, transcript settings, image support, and encoding downloads.</p>
+          </form>
 
-      <form
-        className="create-form"
-        onSubmit={(event) => {
-          event.preventDefault();
-          if (courseIdInput.trim()) {
-            transcriptPreferencesMutation.mutate(courseIdInput.trim());
-            transcriptCredentialsMutation.mutate(courseIdInput.trim());
-            videoEncodingsMutation.mutate(courseIdInput.trim());
-          }
-        }}
-      >
-        <h2>Transcript and Encoding</h2>
-        <label>
-          course id
-          <input value={courseIdInput} onChange={(event) => setCourseIdInput(event.target.value)} />
-        </label>
-        <div className="actions">
-          <button type="submit" disabled={transcriptPreferencesMutation.isPending || transcriptCredentialsMutation.isPending || videoEncodingsMutation.isPending}>
-            {transcriptPreferencesMutation.isPending || transcriptCredentialsMutation.isPending || videoEncodingsMutation.isPending
-              ? 'Loading...'
-              : 'Load Transcript/Encoding'}
-          </button>
-        </div>
-        {transcriptPreferencesMutation.error ? <p className="error-text">Failed to load transcript preferences.</p> : null}
-        {transcriptPreferencesMutation.data ? <pre>{JSON.stringify(transcriptPreferencesMutation.data, null, 2)}</pre> : null}
-        {transcriptCredentialsMutation.error ? <p className="error-text">Failed to load transcript credentials.</p> : null}
-        {transcriptCredentialsMutation.data ? <pre>{JSON.stringify(transcriptCredentialsMutation.data, null, 2)}</pre> : null}
-        {videoEncodingsMutation.error ? <p className="error-text">Failed to load video encodings.</p> : null}
-        {videoEncodingsMutation.data ? <pre>{JSON.stringify(videoEncodingsMutation.data, null, 2)}</pre> : null}
-      </form>
+          <section className="legacy-v1-subnav">
+            <Link to="/course/">Studio Home</Link>
+            <Link to="/contentstore">Contentstore</Link>
+            <Link to="/resource-builder">Resource Builder</Link>
+            <span className="legacy-v1-path">{params.courseKey ? seededCourseKey : pathSeeds.courseId || '(no course key)'}</span>
+          </section>
+        </article>
+
+        <aside className="legacy-v1-sidebar" role="complementary">
+          <div className="legacy-v1-side-bit">
+            <h3>Latest Response</h3>
+            {latestResponse ? <pre>{JSON.stringify(latestResponse, null, 2)}</pre> : <p className="legacy-v1-muted">Run one of the actions to see response payload.</p>}
+          </div>
+          <div className="legacy-v1-side-bit">
+            <h3>Transcript Diagnostics</h3>
+            <div className="actions">
+              <button
+                type="button"
+                onClick={() => {
+                  if (!courseIdInput.trim()) {
+                    return;
+                  }
+                  transcriptPreferencesMutation.mutate(courseIdInput.trim());
+                  transcriptCredentialsMutation.mutate(courseIdInput.trim());
+                }}
+                disabled={transcriptPreferencesMutation.isPending || transcriptCredentialsMutation.isPending}
+              >
+                Load Transcript Settings
+              </button>
+            </div>
+            {transcriptPreferencesMutation.error ? <p className="error-text">Failed transcript preferences.</p> : null}
+            {transcriptCredentialsMutation.error ? <p className="error-text">Failed transcript credentials.</p> : null}
+          </div>
+        </aside>
+      </section>
     </main>
   );
 }

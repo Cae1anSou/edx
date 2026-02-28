@@ -73,149 +73,101 @@ export function AdditionalApiFamiliesPage() {
   const [bulkPayload, setBulkPayload] = useState('{"course_id":"course-v1:org+num+run","emails":"a@example.com"}');
   const [activeAction, setActiveAction] = useState<string | null>(null);
 
-  const loadEndpointMutation = useMutation({
-    mutationFn: async ({ action }: { action: () => Promise<Record<string, unknown>> }) => action()
-  });
-
-  const bulkEnrollMutation = useMutation({
-    mutationFn: postBulkEnroll
-  });
+  const loadEndpointMutation = useMutation({ mutationFn: async ({ action }: { action: () => Promise<Record<string, unknown>> }) => action() });
+  const bulkEnrollMutation = useMutation({ mutationFn: postBulkEnroll });
 
   const dynamicEndpoints = useMemo(() => {
     const encodedCourseId = encodeURIComponent(courseId || 'course-v1:org+num+run');
     const encodedProblem = encodeURIComponent(problemLocation);
     const problemQuery = problemLocation ? `?problem_location_str=${encodedProblem}` : '';
     return [
-      {
-        label: `/api/courses/${encodedCourseId}/bulk_enable_disable_discussions`,
-        run: () => fetchBulkDiscussionToggle(courseId || 'course-v1:org+num+run')
-      },
-      {
-        label: `/api/instructor/v1/?course_id=${encodedCourseId}`,
-        run: () => fetchInstructorSummary(courseId || 'course-v1:org+num+run')
-      },
-      {
-        label: `/api/instructor/v2/courses/${encodedCourseId}`,
-        run: () => fetchInstructorCourseInfo(courseId || 'course-v1:org+num+run')
-      },
-      {
-        label: `/api/instructor/v2/courses/${encodedCourseId}/instructor_tasks${problemQuery}`,
-        run: () => fetchInstructorTasks({ courseId: courseId || 'course-v1:org+num+run', problemLocation: problemLocation || undefined })
-      },
-      {
-        label: `/api/mobile/${encodeURIComponent(mobileVersion || 'v0')}`,
-        run: () => fetchMobileApi(mobileVersion || 'v0')
-      },
-      {
-        label: `/api/youtube/courses/${encodedCourseId}/edx-video-ids`,
-        run: () => fetchYoutubeVideoIds(courseId || 'course-v1:org+num+run')
-      }
+      { label: `/api/courses/${encodedCourseId}/bulk_enable_disable_discussions`, run: () => fetchBulkDiscussionToggle(courseId || 'course-v1:org+num+run') },
+      { label: `/api/instructor/v1/?course_id=${encodedCourseId}`, run: () => fetchInstructorSummary(courseId || 'course-v1:org+num+run') },
+      { label: `/api/instructor/v2/courses/${encodedCourseId}`, run: () => fetchInstructorCourseInfo(courseId || 'course-v1:org+num+run') },
+      { label: `/api/instructor/v2/courses/${encodedCourseId}/instructor_tasks${problemQuery}`, run: () => fetchInstructorTasks({ courseId: courseId || 'course-v1:org+num+run', problemLocation: problemLocation || undefined }) },
+      { label: `/api/mobile/${encodeURIComponent(mobileVersion || 'v0')}`, run: () => fetchMobileApi(mobileVersion || 'v0') },
+      { label: `/api/youtube/courses/${encodedCourseId}/edx-video-ids`, run: () => fetchYoutubeVideoIds(courseId || 'course-v1:org+num+run') }
     ];
   }, [courseId, mobileVersion, problemLocation]);
 
   return (
-    <main className="container">
-      <header className="page-header">
-        <h1>Additional API Families</h1>
-        <p>Run and validate remaining legacy family endpoints from the React UI.</p>
-      </header>
-
-      <section className="actions">
-        <Link to="/course/" className="button-link secondary-btn">
-          Back to Dashboard
-        </Link>
+    <main className="container legacy-v1-shell legacy-v1-generic legacy-v1-additional-apis">
+      <section className="legacy-v1-mast">
+        <div>
+          <h1 className="legacy-v1-title-with-sub">
+            <span className="legacy-v1-subtitle">Compatibility</span>
+            <span>Additional API Families</span>
+          </h1>
+        </div>
+        <nav className="legacy-v1-mast-actions" aria-label="Page Actions">
+          <Link to="/course/" className="legacy-v1-link-btn">Studio Home</Link>
+          <Link to="/legacy-system-apis" className="legacy-v1-link-btn">Legacy System APIs</Link>
+        </nav>
       </section>
 
-      <form
-        className="create-form"
-        onSubmit={(event) => {
-          event.preventDefault();
-          try {
-            const parsed = JSON.parse(bulkPayload) as Record<string, unknown>;
-            bulkEnrollMutation.mutate(parsed);
-          } catch {
-            bulkEnrollMutation.reset();
-          }
-        }}
-      >
-        <h2>Bulk Enroll</h2>
-        <label>
-          Request payload (JSON)
-          <input value={bulkPayload} onChange={(event) => setBulkPayload(event.target.value)} />
-        </label>
-        <div className="actions">
-          <button type="submit" disabled={bulkEnrollMutation.isPending}>
-            {bulkEnrollMutation.isPending ? 'Submitting...' : 'POST /api/bulk_enroll/v1/bulk_enroll'}
-          </button>
-        </div>
-        {bulkEnrollMutation.error ? <p className="error-text">Bulk enroll request failed or JSON is invalid.</p> : null}
-        {bulkEnrollMutation.data ? <pre>{JSON.stringify(bulkEnrollMutation.data, null, 2)}</pre> : null}
-      </form>
+      <section className="legacy-v1-layout legacy-v1-layout-mastless">
+        <article className="legacy-v1-main">
+          <form
+            className="create-form"
+            onSubmit={(event) => {
+              event.preventDefault();
+              try {
+                const parsed = JSON.parse(bulkPayload) as Record<string, unknown>;
+                bulkEnrollMutation.mutate(parsed);
+              } catch {
+                bulkEnrollMutation.reset();
+              }
+            }}
+          >
+            <h2>Bulk Enroll</h2>
+            <label>Request payload (JSON)<input value={bulkPayload} onChange={(event) => setBulkPayload(event.target.value)} /></label>
+            <div className="actions">
+              <button type="submit" disabled={bulkEnrollMutation.isPending}>{bulkEnrollMutation.isPending ? 'Submitting...' : 'POST /api/bulk_enroll/v1/bulk_enroll'}</button>
+            </div>
+          </form>
 
-      <section className="create-form">
-        <h2>Parameterized Endpoints</h2>
-        <label>
-          course id
-          <input value={courseId} onChange={(event) => setCourseId(event.target.value)} />
-        </label>
-        <label>
-          mobile api version
-          <input value={mobileVersion} onChange={(event) => setMobileVersion(event.target.value)} />
-        </label>
-        <label>
-          instructor task problem_location_str
-          <input value={problemLocation} onChange={(event) => setProblemLocation(event.target.value)} />
-        </label>
-        <div className="team-grid">
-          {dynamicEndpoints.map((item) => (
-            <article className="item-card" key={item.label}>
-              <p>{item.label}</p>
-              <div className="item-actions">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveAction(item.label);
-                    loadEndpointMutation.mutate({ action: item.run });
-                  }}
-                  disabled={loadEndpointMutation.isPending}
-                >
-                  Run
-                </button>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
+          <section className="create-form">
+            <h2>Parameterized Endpoints</h2>
+            <label>course id<input value={courseId} onChange={(event) => setCourseId(event.target.value)} /></label>
+            <label>mobile api version<input value={mobileVersion} onChange={(event) => setMobileVersion(event.target.value)} /></label>
+            <label>instructor task problem_location_str<input value={problemLocation} onChange={(event) => setProblemLocation(event.target.value)} /></label>
+            <div className="team-grid">
+              {dynamicEndpoints.map((item) => (
+                <article className="item-card" key={item.label}>
+                  <p>{item.label}</p>
+                  <div className="item-actions">
+                    <button type="button" onClick={() => { setActiveAction(item.label); loadEndpointMutation.mutate({ action: item.run }); }} disabled={loadEndpointMutation.isPending}>Run</button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
 
-      <section className="create-form">
-        <h2>Simple GET Endpoints</h2>
-        <div className="team-grid">
-          {SIMPLE_GET_ACTIONS.map((item) => (
-            <article className="item-card" key={item.label}>
-              <p>{item.label}</p>
-              <div className="item-actions">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveAction(item.label);
-                    loadEndpointMutation.mutate({ action: item.run });
-                  }}
-                  disabled={loadEndpointMutation.isPending}
-                >
-                  Run
-                </button>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
+          <section className="create-form">
+            <h2>Simple GET Endpoints</h2>
+            <div className="team-grid">
+              {SIMPLE_GET_ACTIONS.map((item) => (
+                <article className="item-card" key={item.label}>
+                  <p>{item.label}</p>
+                  <div className="item-actions">
+                    <button type="button" onClick={() => { setActiveAction(item.label); loadEndpointMutation.mutate({ action: item.run }); }} disabled={loadEndpointMutation.isPending}>Run</button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        </article>
 
-      <section className="create-form">
-        <h2>Last Response</h2>
-        {activeAction ? <p><strong>Action:</strong> {activeAction}</p> : null}
-        {loadEndpointMutation.isPending ? <p>Loading endpoint response...</p> : null}
-        {loadEndpointMutation.error ? <p className="error-text">Failed to load endpoint response.</p> : null}
-        {loadEndpointMutation.data ? <pre>{JSON.stringify(loadEndpointMutation.data, null, 2)}</pre> : null}
+        <aside className="legacy-v1-sidebar" role="complementary">
+          <div className="legacy-v1-side-bit">
+            <h3>Last Response</h3>
+            {activeAction ? <p><strong>Action:</strong> {activeAction}</p> : null}
+            {loadEndpointMutation.isPending ? <p>Loading endpoint response...</p> : null}
+            {loadEndpointMutation.error ? <p className="error-text">Failed to load endpoint response.</p> : null}
+            {bulkEnrollMutation.data ? <pre>{JSON.stringify(bulkEnrollMutation.data, null, 2)}</pre> : null}
+            {!bulkEnrollMutation.data && loadEndpointMutation.data ? <pre>{JSON.stringify(loadEndpointMutation.data, null, 2)}</pre> : null}
+          </div>
+        </aside>
       </section>
     </main>
   );

@@ -10,6 +10,13 @@ import {
   fetchXblockV2
 } from '../api/studio';
 
+function apiState(isLoading: boolean, isError: boolean) {
+  if (isLoading) {
+    return 'loading';
+  }
+  return isError ? 'error' : 'ok';
+}
+
 export function AuthoringApisPage() {
   const location = useLocation();
   const legacyCourseKey = (() => {
@@ -26,14 +33,8 @@ export function AuthoringApisPage() {
       }
       return decodeURIComponent(segments[0]);
     };
-    if (pathname.startsWith('/settings/advanced/')) {
-      const rest = pathname.slice('/settings/advanced/'.length).split('/').filter(Boolean);
-      return parseCourseLike(rest);
-    }
-    if (pathname.startsWith('/authoring-apis/')) {
-      const rest = pathname.slice('/authoring-apis/'.length).split('/').filter(Boolean);
-      return parseCourseLike(rest);
-    }
+    if (pathname.startsWith('/settings/advanced/')) return parseCourseLike(pathname.slice('/settings/advanced/'.length).split('/').filter(Boolean));
+    if (pathname.startsWith('/authoring-apis/')) return parseCourseLike(pathname.slice('/authoring-apis/'.length).split('/').filter(Boolean));
     return '';
   })();
 
@@ -46,57 +47,53 @@ export function AuthoringApisPage() {
   const xblockQuery = useQuery({ queryKey: ['authoring-xblock'], queryFn: fetchXblockV2 });
 
   return (
-    <main className="container">
-      <header className="page-header">
-        <h1>Authoring APIs</h1>
-        <p>React migration for authoring-related legacy API families.</p>
-        <p>
-          <strong>Current path:</strong> {location.pathname}
-        </p>
-        {legacyCourseKey ? (
-          <p>
-            <strong>Legacy course key:</strong> {legacyCourseKey}
-          </p>
-        ) : null}
-      </header>
-
-      <section className="actions">
-        <Link to="/course/" className="button-link secondary-btn">
-          Back to Dashboard
-        </Link>
+    <main className="container legacy-v1-shell legacy-v1-generic legacy-v1-authoring-apis">
+      <section className="legacy-v1-mast">
+        <div>
+          <h1 className="legacy-v1-title-with-sub"><span className="legacy-v1-subtitle">Authoring</span><span>APIs</span></h1>
+        </div>
+        <nav className="legacy-v1-mast-actions" aria-label="Page Actions">
+          <Link to="/course/" className="legacy-v1-link-btn">Studio Home</Link>
+          <Link to="/contentstore" className="legacy-v1-link-btn">Contentstore</Link>
+          <Link to="/resource-builder" className="legacy-v1-link-btn">Resource Builder</Link>
+        </nav>
       </section>
 
-      <section className="create-form">
-        <h2>Content Search and Tagging</h2>
-        {contentSearchQuery.isLoading ? <p>Loading content search...</p> : null}
-        {contentSearchQuery.error ? <p className="error-text">Failed to load content search.</p> : null}
-        {contentSearchQuery.data ? <pre>{JSON.stringify(contentSearchQuery.data, null, 2)}</pre> : null}
-        {contentTaggingQuery.isLoading ? <p>Loading content tagging...</p> : null}
-        {contentTaggingQuery.error ? <p className="error-text">Failed to load content tagging.</p> : null}
-        {contentTaggingQuery.data ? <pre>{JSON.stringify(contentTaggingQuery.data, null, 2)}</pre> : null}
-      </section>
-
-      <section className="create-form">
-        <h2>Libraries and XBlock</h2>
-        {librariesQuery.isLoading ? <p>Loading libraries...</p> : null}
-        {librariesQuery.error ? <p className="error-text">Failed to load libraries.</p> : null}
-        {librariesQuery.data ? <pre>{JSON.stringify(librariesQuery.data, null, 2)}</pre> : null}
-        {xblockQuery.isLoading ? <p>Loading xblock...</p> : null}
-        {xblockQuery.error ? <p className="error-text">Failed to load xblock.</p> : null}
-        {xblockQuery.data ? <pre>{JSON.stringify(xblockQuery.data, null, 2)}</pre> : null}
-      </section>
-
-      <section className="create-form">
-        <h2>Migration and Export</h2>
-        {migratorQuery.isLoading ? <p>Loading migrator...</p> : null}
-        {migratorQuery.error ? <p className="error-text">Failed to load migrator.</p> : null}
-        {migratorQuery.data ? <pre>{JSON.stringify(migratorQuery.data, null, 2)}</pre> : null}
-        {olxQuery.isLoading ? <p>Loading olx export...</p> : null}
-        {olxQuery.error ? <p className="error-text">Failed to load olx export.</p> : null}
-        {olxQuery.data ? <pre>{JSON.stringify(olxQuery.data, null, 2)}</pre> : null}
-        {oraQuery.isLoading ? <p>Loading ora staff grader...</p> : null}
-        {oraQuery.error ? <p className="error-text">Failed to load ora staff grader.</p> : null}
-        {oraQuery.data ? <pre>{JSON.stringify(oraQuery.data, null, 2)}</pre> : null}
+      <section className="legacy-v1-layout legacy-v1-layout-mastless">
+        <article className="legacy-v1-main">
+          <section className="create-form">
+            <h2>Discovery and Taxonomy</h2>
+            <ul className="item-list">
+              <li className="item-card"><h3>Content Search</h3><p>Status: {apiState(contentSearchQuery.isLoading, contentSearchQuery.isError)}</p></li>
+              <li className="item-card"><h3>Content Tagging</h3><p>Status: {apiState(contentTaggingQuery.isLoading, contentTaggingQuery.isError)}</p></li>
+            </ul>
+          </section>
+          <section className="create-form">
+            <h2>Libraries and XBlock</h2>
+            <ul className="item-list">
+              <li className="item-card"><h3>Libraries v2</h3><p>Status: {apiState(librariesQuery.isLoading, librariesQuery.isError)}</p></li>
+              <li className="item-card"><h3>XBlock v2</h3><p>Status: {apiState(xblockQuery.isLoading, xblockQuery.isError)}</p></li>
+            </ul>
+          </section>
+          <section className="create-form">
+            <h2>Export and Migration</h2>
+            <ul className="item-list">
+              <li className="item-card"><h3>Modulestore Migrator</h3><p>Status: {apiState(migratorQuery.isLoading, migratorQuery.isError)}</p></li>
+              <li className="item-card"><h3>OLX Export</h3><p>Status: {apiState(olxQuery.isLoading, olxQuery.isError)}</p></li>
+              <li className="item-card"><h3>ORA Staff Grader</h3><p>Status: {apiState(oraQuery.isLoading, oraQuery.isError)}</p></li>
+            </ul>
+          </section>
+        </article>
+        <aside className="legacy-v1-sidebar" role="complementary">
+          <div className="legacy-v1-side-bit">
+            <h3>Data</h3>
+            <p className="legacy-v1-muted">Path: {location.pathname}</p>
+            {legacyCourseKey ? <p className="legacy-v1-muted">Course: {legacyCourseKey}</p> : null}
+            {librariesQuery.data ? <pre>{JSON.stringify(librariesQuery.data, null, 2)}</pre> : null}
+            {!librariesQuery.data && xblockQuery.data ? <pre>{JSON.stringify(xblockQuery.data, null, 2)}</pre> : null}
+            {!librariesQuery.data && !xblockQuery.data && migratorQuery.data ? <pre>{JSON.stringify(migratorQuery.data, null, 2)}</pre> : null}
+          </div>
+        </aside>
       </section>
     </main>
   );

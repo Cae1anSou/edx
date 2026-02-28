@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useLocation } from 'react-router-dom';
 import { fetchStudioDashboard } from '../api/studio';
-import { ItemList } from '../components/ItemList';
 import { CreateCourseForm, CreateLibraryForm } from '../components/CreateForms';
 import { Notifications } from '../components/Notifications';
 import { StudioCourseItem, StudioLibraryItem } from '../types';
@@ -31,7 +30,7 @@ export function DashboardPage() {
     queryFn: fetchStudioDashboard
   });
 
-  const legacyCourseKey = (() => {
+  const legacyCourseKey = useMemo(() => {
     const pathname = location.pathname.replace(/\/+$/, '');
     if (!pathname.startsWith('/course/')) {
       return '';
@@ -47,7 +46,7 @@ export function DashboardPage() {
       return decodeURIComponent(rest.slice(0, 3).join('/'));
     }
     return decodeURIComponent(rest[0]);
-  })();
+  }, [location.pathname]);
 
   useEffect(() => {
     const hash = TAB_TO_HASH[tab];
@@ -68,11 +67,11 @@ export function DashboardPage() {
   }, []);
 
   if (dashboardQuery.isLoading) {
-    return <main className="container">Loading dashboard...</main>;
+    return <main className="container legacy-v1-shell legacy-v1-generic">Loading dashboard...</main>;
   }
 
   if (dashboardQuery.error || !dashboardQuery.data) {
-    return <main className="container">Could not load dashboard.</main>;
+    return <main className="container legacy-v1-shell legacy-v1-generic">Could not load dashboard.</main>;
   }
 
   const permissions = dashboardQuery.data.permissions;
@@ -87,152 +86,116 @@ export function DashboardPage() {
     libraryItems = dashboardQuery.data.libraries;
   }
 
+  const currentItemsCount = tab === 'libraries' ? (libraryItems?.length ?? 0) : (courseItems?.length ?? 0);
+
   return (
-    <main className="container">
-      <header className="page-header">
-        <h1>Studio Dashboard</h1>
-        <p>Manage courses and libraries from one place.</p>
-        <p>
-          <strong>Current path:</strong> {location.pathname}
-        </p>
-        {legacyCourseKey ? (
-          <p>
-            <strong>Legacy course key:</strong> {legacyCourseKey}
-          </p>
-        ) : null}
-      </header>
-      <Notifications notifications={dashboardQuery.data.notifications} />
-
-      <nav className="tabs" aria-label="Course index tabs">
-        <button className={tab === 'courses' ? 'active' : ''} onClick={() => setTab('courses')}>
-          Courses
-        </button>
-        <button className={tab === 'archived' ? 'active' : ''} onClick={() => setTab('archived')}>
-          Archived Courses
-        </button>
-        <button className={tab === 'libraries' ? 'active' : ''} onClick={() => setTab('libraries')}>
-          Libraries
-        </button>
-      </nav>
-
-      <section className="actions">
-        <button
-          type="button"
-          className="secondary-btn"
-          onClick={() => window.location.reload()}
-        >
-          Reload
-        </button>
-        <Link to="/team" className="button-link secondary-btn">
-          Team Management
-        </Link>
-        <Link to="/tasks" className="button-link secondary-btn">
-          Tasks
-        </Link>
-        <Link to="/notifications" className="button-link secondary-btn">
-          Notifications
-        </Link>
-        <Link to="/notification-preferences" className="button-link secondary-btn">
-          Notification Prefs
-        </Link>
-        <Link to="/help-center" className="button-link secondary-btn">
-          Help Center
-        </Link>
-        <Link to="/user-tours" className="button-link secondary-btn">
-          User Tours
-        </Link>
-        <Link to="/mfe-branding" className="button-link secondary-btn">
-          MFE Branding
-        </Link>
-        <Link to="/legacy-compatibility" className="button-link secondary-btn">
-          Compatibility APIs
-        </Link>
-        <Link to="/api-families" className="button-link secondary-btn">
-          API Families
-        </Link>
-        <Link to="/teams-v0" className="button-link secondary-btn">
-          Teams v0
-        </Link>
-        <Link to="/uploads" className="button-link secondary-btn">
-          Uploads
-        </Link>
-        <Link to="/contentstore" className="button-link secondary-btn">
-          Contentstore
-        </Link>
-        <Link to="/learner-services" className="button-link secondary-btn">
-          Learner Services
-        </Link>
-        <Link to="/instructor-tools" className="button-link secondary-btn">
-          Instructor Tools
-        </Link>
-        <Link to="/legacy-system-apis" className="button-link secondary-btn">
-          System APIs
-        </Link>
-        <Link to="/course-operations" className="button-link secondary-btn">
-          Course Ops
-        </Link>
-        <Link to="/learner-experience" className="button-link secondary-btn">
-          Learner UX
-        </Link>
-        <Link to="/platform-integrations" className="button-link secondary-btn">
-          Platform APIs
-        </Link>
-        <Link to="/search-commerce" className="button-link secondary-btn">
-          Search Commerce
-        </Link>
-        <Link to="/authoring-apis" className="button-link secondary-btn">
-          Authoring APIs
-        </Link>
-        <Link to="/identity-access" className="button-link secondary-btn">
-          Identity Access
-        </Link>
-        <Link to="/compliance" className="button-link secondary-btn">
-          Compliance
-        </Link>
-        <Link to="/system-status" className="button-link secondary-btn">
-          System Status
-        </Link>
-        <Link to="/notifications-center" className="button-link secondary-btn">
-          Notifications Hub
-        </Link>
-        <Link to="/resource-builder" className="button-link secondary-btn">
-          Resource Builder
-        </Link>
-        <button
-          onClick={() => {
-            setShowCourseForm((current) => !current);
-            setShowLibraryForm(false);
-          }}
-          disabled={!permissions.canCreateCourse}
-        >
-          New Course
-        </button>
-        <button
-          onClick={() => {
-            setShowLibraryForm((current) => !current);
-            setShowCourseForm(false);
-          }}
-          disabled={!permissions.canCreateLibrary}
-        >
-          New Library
-        </button>
+    <main className="container legacy-v1-shell legacy-v1-studio legacy-v1-studio-home">
+      <section className="legacy-v1-mast">
+        <div>
+          <h1 className="legacy-v1-title-with-sub">
+            <span className="legacy-v1-subtitle">Studio</span>
+            <span>Home</span>
+          </h1>
+        </div>
+        <nav className="legacy-v1-mast-actions" aria-label="Page Actions">
+          <Link to="/dashboard" className="legacy-v1-link-btn">Learner Dashboard</Link>
+          <button
+            type="button"
+            className="legacy-v1-btn legacy-v1-btn-primary"
+            disabled={!permissions.canCreateCourse}
+            onClick={() => {
+              setShowCourseForm((current) => !current);
+              setShowLibraryForm(false);
+            }}
+          >
+            New Course
+          </button>
+          <button
+            type="button"
+            className="legacy-v1-btn legacy-v1-btn-primary"
+            disabled={!permissions.canCreateLibrary}
+            onClick={() => {
+              setShowLibraryForm((current) => !current);
+              setShowCourseForm(false);
+            }}
+          >
+            New Library
+          </button>
+        </nav>
       </section>
 
-      <CreateCourseForm
-        enabled={showCourseForm}
-        onCancel={() => {
-          setShowCourseForm(false);
-        }}
-      />
-      <CreateLibraryForm
-        enabled={showLibraryForm}
-        onCancel={() => {
-          setShowLibraryForm(false);
-        }}
-      />
+      {legacyCourseKey ? (
+        <section className="legacy-v1-alert">
+          Opening legacy course context: <code>{legacyCourseKey}</code>
+        </section>
+      ) : null}
 
-      <section>
-        <ItemList courses={courseItems} libraries={libraryItems} allowReruns={permissions.allowReruns} />
+      <Notifications notifications={dashboardQuery.data.notifications} />
+
+      <section className="legacy-v1-tabs" aria-label="Course index tabs">
+        <button className={tab === 'courses' ? 'active' : ''} onClick={() => setTab('courses')}>Courses</button>
+        <button className={tab === 'archived' ? 'active' : ''} onClick={() => setTab('archived')}>Archived Courses</button>
+        <button className={tab === 'libraries' ? 'active' : ''} onClick={() => setTab('libraries')}>Libraries</button>
+      </section>
+
+      <section className="legacy-v1-layout legacy-v1-layout-mastless">
+        <article className="legacy-v1-main">
+          <CreateCourseForm enabled={showCourseForm} onCancel={() => setShowCourseForm(false)} />
+          <CreateLibraryForm enabled={showLibraryForm} onCancel={() => setShowLibraryForm(false)} />
+
+          <section className="legacy-v1-grid">
+            {(courseItems ?? []).map((course) => (
+              <article className="legacy-v1-course-card" key={course.id}>
+                <div>
+                  <h3><a href={course.url}>{course.displayName}</a></h3>
+                  <p className="legacy-v1-meta">{course.org} · {course.number} · {course.run}</p>
+                </div>
+                <div className="legacy-v1-card-actions">
+                  <a href={course.url}>Open</a>
+                  {course.lmsLink ? <a href={course.lmsLink}>View in LMS</a> : null}
+                  {permissions.allowReruns && course.rerunLink ? <a href={course.rerunLink}>Rerun</a> : null}
+                </div>
+              </article>
+            ))}
+
+            {(libraryItems ?? []).map((library) => (
+              <article className="legacy-v1-course-card" key={library.id}>
+                <div>
+                  <h3><a href={library.url}>{library.displayName}</a></h3>
+                  <p className="legacy-v1-meta">{library.org} · {library.number}</p>
+                </div>
+                <div className="legacy-v1-card-actions">
+                  <a href={library.url}>Open Library</a>
+                </div>
+              </article>
+            ))}
+
+            {currentItemsCount === 0 ? (
+              <article className="legacy-v1-empty">No data returned for this tab.</article>
+            ) : null}
+          </section>
+        </article>
+
+        <aside className="legacy-v1-sidebar" role="complementary">
+          <div className="legacy-v1-side-bit">
+            <h3>Summary</h3>
+            <p><strong>Current tab:</strong> {tab}</p>
+            <p><strong>Items:</strong> {currentItemsCount}</p>
+            <p><strong>Can create course:</strong> {permissions.canCreateCourse ? 'yes' : 'no'}</p>
+            <p><strong>Can create library:</strong> {permissions.canCreateLibrary ? 'yes' : 'no'}</p>
+          </div>
+          <div className="legacy-v1-side-bit">
+            <h3>Quick Links</h3>
+            <p><Link to="/team">Team</Link></p>
+            <p><Link to="/tasks">Tasks</Link></p>
+            <p><Link to="/notifications">Notifications</Link></p>
+            <p><Link to="/contentstore">Contentstore</Link></p>
+            <p><Link to="/resource-builder">Resource Builder</Link></p>
+          </div>
+          <div className="legacy-v1-side-bit">
+            <p className="legacy-v1-muted">Path: {location.pathname}</p>
+          </div>
+        </aside>
       </section>
     </main>
   );

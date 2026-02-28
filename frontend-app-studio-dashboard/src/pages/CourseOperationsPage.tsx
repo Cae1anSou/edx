@@ -56,114 +56,121 @@ export function CourseOperationsPage() {
   const youtubeMutation = useMutation({ mutationFn: fetchYoutubeVideoIds });
 
   return (
-    <main className="container">
-      <header className="page-header">
-        <h1>Course Operations</h1>
-        <p>React migration of bulk enrollment, discussions toggle, mobile, and youtube endpoints.</p>
-        <p>
-          <strong>Current path:</strong> {location.pathname}
-        </p>
-        {legacyRouteCourseId ? (
-          <p>
-            <strong>Legacy course key:</strong> {legacyRouteCourseId}
-          </p>
-        ) : null}
-      </header>
-
-      <section className="actions">
-        <Link to="/course/" className="button-link secondary-btn">
-          Back to Dashboard
-        </Link>
+    <main className="container legacy-v1-shell legacy-v1-generic legacy-v1-course-operations">
+      <section className="legacy-v1-mast">
+        <div>
+          <h1 className="legacy-v1-title-with-sub">
+            <span className="legacy-v1-subtitle">Operations</span>
+            <span>Course Operations</span>
+          </h1>
+        </div>
+        <nav className="legacy-v1-mast-actions" aria-label="Page Actions">
+          <Link to="/course/" className="legacy-v1-link-btn">Studio Home</Link>
+          <Link to="/instructor-tools" className="legacy-v1-link-btn">Instructor Tools</Link>
+          <Link to="/uploads" className="legacy-v1-link-btn">Uploads</Link>
+        </nav>
       </section>
 
-      <form
-        className="create-form"
-        onSubmit={(event) => {
-          event.preventDefault();
-          try {
-            const parsed = JSON.parse(bulkPayload) as Record<string, unknown>;
-            bulkEnrollMutation.mutate(parsed);
-          } catch {
-            bulkEnrollMutation.reset();
-          }
-        }}
-      >
-        <h2>Bulk Enroll</h2>
-        <label>
-          payload (JSON)
-          <input value={bulkPayload} onChange={(event) => setBulkPayload(event.target.value)} />
-        </label>
-        <div className="actions">
-          <button type="submit" disabled={bulkEnrollMutation.isPending}>
-            {bulkEnrollMutation.isPending ? 'Submitting...' : 'Submit Bulk Enroll'}
-          </button>
-        </div>
-        {bulkEnrollMutation.error ? <p className="error-text">Request failed or JSON is invalid.</p> : null}
-        {bulkEnrollMutation.data ? <pre>{JSON.stringify(bulkEnrollMutation.data, null, 2)}</pre> : null}
-      </form>
+      <section className="legacy-v1-layout legacy-v1-layout-mastless">
+        <article className="legacy-v1-main">
+          <form
+            className="create-form"
+            onSubmit={(event) => {
+              event.preventDefault();
+              try {
+                const parsed = JSON.parse(bulkPayload) as Record<string, unknown>;
+                bulkEnrollMutation.mutate(parsed);
+              } catch {
+                bulkEnrollMutation.reset();
+              }
+            }}
+          >
+            <h2>Bulk Enroll</h2>
+            <label>
+              Payload (JSON)
+              <input value={bulkPayload} onChange={(event) => setBulkPayload(event.target.value)} />
+            </label>
+            <div className="actions">
+              <button type="submit" disabled={bulkEnrollMutation.isPending}>
+                {bulkEnrollMutation.isPending ? 'Submitting...' : 'Submit Bulk Enroll'}
+              </button>
+            </div>
+            {bulkEnrollMutation.error ? <p className="error-text">Request failed or JSON is invalid.</p> : null}
+          </form>
 
-      <form
-        className="create-form"
-        onSubmit={(event) => {
-          event.preventDefault();
-          discussionMutation.mutate(courseId);
-        }}
-      >
-        <h2>Bulk Discussion Toggle</h2>
-        <label>
-          course id
-          <input value={courseId} onChange={(event) => setCourseId(event.target.value)} />
-        </label>
-        <div className="actions">
-          <button type="submit" disabled={discussionMutation.isPending}>
-            {discussionMutation.isPending ? 'Loading...' : 'Load Toggle State'}
-          </button>
-        </div>
-        {discussionMutation.error ? <p className="error-text">Request failed.</p> : null}
-        {discussionMutation.data ? <pre>{JSON.stringify(discussionMutation.data, null, 2)}</pre> : null}
-      </form>
+          <form
+            className="create-form"
+            onSubmit={(event) => {
+              event.preventDefault();
+              discussionMutation.mutate(courseId);
+            }}
+          >
+            <h2>Bulk Discussion Toggle</h2>
+            <label>
+              Course id
+              <input value={courseId} onChange={(event) => setCourseId(event.target.value)} />
+            </label>
+            <div className="actions">
+              <button type="submit" disabled={discussionMutation.isPending}>
+                {discussionMutation.isPending ? 'Loading...' : 'Load Toggle State'}
+              </button>
+            </div>
+            {discussionMutation.error ? <p className="error-text">Request failed.</p> : null}
+          </form>
 
-      <form
-        className="create-form"
-        onSubmit={(event) => {
-          event.preventDefault();
-          mobileMutation.mutate(apiVersion);
-        }}
-      >
-        <h2>Mobile API</h2>
-        <label>
-          api version
-          <input value={apiVersion} onChange={(event) => setApiVersion(event.target.value)} />
-        </label>
-        <div className="actions">
-          <button type="submit" disabled={mobileMutation.isPending}>
-            {mobileMutation.isPending ? 'Loading...' : 'Load Mobile Response'}
-          </button>
-        </div>
-        {mobileMutation.error ? <p className="error-text">Request failed.</p> : null}
-        {mobileMutation.data ? <pre>{JSON.stringify(mobileMutation.data, null, 2)}</pre> : null}
-      </form>
+          <form
+            className="create-form"
+            onSubmit={(event) => {
+              event.preventDefault();
+              mobileMutation.mutate(apiVersion);
+            }}
+          >
+            <h2>Mobile API</h2>
+            <label>
+              Api version
+              <input value={apiVersion} onChange={(event) => setApiVersion(event.target.value)} />
+            </label>
+            <div className="actions">
+              <button type="submit" disabled={mobileMutation.isPending}>
+                {mobileMutation.isPending ? 'Loading...' : 'Load Mobile Response'}
+              </button>
+            </div>
+            {mobileMutation.error ? <p className="error-text">Request failed.</p> : null}
+          </form>
 
-      <form
-        className="create-form"
-        onSubmit={(event) => {
-          event.preventDefault();
-          youtubeMutation.mutate(courseId);
-        }}
-      >
-        <h2>YouTube Video IDs</h2>
-        <label>
-          course id
-          <input value={courseId} onChange={(event) => setCourseId(event.target.value)} />
-        </label>
-        <div className="actions">
-          <button type="submit" disabled={youtubeMutation.isPending}>
-            {youtubeMutation.isPending ? 'Loading...' : 'Load Video IDs'}
-          </button>
-        </div>
-        {youtubeMutation.error ? <p className="error-text">Request failed.</p> : null}
-        {youtubeMutation.data ? <pre>{JSON.stringify(youtubeMutation.data, null, 2)}</pre> : null}
-      </form>
+          <form
+            className="create-form"
+            onSubmit={(event) => {
+              event.preventDefault();
+              youtubeMutation.mutate(courseId);
+            }}
+          >
+            <h2>YouTube Video IDs</h2>
+            <label>
+              Course id
+              <input value={courseId} onChange={(event) => setCourseId(event.target.value)} />
+            </label>
+            <div className="actions">
+              <button type="submit" disabled={youtubeMutation.isPending}>
+                {youtubeMutation.isPending ? 'Loading...' : 'Load Video IDs'}
+              </button>
+            </div>
+            {youtubeMutation.error ? <p className="error-text">Request failed.</p> : null}
+          </form>
+        </article>
+
+        <aside className="legacy-v1-sidebar" role="complementary">
+          <div className="legacy-v1-side-bit">
+            <h3>Response</h3>
+            <p className="legacy-v1-muted">Path: {location.pathname}</p>
+            {legacyRouteCourseId ? <p className="legacy-v1-muted">Legacy course: {legacyRouteCourseId}</p> : null}
+            {bulkEnrollMutation.data ? <pre>{JSON.stringify(bulkEnrollMutation.data, null, 2)}</pre> : null}
+            {!bulkEnrollMutation.data && discussionMutation.data ? <pre>{JSON.stringify(discussionMutation.data, null, 2)}</pre> : null}
+            {!bulkEnrollMutation.data && !discussionMutation.data && mobileMutation.data ? <pre>{JSON.stringify(mobileMutation.data, null, 2)}</pre> : null}
+            {!bulkEnrollMutation.data && !discussionMutation.data && !mobileMutation.data && youtubeMutation.data ? <pre>{JSON.stringify(youtubeMutation.data, null, 2)}</pre> : null}
+          </div>
+        </aside>
+      </section>
     </main>
   );
 }

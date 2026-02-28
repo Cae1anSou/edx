@@ -16,6 +16,13 @@ import {
   fetchXblockV2
 } from '../api/studio';
 
+function stateFor(isLoading: boolean, isError: boolean) {
+  if (isLoading) {
+    return 'loading';
+  }
+  return isError ? 'error' : 'ok';
+}
+
 export function PlatformIntegrationsPage() {
   const location = useLocation();
   const rssSeed = useMemo(() => {
@@ -41,80 +48,64 @@ export function PlatformIntegrationsPage() {
   const oraQuery = useQuery({ queryKey: ['pi-ora'], queryFn: fetchOraStaffGraderV1 });
 
   return (
-    <main className="container">
-      <header className="page-header">
-        <h1>Platform Integrations</h1>
-        <p>React migration for platform integration and extension API families.</p>
-        <p>
-          <strong>Current path:</strong> {location.pathname}
-        </p>
-        {rssSeed ? (
-          <p>
-            <strong>Legacy rss path:</strong> {rssSeed}
-          </p>
-        ) : null}
-      </header>
-
-      <section className="actions">
-        <Link to="/course/" className="button-link secondary-btn">
-          Back to Dashboard
-        </Link>
+    <main className="container legacy-v1-shell legacy-v1-generic legacy-v1-platform-integrations">
+      <section className="legacy-v1-mast">
+        <div>
+          <h1 className="legacy-v1-title-with-sub">
+            <span className="legacy-v1-subtitle">Platform</span>
+            <span>Integrations</span>
+          </h1>
+        </div>
+        <nav className="legacy-v1-mast-actions" aria-label="Page Actions">
+          <Link to="/course/" className="legacy-v1-link-btn">Studio Home</Link>
+          <Link to="/legacy-system-apis" className="legacy-v1-link-btn">Legacy System APIs</Link>
+          <Link to="/authoring-apis" className="legacy-v1-link-btn">Authoring APIs</Link>
+        </nav>
       </section>
 
-      <section className="create-form">
-        <h2>Programs and Catalog</h2>
-        {ccxQuery.data ? <pre>{JSON.stringify(ccxQuery.data, null, 2)}</pre> : null}
-        {certsQuery.data ? <pre>{JSON.stringify(certsQuery.data, null, 2)}</pre> : null}
-        {cohortsQuery.data ? <pre>{JSON.stringify(cohortsQuery.data, null, 2)}</pre> : null}
-        {modesQuery.data ? <pre>{JSON.stringify(modesQuery.data, null, 2)}</pre> : null}
-        {librariesQuery.data ? <pre>{JSON.stringify(librariesQuery.data, null, 2)}</pre> : null}
-      </section>
+      <section className="legacy-v1-layout legacy-v1-layout-mastless">
+        <article className="legacy-v1-main">
+          <section className="create-form">
+            <h2>Programs and Enrollment</h2>
+            <ul className="item-list">
+              <li className="item-card"><h3>CCX</h3><p>Status: {stateFor(ccxQuery.isLoading, ccxQuery.isError)}</p></li>
+              <li className="item-card"><h3>Certificates</h3><p>Status: {stateFor(certsQuery.isLoading, certsQuery.isError)}</p></li>
+              <li className="item-card"><h3>Cohorts</h3><p>Status: {stateFor(cohortsQuery.isLoading, cohortsQuery.isError)}</p></li>
+              <li className="item-card"><h3>Course Modes</h3><p>Status: {stateFor(modesQuery.isLoading, modesQuery.isError)}</p></li>
+            </ul>
+          </section>
 
-      <section className="create-form">
-        <h2>Organizations and Auth</h2>
-        {orgsQuery.data ? <pre>{JSON.stringify(orgsQuery.data, null, 2)}</pre> : null}
-        {providersQuery.data ? <pre>{JSON.stringify(providersQuery.data, null, 2)}</pre> : null}
-      </section>
+          <section className="create-form">
+            <h2>Organization and Auth</h2>
+            <ul className="item-list">
+              <li className="item-card"><h3>Organizations</h3><p>Status: {stateFor(orgsQuery.isLoading, orgsQuery.isError)}</p></li>
+              <li className="item-card"><h3>Third-party Providers</h3><p>Status: {stateFor(providersQuery.isLoading, providersQuery.isError)}</p></li>
+            </ul>
+          </section>
 
-      <section className="create-form">
-        <h2>Extensions</h2>
-        {valQuery.data ? <pre>{JSON.stringify(valQuery.data, null, 2)}</pre> : null}
-        {xblockQuery.data ? <pre>{JSON.stringify(xblockQuery.data, null, 2)}</pre> : null}
-        {migratorQuery.data ? <pre>{JSON.stringify(migratorQuery.data, null, 2)}</pre> : null}
-        {olxQuery.data ? <pre>{JSON.stringify(olxQuery.data, null, 2)}</pre> : null}
-        {oraQuery.data ? <pre>{JSON.stringify(oraQuery.data, null, 2)}</pre> : null}
-      </section>
+          <section className="create-form">
+            <h2>Content Runtime Extensions</h2>
+            <ul className="item-list">
+              <li className="item-card"><h3>Libraries</h3><p>Status: {stateFor(librariesQuery.isLoading, librariesQuery.isError)}</p></li>
+              <li className="item-card"><h3>VAL</h3><p>Status: {stateFor(valQuery.isLoading, valQuery.isError)}</p></li>
+              <li className="item-card"><h3>XBlock</h3><p>Status: {stateFor(xblockQuery.isLoading, xblockQuery.isError)}</p></li>
+              <li className="item-card"><h3>Modulestore Migrator</h3><p>Status: {stateFor(migratorQuery.isLoading, migratorQuery.isError)}</p></li>
+              <li className="item-card"><h3>OLX Export</h3><p>Status: {stateFor(olxQuery.isLoading, olxQuery.isError)}</p></li>
+              <li className="item-card"><h3>ORA Staff Grader</h3><p>Status: {stateFor(oraQuery.isLoading, oraQuery.isError)}</p></li>
+            </ul>
+          </section>
+        </article>
 
-      <section className="create-form">
-        <h2>Status</h2>
-        {[
-          ccxQuery,
-          certsQuery,
-          cohortsQuery,
-          modesQuery,
-          librariesQuery,
-          orgsQuery,
-          providersQuery,
-          valQuery,
-          xblockQuery,
-          migratorQuery,
-          olxQuery,
-          oraQuery
-        ].some((q) => q.isLoading) ? <p>Loading integrations...</p> : null}
-        {[
-          ccxQuery,
-          certsQuery,
-          cohortsQuery,
-          modesQuery,
-          librariesQuery,
-          orgsQuery,
-          providersQuery,
-          valQuery,
-          xblockQuery,
-          migratorQuery,
-          olxQuery,
-          oraQuery
-        ].some((q) => q.error) ? <p className="error-text">One or more integration endpoints failed.</p> : null}
+        <aside className="legacy-v1-sidebar" role="complementary">
+          <div className="legacy-v1-side-bit">
+            <h3>Sample Data</h3>
+            <p className="legacy-v1-muted">Path: {location.pathname}</p>
+            {rssSeed ? <p className="legacy-v1-muted">RSS seed: {rssSeed}</p> : null}
+            {orgsQuery.data ? <pre>{JSON.stringify(orgsQuery.data, null, 2)}</pre> : null}
+            {!orgsQuery.data && providersQuery.data ? <pre>{JSON.stringify(providersQuery.data, null, 2)}</pre> : null}
+            {!orgsQuery.data && !providersQuery.data && valQuery.data ? <pre>{JSON.stringify(valQuery.data, null, 2)}</pre> : null}
+          </div>
+        </aside>
       </section>
     </main>
   );

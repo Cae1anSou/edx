@@ -2,45 +2,69 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { fetchDiscountsV1, fetchEmbargoV1, fetchExperimentsV1, fetchValV0 } from '../api/studio';
 
+type ApiRow = { label: string; route: string; state: 'loading' | 'error' | 'ok' };
+
+function getState(isLoading: boolean, isError: boolean): ApiRow['state'] {
+  if (isLoading) return 'loading';
+  return isError ? 'error' : 'ok';
+}
+
 export function CompliancePage() {
   const discountsQuery = useQuery({ queryKey: ['compliance-discounts'], queryFn: fetchDiscountsV1 });
   const embargoQuery = useQuery({ queryKey: ['compliance-embargo'], queryFn: fetchEmbargoV1 });
   const valQuery = useQuery({ queryKey: ['compliance-val'], queryFn: fetchValV0 });
   const experimentsQuery = useQuery({ queryKey: ['compliance-experiments'], queryFn: fetchExperimentsV1 });
 
+  const rows: ApiRow[] = [
+    { label: 'Discount Rules', route: '/api/discounts/v1/', state: getState(discountsQuery.isLoading, discountsQuery.isError) },
+    { label: 'Embargo', route: '/api/embargo/v1/', state: getState(embargoQuery.isLoading, embargoQuery.isError) },
+    { label: 'VAL', route: '/api/val/v0/', state: getState(valQuery.isLoading, valQuery.isError) },
+    { label: 'Experiments', route: '/api/experiments/v1/', state: getState(experimentsQuery.isLoading, experimentsQuery.isError) }
+  ];
+
   return (
-    <main className="container">
-      <header className="page-header">
-        <h1>Compliance and Controls</h1>
-        <p>React migration for policy, entitlement validation, and rollout control endpoints.</p>
-      </header>
-
-      <section className="actions">
-        <Link to="/course/" className="button-link secondary-btn">
-          Back to Dashboard
-        </Link>
+    <main className="container legacy-v1-shell legacy-v1-generic legacy-v1-compliance">
+      <section className="legacy-v1-mast">
+        <div>
+          <h1 className="legacy-v1-title-with-sub"><span className="legacy-v1-subtitle">Policy</span><span>Compliance and Controls</span></h1>
+        </div>
+        <nav className="legacy-v1-mast-actions" aria-label="Page Actions">
+          <Link to="/course/" className="legacy-v1-link-btn">Studio Home</Link>
+          <Link to="/search-commerce" className="legacy-v1-link-btn">Search & Commerce</Link>
+          <Link to="/system-status" className="legacy-v1-link-btn">System Status</Link>
+        </nav>
       </section>
 
-      <section className="create-form">
-        <h2>Pricing and Embargo</h2>
-        {discountsQuery.isLoading ? <p>Loading discounts...</p> : null}
-        {discountsQuery.error ? <p className="error-text">Failed to load discounts.</p> : null}
-        {discountsQuery.data ? <pre>{JSON.stringify(discountsQuery.data, null, 2)}</pre> : null}
+      <section className="legacy-v1-layout legacy-v1-layout-mastless">
+        <article className="legacy-v1-main">
+          <section className="create-form">
+            <h2>Service Summary</h2>
+            <ul className="item-list">
+              {rows.map((item) => (
+                <li className="item-card" key={item.route}>
+                  <h3>{item.label}</h3>
+                  <p><strong>Endpoint:</strong> {item.route}</p>
+                  <p><strong>Status:</strong> {item.state}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
 
-        {embargoQuery.isLoading ? <p>Loading embargo...</p> : null}
-        {embargoQuery.error ? <p className="error-text">Failed to load embargo.</p> : null}
-        {embargoQuery.data ? <pre>{JSON.stringify(embargoQuery.data, null, 2)}</pre> : null}
-      </section>
+          <section className="create-form">
+            <h2>Control Surfaces</h2>
+            <p>Discount and embargo endpoints are used for checkout guardrails and regional restrictions.</p>
+            <p>VAL and experiments endpoints back controlled media rollout and runtime feature toggles.</p>
+          </section>
+        </article>
 
-      <section className="create-form">
-        <h2>VAL and Experiments</h2>
-        {valQuery.isLoading ? <p>Loading VAL...</p> : null}
-        {valQuery.error ? <p className="error-text">Failed to load VAL.</p> : null}
-        {valQuery.data ? <pre>{JSON.stringify(valQuery.data, null, 2)}</pre> : null}
-
-        {experimentsQuery.isLoading ? <p>Loading experiments...</p> : null}
-        {experimentsQuery.error ? <p className="error-text">Failed to load experiments.</p> : null}
-        {experimentsQuery.data ? <pre>{JSON.stringify(experimentsQuery.data, null, 2)}</pre> : null}
+        <aside className="legacy-v1-sidebar" role="complementary">
+          <div className="legacy-v1-side-bit">
+            <h3>Responses</h3>
+            {discountsQuery.data ? <pre>{JSON.stringify(discountsQuery.data, null, 2)}</pre> : null}
+            {!discountsQuery.data && embargoQuery.data ? <pre>{JSON.stringify(embargoQuery.data, null, 2)}</pre> : null}
+            {!discountsQuery.data && !embargoQuery.data && valQuery.data ? <pre>{JSON.stringify(valQuery.data, null, 2)}</pre> : null}
+          </div>
+        </aside>
       </section>
     </main>
   );

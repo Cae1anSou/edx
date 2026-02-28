@@ -1,5 +1,7 @@
 # Frontend Migration Map (master -> React)
 
+> Historical reference: `migration-reference/master/{cms,lms}` snapshots are retained for mapping context. On this split branch, top-level `lms/` and `cms/` were removed on 2026-02-28.
+
 This map records legacy CMS routes discovered from `master:cms/urls.py` and their React destination in `frontend-app-studio-dashboard`.
 
 ## Source snapshots pulled from master

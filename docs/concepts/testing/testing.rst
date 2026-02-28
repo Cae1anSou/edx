@@ -236,58 +236,30 @@ See this `confluence document <https://openedx.atlassian.net/wiki/spaces/AC/page
 Running JavaScript Unit Tests
 *****************************
 
-Before running Javascript unit tests, you will need to be running Firefox or Chrome in a place visible to edx-platform.
-If you are using Tutor Dev to run edx-platform, then you can do so by installing and enabling the
-``test-legacy-js`` plugin from `openedx-tutor-plugins`_, and then rebuilding
-the ``openedx-dev`` image::
+.. note::
+    Historical context: references to LMS/CMS Python test paths in this document describe legacy monolith layout and are not runnable on this split branch.
 
-    tutor plugins install https://github.com/openedx/openedx-tutor-plugins/tree/main/plugins/tutor-contrib-test-legacy-js
-    tutor plugins enable test-legacy-js
-    tutor images build openedx-dev
+On this branch, frontend testing is centered on the standalone Studio
+Dashboard MFE in ``frontend-app-studio-dashboard/``.
 
-.. _openedx-tutor-plugins: https://github.com/openedx/openedx-tutor-plugins/
+Run from repository root::
 
-We use Jasmine (via Karma) to run most JavaScript unit tests. We use Jest to
-run a small handful of additional JS unit tests. You can use the ``npm run
-test*`` commands to run them::
+    npm run test
 
-    npm run test-karma  # Run all Jasmine+Karma tests.
-    npm run test-jest   # Run all Jest tests.
-    npm run test        # Run both of the above.
+This runs the branch-standard frontend checks:
 
-The Karma tests are further broken down into three types depending on how the
-JavaScript it is testing is built::
+- Studio Dashboard production build.
+- Studio Dashboard E2E TypeScript compilation.
 
-    npm run test-karma-vanilla  # Our very oldest JS, which doesn't even use RequireJS
-    npm run test-karma-require  # Old JS that uses RequireJS
-    npm run test-karma-webpack  # Slightly "newer" JS which is built with Webpack
+For direct MFE commands::
 
-Unfortunately, at the time of writing, the build for the ``test-karma-webpack``
-tests is broken. The tests are excluded from ``npm run test-karma`` as to not
-fail CI. We `may fix this one day`_.
+    npm --prefix frontend-app-studio-dashboard run build
+    npm --prefix frontend-app-studio-dashboard run e2e:build
+    npm --prefix frontend-app-studio-dashboard run e2e:headless
+    npm --prefix frontend-app-studio-dashboard run e2e:release
 
-.. _may fix this one day: https://github.com/openedx/edx-platform/issues/35956
-
-To run all Karma+Jasmine tests for a particular top-level edx-platform folder,
-you can run::
-
-    npm run test-cms
-    npm run test-lms
-    npm run test-xmodule
-    npm run test-common
-
-Finally, if you want to pass any options to the underlying ``node`` invocation
-for Karma+Jasmine tests, you can run one of these specific commands, and put
-your arguments after the ``--`` separator::
-
-    npm run test-cms-vanilla -- --your --args --here
-    npm run test-cms-require -- --your --args --here
-    npm run test-cms-webpack -- --your --args --here
-    npm run test-lms-webpack -- --your --args --here
-    npm run test-xmodule-vanilla -- --your --args --here
-    npm run test-xmodule-webpack -- --your --args --here
-    npm run test-common-vanilla -- --your --args --here
-    npm run test-common-require -- --your --args --here
+Legacy Karma/Jest commands for LMS/CMS static assets are disabled on this
+branch.
 
 
 Code Quality

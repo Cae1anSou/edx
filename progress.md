@@ -1,5 +1,7 @@
 # Progress Log
 
+> Historical note (split branch): As of 2026-02-28, top-level `lms/` and `cms/` directories were removed from this branch. Prior log entries referencing those paths describe earlier migration states.
+
 ## Session: 2026-02-27
 
 ### Phase 1: Requirements & Discovery
@@ -613,3 +615,72 @@
   - authoring doc endpoints: `/authoring-api/ui`, `/authoring-api/schema`
 - Updated migration map with these route families.
 - Validation passed: parity + backend tests.
+
+## Session: 2026-02-28 (Release Readiness Validation)
+
+### Phase 27: Go/No-Go Validation
+- **Status:** in_progress
+- Actions taken:
+  - Added Vite API proxy for local BFF integration:
+    - [vite.config.ts](/machine/Learning/Code/edx/frontend-app-studio-dashboard/vite.config.ts)
+    - [vite.config.js](/machine/Learning/Code/edx/frontend-app-studio-dashboard/vite.config.js)
+  - Added expanded release E2E script:
+    - [release-readiness-e2e.ts](/machine/Learning/Code/edx/frontend-app-studio-dashboard/e2e/release-readiness-e2e.ts)
+  - Executed backend regression:
+    - `backend-java mvn test` (PASS)
+    - `backend-java mvn test -Dspring.profiles.active=jdbc` (PASS)
+  - Executed frontend regression:
+    - `frontend-app-studio-dashboard npm run build` (PASS)
+  - Executed contract freeze:
+    - `backend-java/scripts/freeze-contracts.sh` (PASS, unmatched=0)
+  - Executed expanded headless E2E:
+    - routes `/course|/dashboard|/system-status` + auth/write/error branches (PASS)
+  - Executed pre-prod smoke validation:
+    - `smoke-spring-only.sh` (PASS)
+    - `smoke-frontend-compat.sh` (PASS)
+
+## Test Results (Release Readiness)
+| Test | Input | Expected | Actual | Status |
+|------|-------|----------|--------|--------|
+| Backend regression | `backend-java mvn test` | All tests pass | `39/0/0` | PASS |
+| Backend JDBC/Flyway regression | `backend-java mvn test -Dspring.profiles.active=jdbc` | All tests pass with JDBC profile | `39/0/0` | PASS |
+| Frontend build | `frontend-app-studio-dashboard npm run build` | Build succeeds | Vite build success | PASS |
+| Contract coverage | `backend-java/scripts/freeze-contracts.sh` | Unmatched paths = 0 | `Unmatched: 0` | PASS |
+| Expanded headless E2E | `node --experimental-strip-types e2e/release-readiness-e2e.ts` | all checks pass | all checks passed | PASS |
+| Pre-prod smoke | `smoke-spring-only.sh` + `smoke-frontend-compat.sh` | all checks pass | both scripts OK | PASS |
+| Root JS unit tests | `npm run test-jest` | Jest suite runs | `jest: command not found` + install issues | BLOCKED |
+
+## Error Log (Release Readiness)
+| Timestamp | Error | Attempt | Resolution |
+|-----------|-------|---------|------------|
+| 2026-02-28 | `vite.config.ts` used `process.env` without Node types | 1 | Switched to `loadEnv` in Vite config |
+| 2026-02-28 | TS compile for E2E script failed from workspace type noise | 1 | Used `node --experimental-strip-types` to execute TS script directly |
+| 2026-02-28 | `npm run test-jest` failed (`jest` missing) | 1 | Tried `npm install`; blocked by legacy npm/toolchain issues |
+| 2026-02-28 | Root `npm install` failed with cache permission and npm CLI exit-handler error | 2 | Used project-safe cache path; still blocked, recorded as environment blocker |
+
+### Phase 27.1: Root Jest Regression Unblocked (2026-02-28)
+- Used RAN + pnpm to install root dependencies successfully.
+- Command: `pnpm install --frozen-lockfile`
+- Command: `npm run test-jest -- --runInBand`
+- Result: `Test Suites: 1 passed, Tests: 3 passed`.
+
+### Phase 27.2: Contract/E2E Tooling Accuracy Hardening (2026-02-28)
+- Fixed Spring endpoint export parsing to preserve class-level `@RequestMapping` base path when extra annotations exist before class declaration.
+- Re-generated endpoint index and contract coverage report:
+  - `Spring endpoints indexed: 277`
+  - `Frontend-discovered API paths: 84`
+  - `Matched: 76`
+  - `Unmatched: 0`
+  - `Unresolved template expressions: 0`
+- Fixed template normalization to handle dangling `${suffix|query|problemQuery` fragments.
+- Hardened frontend E2E execution model:
+  - Removed `@ts-nocheck` from E2E TS scripts.
+  - Added `tsconfig.e2e.json`.
+  - Added scripts:
+    - `npm --prefix frontend-app-studio-dashboard run e2e:build`
+    - `npm --prefix frontend-app-studio-dashboard run e2e:headless`
+    - `npm --prefix frontend-app-studio-dashboard run e2e:release`
+  - Added local Node type shims for restricted-network compile stability.
+- Validation:
+  - `npm --prefix frontend-app-studio-dashboard run e2e:build` PASS
+  - `npm --prefix frontend-app-studio-dashboard run build` PASS

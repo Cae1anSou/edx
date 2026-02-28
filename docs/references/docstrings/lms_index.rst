@@ -1,6 +1,9 @@
 lms
 ***
 
+.. note::
+    Historical reference on this split branch: the top-level ``lms/`` source tree was removed on 2026-02-28.
+
 The ``lms`` directory in edx-platform is home to the code needed for the LMS
 (Learning Management System) which is not also needed for the Course Authoring
 Studio.

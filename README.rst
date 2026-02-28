@@ -1,11 +1,17 @@
 edx (Spring Refactor Branch)
 ============================
 
-This branch has removed legacy Django runtime code and keeps:
+This branch has removed legacy Django runtime code and is now organized with a frontend/backend split:
 
 - ``backend-java/``: Spring Boot backend services and API contracts.
-- ``cms/static/``, ``lms/static/``, ``common/static/``, ``xmodule/static/``: legacy frontend static assets still in use.
-- ``xmodule/js/`` and ``xmodule/assets/``: frontend block assets.
+- ``frontend-app-studio-dashboard/``: standalone React + Vite + TypeScript Studio Dashboard MFE.
+- ``common/static/``, ``xmodule/static/``: legacy shared static assets still in use.
+- ``xmodule/js/`` and ``xmodule/assets/``: legacy frontend block assets retained during migration.
+
+Directory guide
+---------------
+
+- ``PROJECT_STRUCTURE.md``: canonical top-level layout and placement conventions for new code.
 
 Quick start (backend)
 ---------------------
@@ -31,4 +37,7 @@ Run it with:
 
 ::
 
+   npm --prefix frontend-app-studio-dashboard ci
    npm run studio-dashboard-dev
+   npm run build
+   npm run test

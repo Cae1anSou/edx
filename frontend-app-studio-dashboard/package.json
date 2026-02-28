@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "e2e:build": "tsc -p tsconfig.e2e.json",
+    "e2e:headless": "npm run e2e:build && node e2e-dist/headless-e2e.js",
+    "e2e:release": "npm run e2e:build && node e2e-dist/release-readiness-e2e.js"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.5",

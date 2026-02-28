@@ -2,6 +2,9 @@
 Styling in edx-platform
 #######################
 
+.. note::
+    Historical reference on this split branch: this page documents legacy LMS/CMS Sass structure and paths.
+
 Over time, our Sass styling has become a little convoluted, with three major
 reworkings often leading to confusion when a developer needs to style in
 multiple locations across edx-platform. The main endeavors were v1, v2 (or

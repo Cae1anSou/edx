@@ -1,5 +1,7 @@
 # Unit tests sharding strategy
 
+> Historical reference: this document describes legacy Django LMS/CMS unit-test sharding and is not applicable to the split frontend/backend runtime path used on this branch.
+
 #### background
 Unit tests are run in parallel (in GitHub Actions matrices) using the sharding strategy specified in unit-test-shards.json
 We've divided the top level modules into multiple shards to achieve better parallelism.

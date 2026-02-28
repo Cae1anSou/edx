@@ -2,7 +2,7 @@
   This file mirror UXPL Form field styles
 */
 
-@import 'lms/theme/variables';
+@import 'legacy-theme/lms-variables';
 
 .post-type-label {
   @include margin-right($baseline);

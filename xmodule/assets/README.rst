@@ -44,9 +44,8 @@ Currently, edx-platform XBlock JS is defined both here in `xmodule/assets`_ and 
 
 * For many older blocks, their JS is:
 
-  * bundled using a `webpack.builtinblocks.config.js`_,
-  * which is included into `webpack.common.config.js`_,
-  * allowing it to be included into XBlock fragments using ``add_webpack_js_to_fragment`` from `builtin_assets.py`_.
+  * bundled by the legacy builtin-block asset pipeline,
+  * then included into XBlock fragments using ``add_webpack_js_to_fragment`` from `builtin_assets.py`_.
 
   Example blocks using this setup:
 
@@ -72,5 +71,3 @@ As part of an `active build refactoring`_, we will soon consolidate all edx-plat
 .. _builtin_assets.py: https://github.com/openedx/edx-platform/tree/master/xmodule/util/builtin_assets.py
 .. _static_content.py: https://github.com/openedx/edx-platform/blob/master/xmodule/static_content.py
 .. _library_source_block/style.css: https://github.com/openedx/edx-platform/blob/master/xmodule/assets/library_source_block/style.css
-.. _webpack.builtinblocks.config.js: https://github.com/openedx/edx-platform/blob/master/webpack.builtinblocks.config.js
-.. _webpack.common.config.js: https://github.com/openedx/edx-platform/blob/master/webpack.common.config.js

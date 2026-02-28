@@ -1,6 +1,9 @@
 Settings
 ========
 
+.. note::
+    Historical reference on this split branch: examples below may mention legacy ``lms``/``cms`` paths that were removed from this branch on 2026-02-28.
+
 This is the list of (non-toggle) Django settings defined in the ``common.py`` modules of edx-platform.
 
 .. note::

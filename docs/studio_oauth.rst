@@ -1,6 +1,9 @@
 Enabling OAuth for Studio login
 ###############################
 
+.. note::
+    Historical migration guide: commands below reference legacy LMS/CMS Django management workflows and may not apply to this split branch runtime.
+
 This is a migration guide for converting Studio login to use OAuth, for use in the Lilac to Maple upgrade.
 
 Background

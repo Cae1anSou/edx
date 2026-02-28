@@ -156,3 +156,11 @@ pii_report
 
 ### Java build artifacts
 backend-java/target/
+
+### Frontend MFE generated artifacts
+frontend-app-studio-dashboard/node_modules/
+frontend-app-studio-dashboard/dist/
+frontend-app-studio-dashboard/e2e-dist/
+frontend-app-studio-dashboard/*.tsbuildinfo
+frontend-app-studio-dashboard/vite.config.js
+frontend-app-studio-dashboard/vite.config.d.ts

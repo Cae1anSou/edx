@@ -30,8 +30,8 @@ export class ReactRenderer {
             throw new ReactRendererException(
                 `Component ${this.componentName} is not defined. Make sure you're `
         + `using a non-default export statement for the ${this.componentName} `
-        + `class, that ${this.componentName} has an entry point defined `
-        + 'within the \'entry\' section of webpack.common.config.js, and that the '
+        + `class, that ${this.componentName} has been wired into the active `
+        + 'frontend entry/routing layer, and that the '
         + 'entry point is pointing at the correct file path.',
             );
         }

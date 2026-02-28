@@ -8,7 +8,9 @@ from pathlib import Path
 def normalize_path(path: str) -> str:
     p = path.strip()
     # Drop template vars used to append optional query suffixes.
-    p = re.sub(r"/?\$\{[^}]*?(suffix|query|problemQuery)[^}]*\}", "", p)
+    p = re.sub(r"/?\$\{[^}]*?(suffix|query|problemQuery)[^}]*\}?", "", p)
+    # Handle malformed/dangling template expressions without closing "}".
+    p = re.sub(r"/?\$\{(suffix|query|problemQuery)[^/]*$", "", p)
     p = p.split("?", 1)[0]
     # Normalize JS template vars so route parameters can still match.
     p = re.sub(r"\$\{[^}]+\}", "placeholder", p)

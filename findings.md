@@ -1,5 +1,7 @@
 # Findings & Decisions
 
+> Historical note (split branch): As of 2026-02-28, top-level `lms/` and `cms/` directories were removed from this branch. Any references to those paths below are migration-history context from earlier phases.
+
 ## Current Task (Kickoff Implementation)
 - 用户要求按 `BACKEND_REFACTOR_PLAN.md` 开始实际重构，先完成分支与提交，然后持续推进。
 - 已完成：
@@ -230,8 +232,8 @@
 
 ## Scope Blocker (LMS/CMS Full Migration)
 - 当前仓库快照中：
-  - `lms/` 仅包含 `lms/static/**`
-  - `cms/` 仅包含 `cms/static/**`
+  - 当时 `lms/` 仅包含 `lms/static/**`（历史状态）
+  - 当时 `cms/` 仅包含 `cms/static/**`（历史状态）
 - 未发现可迁移的 Django 端页面源（`views.py` / `urls.py` / `templates/`），因此无法在本仓库内完成“LMS/CMS 全量页面迁移到前后端分离”。
 - 结论：本轮可完成的是 Studio/legacy React 微前端迁移闭环；若要继续全量迁移，需要提供包含 LMS/CMS 服务端页面源码的仓库或子模块。
 
@@ -310,3 +312,40 @@
 ## Legacy Tail Route Sweep Findings (2026-02-28)
 - Master-reference legacy tails still had uncovered SPA entry points (`lang_pref/update_language`, `preview/xblock`, `xblock/resource`, `export_git`, `certificates`, `authoring-api/ui|schema`, `course/*/entrance_exam`, `event`, `calculate`).
 - Added explicit frontend + backend route coverage to reduce remaining 404/fallback cases during LMS/CMS cutover.
+## Release Readiness Findings (2026-02-28)
+- Backend regression passed:
+  - `backend-java mvn test` -> `Tests run: 39, Failures: 0, Errors: 0`.
+  - `backend-java mvn test -Dspring.profiles.active=jdbc` -> `Tests run: 39, Failures: 0, Errors: 0`.
+  - JDBC profile confirms Flyway migrations `V1..V9` apply successfully on startup.
+- Frontend regression passed at build level:
+  - `frontend-app-studio-dashboard npm run build` succeeded after Vite config fix.
+  - Added Vite `/api` proxy in both `vite.config.ts` and `vite.config.js` (default target `http://127.0.0.1:8080`, env-overridable by `VITE_BACKEND_ORIGIN`).
+- Contract coverage passed:
+  - `backend-java/scripts/freeze-contracts.sh` -> `Unmatched: 0`.
+- Expanded release E2E passed:
+  - New script `frontend-app-studio-dashboard/e2e/release-readiness-e2e.ts`.
+  - Covers route rendering + auth (401/200) + write success (`POST /api/studio/v1/courses` with `X-Roles: INSTRUCTOR`) + error branch (`400 INVALID_ARGUMENT`).
+- Pre-production style smoke integration passed (when backend reachable in same permission context):
+  - `backend-java/scripts/smoke-spring-only.sh`
+  - `backend-java/scripts/smoke-frontend-compat.sh`
+- Remaining blocker:
+  - Root monorepo JS unit tests (`npm run test-jest`) are blocked in current environment due legacy dependency/toolchain issues (`jest` missing; `npm install` cache permission + npm CLI exit-handler failure under Node 24).
+
+- Root monorepo Jest blocker resolved under RAN:
+  - `pnpm install --frozen-lockfile` completed.
+  - `npm run test-jest -- --runInBand` passed (`1 suite, 3 tests`).
+
+## Contract & E2E Tooling Findings (2026-02-28, continued)
+- Fixed false negatives in contract coverage pipeline:
+  - `export-spring-endpoint-index.py` now correctly combines class-level `@RequestMapping` with method mappings even when extra class annotations exist between mapping and class declaration.
+  - Endpoint indexing now includes `/api/studio/v1/*`, removing prior mismatch noise.
+- Fixed template normalization edge case:
+  - `check-contract-coverage.py` now handles dangling `${suffix|query|problemQuery` expressions without closing `}`.
+- Verification after fixes:
+  - `python3 backend-java/scripts/export-spring-endpoint-index.py`
+  - `python3 backend-java/scripts/check-contract-coverage.py`
+  - Coverage report now: `Matched=76`, `Unmatched=0`, `Unresolved template expressions=0`.
+- E2E pipeline hardening:
+  - Removed `@ts-nocheck` from `frontend-app-studio-dashboard/e2e/*.ts`.
+  - Added dedicated `tsconfig.e2e.json` and npm scripts: `e2e:build`, `e2e:headless`, `e2e:release`.
+  - Added local `e2e/node-shims.d.ts` to keep TS compile independent of external `@types/node` download in restricted network environments.

@@ -46,9 +46,9 @@ Give your new file an UpperCamelCase filename, such as
 ``MyAwesomeModule.js``. If it is a React module, use the ``.jsx``
 extension; otherwise, use the ``.js`` extension.
 
-If you intend to include this module itself directly within a page, you
-will need to tell Webpack about it. Add a line to the ``entry`` object
-within ``webpack.common.config.js``.
+If you intend to include this module itself directly within a page,
+register it in the frontend application entry/routing layer used by this
+branch (for example, under ``frontend-app-studio-dashboard/src``).
 
 ::
 
@@ -101,9 +101,9 @@ and stop them with
 
     make stop.watchers
 
-If you make any changes to ``webpack.common.config.js`` while the
-watchers are running, you will need to restart the watchers in order for
-them to pick up your changes.
+If you make any changes to frontend build configuration while the
+watchers are running, restart the relevant frontend process so it can
+pick up the changes.
 
 If your changes aren't being reflected in the browser, check the logs
 with ``make logs`` to see if something went wrong. If you get stuck, ask

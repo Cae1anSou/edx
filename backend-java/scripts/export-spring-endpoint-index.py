@@ -14,13 +14,15 @@ def extract_paths(raw: str | None) -> list[str]:
 
 def extract_mapping(path: Path) -> list[str]:
     text = path.read_text(encoding="utf-8")
-    class_match = re.search(r'@RequestMapping\(([^)]*)\)\s*public class', text, re.MULTILINE | re.DOTALL)
-    class_paths = extract_paths(class_match.group(1) if class_match else None)
+    class_decl = re.search(r"\bclass\s+\w+", text)
+    class_header = text[: class_decl.start()] if class_decl else text
+    class_mappings = re.findall(r"@RequestMapping\(([^)]*)\)", class_header, re.MULTILINE | re.DOTALL)
+    class_paths = extract_paths(class_mappings[-1] if class_mappings else None)
     class_base = class_paths[0] if class_paths else ""
 
     endpoints: list[str] = []
     method_pat = re.compile(
-        r'@(GetMapping|PostMapping|PutMapping|DeleteMapping)(?:\(([^)]*)\))?\s*'
+        r'@(GetMapping|PostMapping|PutMapping|DeleteMapping|PatchMapping)(?:\(([^)]*)\))?\s*'
         r'(?:@\w+(?:\([^)]*\))?\s*)*'
         r'(?:public|private|protected)\s+',
         re.MULTILINE | re.DOTALL,

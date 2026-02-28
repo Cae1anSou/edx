@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS course_metadata (
 CREATE TABLE IF NOT EXISTS job_record (
     job_id VARCHAR(128) PRIMARY KEY,
     job_type VARCHAR(64) NOT NULL,
-    payload CLOB NOT NULL,
+    payload TEXT NOT NULL,
     status VARCHAR(32) NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL

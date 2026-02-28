@@ -36,6 +36,7 @@
 /api/libraries/v2/
 /api/mfe_config/v1${suffix}
 /api/modulestore_migrator/v1/
+/api/notifications/v2/configurations/
 /api/notifications/v3/configurations/
 /api/olx-export/v1/
 /api/ora_staff_grader/v1/
@@ -49,7 +50,7 @@
 /api/studio/v1/notifications/${encodeURIComponent(notificationId)}
 /api/studio/v1/organizations
 /api/support/v1/manage_course_team/
-/api/support/v1/manage_course_team/?email=${query}
+/api/support/v1/manage_course_team/${suffix
 /api/tasks/v0/
 /api/tasks/v0/${taskId}/
 /api/team/v0/team_membership/${encodeURIComponent(teamId)},${encodeURIComponent(username)}${suffix}
@@ -71,6 +72,7 @@
 /api/user_tours/v1/discussions/
 /api/user_tours/v1/discussions/${tourId}
 /api/v1/bookmarks/
+/api/v1/courses/${encodeURIComponent(courseId)}/progress/${encodeURIComponent(targetUser)}
 /api/v1/search/${suffix}
 /api/v1/search/?course_id={course_id}&user={user_id}&usage_id={usage_id}&usage_id={usage_id}
 /api/v2/help_center/articles/search.json?query=${encodeURIComponent(query)}

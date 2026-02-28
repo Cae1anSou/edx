@@ -1,8 +1,8 @@
 # API Contract Coverage Report
 
-- Spring endpoints indexed: 160
-- Frontend-discovered API paths: 82
-- Matched: 74
+- Spring endpoints indexed: 277
+- Frontend-discovered API paths: 84
+- Matched: 76
 - Unmatched: 0
 - Unresolved template expressions: 0
 
@@ -40,6 +40,7 @@
 - /api/libraries/v2
 - /api/mfe_config/v1
 - /api/modulestore_migrator/v1
+- /api/notifications/v2/configurations
 - /api/notifications/v3/configurations
 - /api/olx-export/v1
 - /api/ora_staff_grader/v1
@@ -74,6 +75,7 @@
 - /api/user_tours/v1/discussions/placeholder
 - /api/user_tours/v1/placeholder
 - /api/v1/bookmarks
+- /api/v1/courses/placeholder/progress/placeholder
 - /api/v1/search
 - /api/v2/help_center/articles/search.json
 - /api/v2/uploads.json

@@ -86,6 +86,45 @@ class BackendApplicationTests {
     }
 
     @Test
+    void notificationIdempotencyKeyShouldNotBeReusableAcrossUsers() throws Exception {
+        String key = "idem-cross-user-001";
+        mockMvc.perform(withAuthWithUserAndRoles(
+                        put("/api/v1/notification-preferences/u-a"),
+                        "u-a",
+                        "LEARNER,INSTRUCTOR",
+                        "notification:write",
+                        null
+                )
+                        .header("X-Idempotency-Key", key)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "emailEnabled": true,
+                                  "smsEnabled": false
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(withAuthWithUserAndRoles(
+                        put("/api/v1/notification-preferences/u-b"),
+                        "u-b",
+                        "LEARNER,INSTRUCTOR",
+                        "notification:write",
+                        null
+                )
+                        .header("X-Idempotency-Key", key)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "emailEnabled": false,
+                                  "smsEnabled": true
+                                }
+                                """))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("IDEMPOTENCY_KEY_CONFLICT"));
+    }
+
+    @Test
     void legacyNotificationPreferenceEndpointShouldMapSnakeCase() throws Exception {
         mockMvc.perform(withAuth(put("/api/legacy/users/u-legacy/notification-preferences"), "notification:write", null)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -933,6 +972,36 @@ class BackendApplicationTests {
 
         mockMvc.perform(get("/assets/not-found.js"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void studioApiShouldRequireLoginForMutatingOperations() throws Exception {
+        mockMvc.perform(post("/api/studio/v1/courses")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "displayName": "Secure Course",
+                                  "org": "edX",
+                                  "number": "SEC101",
+                                  "run": "2026_T1",
+                                  "sourceCourseKey": "course-v1:edX+DemoX+2025_T1"
+                                }
+                                """))
+                .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(withAuth(post("/api/studio/v1/courses")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "displayName": "Secure Course",
+                                  "org": "edX",
+                                  "number": "SEC101",
+                                  "run": "2026_T1",
+                                  "sourceCourseKey": "course-v1:edX+DemoX+2025_T1"
+                                }
+                                """), null, null))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.id").exists());
     }
 
     private MockHttpServletRequestBuilder withAuth(

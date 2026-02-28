@@ -3,6 +3,7 @@ package org.openedx.backend.legacy.api;
 import jakarta.servlet.http.HttpServletRequest;
 import org.openedx.backend.bookmarks.application.BookmarksService;
 import org.openedx.backend.bookmarks.domain.BookmarkRecord;
+import org.openedx.backend.common.security.annotation.RequireLogin;
 import org.openedx.backend.legacy.application.LegacyContentstoreService;
 import org.openedx.backend.legacy.application.LegacyHelpCenterService;
 import org.openedx.backend.legacy.application.LegacyTeamService;
@@ -43,6 +44,7 @@ public class LegacyCompatibilityController {
     }
 
     @GetMapping("/api/v1/bookmarks/")
+    @RequireLogin
     public ResponseEntity<?> bookmarksAlias(HttpServletRequest request) {
         String user = currentUser(request);
         if (user == null) {
@@ -68,11 +70,13 @@ public class LegacyCompatibilityController {
     }
 
     @GetMapping("/api/contentstore/v2/downstreams/")
+    @RequireLogin
     public ResponseEntity<?> downstreams() {
         return ResponseEntity.ok(Map.of("results", contentstoreService.listDownstreams()));
     }
 
     @PostMapping("/api/contentstore/v2/downstreams/{downstreamBlockId}/sync")
+    @RequireLogin
     public ResponseEntity<?> downstreamSync(@PathVariable String downstreamBlockId) {
         return ResponseEntity.ok(contentstoreService.sync(downstreamBlockId));
     }
@@ -93,6 +97,7 @@ public class LegacyCompatibilityController {
     }
 
     @PostMapping("/api/enrollment/v1/enrollment")
+    @RequireLogin
     public ResponseEntity<?> enrollmentV1(@RequestBody(required = false) Map<String, Object> body, HttpServletRequest request) {
         String user = currentUser(request);
         if (user == null) {
@@ -113,21 +118,25 @@ public class LegacyCompatibilityController {
     }
 
     @PostMapping("/api/profile_images/v0/staff/upload")
+    @RequireLogin
     public ResponseEntity<?> profileImageUpload() {
         return ResponseEntity.ok(Map.of("uploaded", true));
     }
 
     @PostMapping("/api/profile_images/v0/staff/remove")
+    @RequireLogin
     public ResponseEntity<?> profileImageRemove() {
         return ResponseEntity.ok(Map.of("removed", true));
     }
 
     @GetMapping("/api/team/v0/team_memberships/")
+    @RequireLogin
     public ResponseEntity<?> teamMemberships() {
         return ResponseEntity.ok(Map.of("results", teamService.listMemberships()));
     }
 
     @GetMapping("/api/team/v0/team_membership/{teamId},{username}")
+    @RequireLogin
     public ResponseEntity<?> teamMembership(@PathVariable String teamId, @PathVariable String username, @RequestParam(required = false) Boolean admin) {
         try {
             return ResponseEntity.ok(teamService.getMembership(teamId, username, admin != null && admin));
@@ -137,11 +146,13 @@ public class LegacyCompatibilityController {
     }
 
     @GetMapping("/api/team/v0/teams/")
+    @RequireLogin
     public ResponseEntity<?> teams() {
         return ResponseEntity.ok(Map.of("results", teamService.listTeams()));
     }
 
     @GetMapping("/api/team/v0/teams/{teamId}")
+    @RequireLogin
     public ResponseEntity<?> team(@PathVariable String teamId, @RequestParam(required = false) String expand) {
         try {
             return ResponseEntity.ok(teamService.getTeam(teamId, expand));
@@ -151,6 +162,7 @@ public class LegacyCompatibilityController {
     }
 
     @GetMapping("/api/team/v0/teams/{teamId}/assignments")
+    @RequireLogin
     public ResponseEntity<?> teamAssignments(@PathVariable String teamId) {
         try {
             return ResponseEntity.ok(teamService.getTeamAssignments(teamId));
@@ -160,6 +172,7 @@ public class LegacyCompatibilityController {
     }
 
     @GetMapping("/api/team/v0/topics/{topicId},{courseId}")
+    @RequireLogin
     public ResponseEntity<?> teamTopics(@PathVariable String topicId, @PathVariable String courseId) {
         try {
             return ResponseEntity.ok(teamService.getTopic(topicId, courseId));
@@ -169,6 +182,7 @@ public class LegacyCompatibilityController {
     }
 
     @GetMapping("/api/team/v0/topics/{topicId},{coursePrefix}/{courseSuffix}")
+    @RequireLogin
     public ResponseEntity<?> teamTopicsWithSlash(
             @PathVariable String topicId,
             @PathVariable String coursePrefix,

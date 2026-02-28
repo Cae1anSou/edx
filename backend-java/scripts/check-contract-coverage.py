@@ -12,7 +12,7 @@ def normalize_path(path: str) -> str:
     p = p.split("?", 1)[0]
     # Normalize JS template vars so route parameters can still match.
     p = re.sub(r"\$\{[^}]+\}", "placeholder", p)
-    p = p.replace("`", "")
+    p = p.replace("`", "").rstrip(",")
     # Trim trailing non-path noise from string templates/chaining.
     p = re.sub(r"[^A-Za-z0-9_/\.\-{},:]+$", "", p)
     # Handle malformed extracted values where comma-separated IDs were split by "/".
@@ -47,10 +47,15 @@ def main() -> None:
 
     matched: list[str] = []
     unmatched: list[str] = []
+    unresolved_templates: list[str] = []
     for path in frontend_lines:
         normalized = normalize_path(path)
+        if "${" in normalized:
+            unresolved_templates.append(path)
+            unmatched.append(path)
+            continue
         if any(p.match(normalized) for p in spring_patterns):
-            matched.append(path)
+            matched.append(normalized)
         else:
             unmatched.append(path)
 
@@ -59,12 +64,16 @@ def main() -> None:
         "",
         f"- Spring endpoints indexed: {len(spring_paths)}",
         f"- Frontend-discovered API paths: {len(frontend_lines)}",
-        f"- Matched: {len(matched)}",
+        f"- Matched: {len(set(matched))}",
         f"- Unmatched: {len(unmatched)}",
+        f"- Unresolved template expressions: {len(unresolved_templates)}",
         "",
         "## Matched Frontend Paths",
     ]
-    report.extend([f"- {p}" for p in matched] or ["- (none)"])
+    report.extend([f"- {p}" for p in sorted(set(matched))] or ["- (none)"])
+    report.append("")
+    report.append("## Unresolved Template Paths")
+    report.extend([f"- {p}" for p in sorted(set(unresolved_templates))] or ["- (none)"])
     report.append("")
     report.append("## Unmatched Frontend Paths")
     report.extend([f"- {p}" for p in unmatched] or ["- (none)"])

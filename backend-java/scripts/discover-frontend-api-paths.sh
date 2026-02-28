@@ -28,9 +28,10 @@ rg -o --no-filename \
   --glob "!**/vendor/**" \
   --glob "!**/node_modules/**" \
   --glob "!**/tests/**" \
+  | tr -d '`' \
   | sed '/^\/\//d' \
   | sed -E 's/[^A-Za-z0-9_\/\.\-\?\&=\{\}\$:%,+]*$//' \
-  | sed -E 's/[`]+$//' \
+  | sed -E 's/,+$//' \
   | sed -E 's/\)\.done$//' \
   | sort -u > "${OUT_FILE}" || true
 

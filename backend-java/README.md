@@ -101,9 +101,10 @@ cd backend-java
 - `app.certificate.repository=inmemory|jdbc`
 - `app.job-orchestrator.repository=inmemory|jdbc`
 - `app.studio-dashboard.dist-dir=../frontend-app-studio-dashboard/dist`
+- `app.security.auth-context-signature-secret=`（可选。配置后会强制校验 `X-Auth-Context-Signature`）
 
 ## 约定
-- `PUT` 接口支持请求头 `X-Idempotency-Key`，用于幂等更新。
+- 通知偏好 `PUT` 接口支持请求头 `X-Idempotency-Key`，用于幂等更新（同 key 绑定同一 user）。
 - 通知偏好更新后会产生日志事件（后续可替换为 Kafka publisher）。
 - 当前目标是直接由 Spring 承载核心 API，不再依赖 Django 灰度切流。
 - 统一响应格式：`{ code, message, data, error }`。

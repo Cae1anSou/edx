@@ -6,11 +6,12 @@ import java.util.UUID;
 
 import org.openedx.backend.common.event.DomainEventPublisher;
 import org.openedx.backend.common.api.DomainNotFoundException;
+import org.openedx.backend.common.exception.BusinessException;
 import org.openedx.backend.notification.domain.NotificationPreference;
 import org.openedx.backend.notification.domain.event.NotificationPreferenceChangedEvent;
 import org.openedx.backend.notification.infra.idempotency.NotificationIdempotencyRepository;
 import org.openedx.backend.notification.infra.NotificationPreferenceRepository;
-import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -37,21 +38,37 @@ public class NotificationPreferenceService {
     }
 
     public NotificationPreference upsert(String userId, boolean emailEnabled, boolean smsEnabled, String idempotencyKey) {
-        if (StringUtils.hasText(idempotencyKey) && idempotencyRepository.exists(idempotencyKey)) {
-            return repository.findByUserId(userId)
-                    .orElseThrow(() -> new DomainNotFoundException("Notification preference not found for user: " + userId));
+        if (StringUtils.hasText(idempotencyKey)) {
+            String owner = idempotencyRepository.findOwner(idempotencyKey);
+            if (owner != null) {
+                if (!owner.equals(userId)) {
+                    throw new BusinessException(
+                            "IDEMPOTENCY_KEY_CONFLICT",
+                            "X-Idempotency-Key is already bound to a different user",
+                            HttpStatus.CONFLICT
+                    );
+                }
+                return repository.findByUserId(userId)
+                        .orElseThrow(() -> new DomainNotFoundException("Notification preference not found for user: " + userId));
+            }
+
+            boolean reserved = idempotencyRepository.saveIfAbsent(idempotencyKey, userId);
+            if (!reserved) {
+                String currentOwner = idempotencyRepository.findOwner(idempotencyKey);
+                if (userId.equals(currentOwner)) {
+                    return repository.findByUserId(userId)
+                            .orElseThrow(() -> new DomainNotFoundException("Notification preference not found for user: " + userId));
+                }
+                throw new BusinessException(
+                        "IDEMPOTENCY_KEY_CONFLICT",
+                        "X-Idempotency-Key is already bound to a different user",
+                        HttpStatus.CONFLICT
+                );
+            }
         }
 
         NotificationPreference updated = new NotificationPreference(userId, emailEnabled, smsEnabled, Instant.now());
         NotificationPreference saved = repository.save(updated);
-
-        if (StringUtils.hasText(idempotencyKey)) {
-            try {
-                idempotencyRepository.save(idempotencyKey, userId);
-            } catch (DuplicateKeyException ignored) {
-                // Another concurrent request with the same idempotency key already persisted the marker.
-            }
-        }
 
         eventPublisher.publish(new NotificationPreferenceChangedEvent(
                 UUID.randomUUID().toString(),

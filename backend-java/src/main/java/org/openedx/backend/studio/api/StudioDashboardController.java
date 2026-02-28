@@ -2,6 +2,8 @@ package org.openedx.backend.studio.api;
 
 import jakarta.validation.Valid;
 import org.openedx.backend.common.api.ApiResponse;
+import org.openedx.backend.common.security.annotation.RequireLogin;
+import org.openedx.backend.common.security.annotation.RequireRole;
 import org.openedx.backend.studio.application.StudioDashboardService;
 import org.openedx.backend.studio.application.StudioDashboardService.CreatedResource;
 import org.openedx.backend.studio.application.StudioDashboardService.StudioDashboardPayload;
@@ -22,6 +24,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/studio/v1")
+@RequireLogin
 public class StudioDashboardController {
 
     private final StudioDashboardService service;
@@ -50,6 +53,7 @@ public class StudioDashboardController {
     }
 
     @PostMapping("/courses")
+    @RequireRole("INSTRUCTOR")
     public ApiResponse<CreateStudioResourceResponse> createCourse(@Valid @RequestBody CreateStudioCourseRequest request) {
         CreatedResource created = service.createCourse(
                 request.displayName(),
@@ -62,6 +66,7 @@ public class StudioDashboardController {
     }
 
     @PostMapping("/courses/rerun")
+    @RequireRole("INSTRUCTOR")
     public ApiResponse<CreateStudioResourceResponse> rerunCourse(@Valid @RequestBody CreateStudioCourseRequest request) {
         CreatedResource created = service.rerunCourse(
                 request.sourceCourseKey(),
@@ -74,6 +79,7 @@ public class StudioDashboardController {
     }
 
     @PostMapping("/libraries")
+    @RequireRole("INSTRUCTOR")
     public ApiResponse<CreateStudioResourceResponse> createLibrary(@Valid @RequestBody CreateStudioLibraryRequest request) {
         CreatedResource created = service.createLibrary(request.displayName(), request.org(), request.number());
         return ApiResponse.success(new CreateStudioResourceResponse(created.id(), created.url()));

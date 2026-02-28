@@ -2,7 +2,7 @@ package org.openedx.backend.notification.infra.idempotency;
 
 public interface NotificationIdempotencyRepository {
 
-    boolean exists(String idempotencyKey);
+    String findOwner(String idempotencyKey);
 
-    void save(String idempotencyKey, String userId);
+    boolean saveIfAbsent(String idempotencyKey, String userId);
 }

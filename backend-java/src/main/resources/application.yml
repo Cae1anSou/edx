@@ -59,3 +59,5 @@ app:
     default-language: en
   studio-dashboard:
     dist-dir: ../frontend-app-studio-dashboard/dist
+  security:
+    auth-context-signature-secret: ""

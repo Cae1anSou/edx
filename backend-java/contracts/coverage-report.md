@@ -1,95 +1,89 @@
 # API Contract Coverage Report
 
 - Spring endpoints indexed: 160
-- Frontend-discovered API paths: 84
-- Matched: 84
+- Frontend-discovered API paths: 82
+- Matched: 74
 - Unmatched: 0
+- Unresolved template expressions: 0
 
 ## Matched Frontend Paths
 - /api/branding/v1/footer
 - /api/bulk_enroll/v1/bulk_enroll
-- /api/ccx/v0/
-- /api/certificates/v0/
-- /api/cohorts/v1/
-- /api/commerce/v0/baskets/
-- /api/content-staging/v1/clipboard/
-- /api/content_search/v2/studio/
-- /api/content_tagging/v1/
-- /api/contentstore/v2/downstreams/
-- /api/contentstore/v2/downstreams/${encodeURIComponent(downstreamBlockId)}/sync`,
-- /api/contentstore/v2/downstreams/${this.downstreamBlockId}/sync`
-- /api/contentstore/v2/downstreams/${this.downstreamBlockId}/sync`,
-- /api/course_home/v1/
-- /api/course_modes/v1/
-- /api/courses/v1/blocks/
-- /api/courses/v1/blocks/${suffix}
-- /api/credit/v1/providers/
-- /api/discounts/v1/
-- /api/discussion/v1/
-- /api/edxnotes/v1/
-- /api/embargo/v1/
+- /api/ccx/v0
+- /api/certificates/v0
+- /api/cohorts/v1
+- /api/commerce/v0/baskets
+- /api/content-staging/v1/clipboard
+- /api/content_search/v2/studio
+- /api/content_tagging/v1
+- /api/contentstore/v2/downstreams
+- /api/contentstore/v2/downstreams/placeholder/sync
+- /api/course_home/v1
+- /api/course_modes/v1
+- /api/courses/v1/blocks
+- /api/credit/v1/providers
+- /api/discounts/v1
+- /api/discussion/v1
+- /api/edxnotes/v1
+- /api/embargo/v1
 - /api/end_point/v1
 - /api/enrollment/v1/enrollment
-- /api/entitlements/v1/entitlements/
-- /api/experiments/v1/
+- /api/entitlements/v1/entitlements
+- /api/experiments/v1
 - /api/financial/v1/assistance
-- /api/instructor/v1/?course_id=${encodeURIComponent(courseId)}
-- /api/instructor/v1/?course_id=${encodedCourseId}`,
-- /api/instructor/v2/
-- /api/instructor/v2/courses/${encodeURIComponent(courseId)}
-- /api/instructor/v2/courses/${encodeURIComponent(params.courseId)}/instructor_tasks${query}
-- /api/instructor/v2/courses/${encodedCourseId}/instructor_tasks${problemQuery}`,
-- /api/instructor/v2/courses/${encodedCourseId}`,
-- /api/instructor_task/v1/
-- /api/learning_sequences/v1/
-- /api/libraries/v2/
-- /api/mfe_config/v1${suffix}
-- /api/modulestore_migrator/v1/
-- /api/notifications/v3/configurations/
-- /api/olx-export/v1/
-- /api/ora_staff_grader/v1/
-- /api/organizations/v0/
+- /api/instructor/v1
+- /api/instructor/v2
+- /api/instructor/v2/courses/placeholder
+- /api/instructor/v2/courses/placeholder/instructor_tasks
+- /api/instructor_task/v1
+- /api/learning_sequences/v1
+- /api/libraries/v2
+- /api/mfe_config/v1
+- /api/modulestore_migrator/v1
+- /api/notifications/v3/configurations
+- /api/olx-export/v1
+- /api/ora_staff_grader/v1
+- /api/organizations/v0
 - /api/profile_images/v0/staff/remove
 - /api/profile_images/v0/staff/upload
 - /api/studio/v1/courses
 - /api/studio/v1/courses/rerun
 - /api/studio/v1/dashboard
 - /api/studio/v1/libraries
-- /api/studio/v1/notifications/${encodeURIComponent(notificationId)}
+- /api/studio/v1/notifications/placeholder
 - /api/studio/v1/organizations
-- /api/support/v1/manage_course_team/
-- /api/support/v1/manage_course_team/?email=${query}
-- /api/tasks/v0/
-- /api/tasks/v0/${taskId}/
-- /api/team/v0/team_membership/${encodeURIComponent(teamId)},${encodeURIComponent(username)}${suffix}
-- /api/team/v0/team_memberships/
-- /api/team/v0/teams/
-- /api/team/v0/teams/${encodeURIComponent(teamId)}${suffix}
-- /api/team/v0/teams/${encodeURIComponent(teamId)}/assignments
-- /api/team/v0/topics/${encodeURIComponent(topicId)},${encodeURIComponent(courseId)}
-- /api/third_party_auth/v0/providers/
+- /api/support/v1/manage_course_team
+- /api/tasks/v0
+- /api/tasks/v0/placeholder
+- /api/team/v0/team_membership/placeholder,placeholder
+- /api/team/v0/team_memberships
+- /api/team/v0/teams
+- /api/team/v0/teams/placeholder
+- /api/team/v0/teams/placeholder/assignments
+- /api/team/v0/topics/placeholder,placeholder
+- /api/third_party_auth/v0/providers
 - /api/user/v0/accounts/student
 - /api/user/v0/preferences/student
-- /api/user/v1/account/login_session/
-- /api/user/v1/account/registration/
-- /api/user/v1/accounts/deactivate_logout/
-- /api/user/v1/preferences/email_opt_in/
-- /api/user/v1/preferences/test1/
+- /api/user/v1/account/login_session
+- /api/user/v1/account/registration
+- /api/user/v1/accounts/deactivate_logout
+- /api/user/v1/preferences/email_opt_in
+- /api/user/v1/preferences/test1
 - /api/user/v1/validation/registration
-- /api/user_tours/v1/${encodeURIComponent(user)}
-- /api/user_tours/v1/${encodeURIComponent(user)}`,
-- /api/user_tours/v1/discussions/
-- /api/user_tours/v1/discussions/${tourId}`,
-- /api/v1/bookmarks/
-- /api/v1/search/${suffix}
-- /api/v1/search/?course_id={course_id}&user={user_id}&usage_id={usage_id}&usage_id={usage_id}
-- /api/v2/help_center/articles/search.json?query=${encodeURIComponent(query)}
-- /api/v2/uploads.json${suffix}`,
-- /api/v2/uploads/${encodeURIComponent(token)}.json
-- /api/val/v0/
-- /api/xblock/v2/
-- /enterprise/api/v1/enterprise-learner/
-- /enterprise/api/v1/enterprise-learner/?username=test-learner
+- /api/user_tours/v1/discussions
+- /api/user_tours/v1/discussions/placeholder
+- /api/user_tours/v1/placeholder
+- /api/v1/bookmarks
+- /api/v1/search
+- /api/v2/help_center/articles/search.json
+- /api/v2/uploads.json
+- /api/v2/uploads/placeholder.json
+- /api/val/v0
+- /api/xblock/v2
+- /enterprise/api/v1/enterprise-learner
+
+## Unresolved Template Paths
+- (none)
 
 ## Unmatched Frontend Paths
 - (none)

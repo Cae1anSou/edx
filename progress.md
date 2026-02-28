@@ -349,3 +349,267 @@
 | Maven tests (course_experience) | `cd backend-java && mvn -Dmaven.repo.local=/tmp/.m2 test` | New course_experience tests pass | `Tests run: 24, Failures: 0, Errors: 0` | PASS |
 | Maven tests (lang_pref/dark_lang compat) | `cd backend-java && mvn -Dmaven.repo.local=/tmp/.m2 test` | New language compatibility tests pass | `Tests run: 25, Failures: 0, Errors: 0` | PASS |
 | Maven tests (toggles compat) | `cd backend-java && mvn -Dmaven.repo.local=/tmp/.m2 test` | New toggle-state tests pass | `Tests run: 26, Failures: 0, Errors: 0` | PASS |
+| Maven tests (legacy/user compat sweep) | `cd backend-java && mvn -Dmaven.repo.local=/tmp/.m2 test` | Legacy/user compatibility tests pass | `Tests run: 27, Failures: 0, Errors: 0` | PASS |
+
+## Session: 2026-02-28 (Frontend Decoupling Completion)
+
+### Phase 26: Frontend Compatibility Closure
+- **Status:** in_progress
+- Actions taken:
+  - Completed legacy notification compatibility on React side:
+    - Added `v2` preferences fetch.
+    - Added one-click update GET/POST and optional patch variant support.
+  - Expanded team-management query compatibility:
+    - Added `email/username/user_id` search inputs.
+    - Added teams `expand` and membership `admin` query handling.
+  - Closed SPA route parity gaps by adding:
+    - `/course/:courseKey`
+    - `/rerun/`
+    - `/rerun/:sourceCourseKey/`
+  - Added automated parity script:
+    - `backend-java/scripts/check-spa-route-parity.py`
+  - Updated docs:
+    - `frontend-app-studio-dashboard/README.md`
+    - `backend-java/README.md`
+
+## Test Results (Frontend Decoupling)
+| Test | Input | Expected | Actual | Status |
+|------|-------|----------|--------|--------|
+| SPA route parity | `python3 backend-java/scripts/check-spa-route-parity.py` | No missing frontend routes | `backend routes: 32`, `frontend routes: 32`, passed | PASS |
+| Frontend install/build | `npm install && npm run build` (frontend-app-studio-dashboard) | Build succeeds | `esbuild spawnSync EPERM` in current sandbox | BLOCKED |
+
+## Error Log (Frontend Decoupling)
+| Timestamp | Error | Attempt | Resolution |
+|-----------|-------|---------|------------|
+| 2026-02-28 | `npm install` failed at `esbuild` with `EPERM` | 1 | Switched to static API/route parity verification and documented blocked full build |
+
+### Phase 26 Scope Verification (LMS/CMS)
+- **Status:** in_progress
+- Actions taken:
+  - Scanned repository structure and confirmed `lms/` and `cms/` currently only contain `static/` resources.
+  - Verified absence of Django page-layer sources (`views.py`, `urls.py`, `templates/`) within this snapshot.
+  - Marked full LMS/CMS page migration as blocked by missing source scope in this repository.
+
+### Phase 26 Legacy Source Pull from master
+- **Status:** in_progress
+- Actions taken:
+  - Pulled migration reference sources from `master` into `migration-reference/master`:
+    - `cms/urls.py`, `lms/urls.py`
+    - key templates (`course-create-rerun`, `manage_users`, `library`, `videos_index`, `lms/dashboard`)
+    - CMS JS entry files (`main.js`, `require-config.js`)
+  - Added route-alias migration mappings for legacy CMS paths to React pages.
+  - Extended backend SPA route controller and React router to support legacy aliases.
+  - Added `migration-reference/FRONTEND_MIGRATION_MAP.md` to track source->target mapping.
+| Maven tests (after legacy route alias migration) | `cd backend-java && mvn test -q` | All tests pass after controller route expansion | PASS | PASS |
+
+### Phase 26 Legacy LMS Entry Migration
+- **Status:** in_progress
+- Actions taken:
+  - Added LMS entry page `LmsDashboardPage` and routed `/dashboard` to React.
+  - Added LMS course route aliases `/courses`, `/courses/:coursePath`, `/courses/*`.
+  - Expanded backend SPA carrier routes for LMS aliases (`/dashboard`, `/courses/...`).
+  - Added legacy-path param seeding to React pages:
+    - `InstructorToolsPage` (`courseKey`)
+    - `TeamsV0Page` (`courseKey/groupConfigurationId/groupId`)
+    - `UploadsPage` (`courseKey/edxVideoId`)
+    - `LearnerExperiencePage` (`coursePath/*`)
+    - `ResourceBuilderPage` (`courseKey`)
+
+## Test Results (LMS Entry Migration)
+| Test | Input | Expected | Actual | Status |
+|------|-------|----------|--------|--------|
+| SPA route parity | `python3 backend-java/scripts/check-spa-route-parity.py` | Backend routes covered in frontend | Passed (51 backend routes covered) | PASS |
+| Backend regression | `cd backend-java && mvn test -q` | No test regressions | Passed | PASS |
+
+### Phase 26 Legacy Courses View-Level Migration
+- **Status:** in_progress
+- Actions taken:
+  - Reworked `/courses/*` handling from generic fallback to view-aware page logic.
+  - Added `LegacyCoursesPage` view detection and data loading by legacy sub-path:
+    - `about`, `courseware`, `progress`, `instructor`, `discussion`, `bookmarks`.
+  - Added in-page legacy navigation between sub-views for a detected course key.
+  - Added enrollment action in `about` view (`Enroll Current Course`) for course-scoped routes.
+
+## Test Results (Legacy Courses View-Level)
+| Test | Input | Expected | Actual | Status |
+|------|-------|----------|--------|--------|
+| SPA route parity | `python3 backend-java/scripts/check-spa-route-parity.py` | no backend route missing in frontend | Passed | PASS |
+| Backend regression | `cd backend-java && mvn test -q` | no backend regressions | Passed | PASS |
+
+### Phase 26 Legacy Courses Deepening
+- **Status:** in_progress
+- Actions taken:
+  - Added view-specific parsing fields for courseware/progress routes (`section/subsection/position`, `studentId`).
+  - Added per-view data loading and controls for `/courses/*`:
+    - progress user selector
+    - instructor `problem_location_str` filter
+    - in-page subview navigation links
+  - Added `fetchLearningProgress(courseId, userId)` API client and wired it into progress view.
+  - Added additional LMS legacy alias shell page and route aliases (`course_modes`, `verify_student`, `support`, `wiki`).
+
+## Test Results (Legacy Courses Deepening)
+| Test | Input | Expected | Actual | Status |
+|------|-------|----------|--------|--------|
+| SPA route parity | `python3 backend-java/scripts/check-spa-route-parity.py` | backend routes covered | Passed (`backend routes: 55`) | PASS |
+| Backend regression | `cd backend-java && mvn test -q` | no regressions | Passed | PASS |
+### Phase 26: Legacy Route-to-Page Deepening (2026-02-28, continued)
+- Added backend SPA compatibility aliases for additional legacy entry shapes:
+  - Trailing slash variants (`/course/{key}/`, `/team/{key}/`, `/course_team/.../`, `/courses/{path}/`, `/library/{key}/team/`).
+  - Root entries for LMS/CMS families (`/course_modes`, `/verify_student`, `/support`, `/wiki`, `/search`, `/catalog`, `/api-admin`, `/howitworks/`, `/signin_redirect_to_lms/`, `/request_course_creator/`, `/signin`, `/signup`, `/accessibility`, `/status`).
+- Avoided regression by **not** mapping `/update_lang/` root to SPA (keeps backend language-preview endpoint behavior).
+- React route migration deepening:
+  - Re-mapped many legacy paths from generic shell pages to concrete React pages.
+  - LMS: `course_modes/verify_student/api-admin -> IdentityAccessPage`, `support -> HelpCenterPage`, `search/catalog -> SearchCommercePage`, `wiki -> LearnerExperiencePage`.
+  - CMS: `import/export/checklists -> CourseOperationsPage`, `container/container_embed/orphan/tabs/textbooks -> ContentstorePage`, `video_images -> UploadsPage`, `howitworks/signin_redirect_to_lms/request_course_creator/signin/signup -> DashboardPage`, `accessibility/status -> SystemStatusPage`.
+### Phase 26: Legacy Context Seeding + Help Route Migration (2026-02-28, continued)
+- Replaced `/help_token*` route target from legacy shell to concrete `HelpCenterPage`.
+- Added route-context seeding for legacy URLs:
+  - `CourseOperationsPage`: auto-detects course key from `/import* /export* /checklists*` legacy paths and pre-fills payload.
+  - `ContentstorePage`: auto-detects course key/block key from `/tabs* /textbooks* /container* /container_embed* /orphan*` paths.
+  - `HelpCenterPage`: auto-seeds query from `/support/*` and `/help_token/*` paths.
+  - `SearchCommercePage`: auto-seeds `course_id/user` from query params.
+  - `IdentityAccessPage`: now displays current legacy path context.
+- Further reduced shell-route usage:
+  - `/update_lang/*` now mapped to `IdentityAccessPage`.
+  - `/help_token*` mapped to `HelpCenterPage`.
+### Phase 26.3: Video/Transcript Legacy Flow Migration (2026-02-28)
+- Expanded Uploads migration scope from generic upload token flow to legacy video/transcript surface:
+  - Added API clients for `generate_video_upload_link`, `video_images_upload_enabled`, `video_features`, `transcript_preferences`, `transcript_credentials`, `video_encodings_download`.
+  - `UploadsPage` now supports these operations and displays their responses.
+- Added deep-link context seeding in `UploadsPage` from legacy paths:
+  - `/videos/*`, `/video_images/*`, `/generate_video_upload_link/*`, `/transcript_*`, `/video_encodings_download/*`.
+- Added frontend routes and backend SPA carrier routes for transcript/video legacy endpoints, including trailing-slash variants.
+- Validation:
+  - Route parity check passed (`backend routes: 99`).
+  - Backend Maven tests passed.
+### Phase 26.4: CMS Legacy Authoring Entry Expansion (2026-02-28)
+- Added route migration for additional CMS legacy entries:
+  - `course_info`, `course_info_update`, `course_notifications`, `course/<key>/search_reindex`
+  - `xblock/*` authoring views
+  - `transcripts/*` utility actions
+- Mapped these routes to existing React pages (`ResourceBuilderPage`, `NotificationsCenterPage`, `CourseOperationsPage`, `ContentstorePage`, `UploadsPage`).
+- Updated page context behavior:
+  - `CourseOperationsPage` now extracts course key from `search_reindex` path.
+  - `ContentstorePage` now seeds block key from `xblock/*` routes.
+  - `NotificationsCenterPage` now shows current legacy route context.
+- Validation passed: SPA route parity and backend Maven tests.
+### Phase 26.5: Legacy Error/Org + LMS Deep-Link Parsing (2026-02-28)
+- Added migration routes for legacy org/error entries:
+  - `/organizations` -> `IdentityAccessPage`
+  - `/not_found`, `/server_error`, `/403`, `/404`, `/429`, `/500` -> `SystemStatusPage`
+  - plus `/accessibility/` trailing slash alias.
+- Added backend SPA carrier support for the same route set.
+- Enhanced `LegacyCoursesPage` deep-link parser:
+  - `jump_to` / `jump_to_id` now treated as courseware route context.
+  - `course_wiki` / `wiki` now mapped to discussion view context.
+- Validation passed: parity + backend tests.
+### Phase 26.6: Identity Route Semantics Improvement (2026-02-28)
+- Improved `IdentityAccessPage` behavior for legacy `course_modes*` routes:
+  - Detects `course_modes` path family and loads `/api/course_modes/v1/` response in-page.
+- This reduces generic landing behavior for identity routes and aligns content with legacy intent.
+- Validation passed: route parity + backend tests.
+### Phase 26.7: Slashful Course-Key Compatibility (2026-02-28)
+- Added wildcard route aliases for legacy paths where course keys can be slash-delimited (`org/course/run`):
+  - `course_info*`, `course_info_update*`, `course_notifications*`,
+  - `generate_video_upload_link*`, `transcript_preferences*`, `transcript_credentials*`, `video_encodings_download*`.
+- Implemented path-based course-key parsing (including slashful keys) in:
+  - `ResourceBuilderPage`, `NotificationsCenterPage`, `UploadsPage`, `CourseOperationsPage`, `ContentstorePage`, `TeamManagementPage`, `TeamsV0Page`.
+- Validation passed: parity + backend tests.
+### Phase 26.8: Route-Aware Auto-Execution Improvements (2026-02-28)
+- `HelpCenterPage`: for `support/help_token` seeded routes, auto-runs one search request after seeding query.
+- `SearchCommercePage`: for `search/catalog` entry routes, auto-runs legacy search when seeded params exist.
+- `LearnerExperiencePage`: improved course-key parsing for slashful and `course-v1` styles and shows current path.
+- Validation passed: route parity + backend tests.
+### Phase 26.9: XBlock/Transcript Route Hardening (2026-02-28)
+- Added trailing-slash aliases for `/transcripts/*` in frontend routes and backend SPA carrier routes.
+- Added wildcard frontend aliases for xblock paths:
+  - `/xblock/*`, `/xblock/container/*`, `/xblock/outline/*`.
+- Improved `ContentstorePage` path parsing to preserve full block/usage keys instead of truncating at first segment.
+- Validation passed: route parity + backend tests.
+### Phase 26.10: LMS Tail Entry Migration (2026-02-28)
+- Added legacy LMS entries to SPA migration map and routes:
+  - `/change_enrollment` -> `LearnerServicesPage`
+  - `/notify*` -> `LearnerExperiencePage`
+  - `/rss_proxy*` -> `PlatformIntegrationsPage`
+- Added backend SPA carrier support for the same routes.
+- Enhanced `LearnerServicesPage` route awareness:
+  - reads `course_id` from query string and pre-fills enrollment/financial payload.
+  - displays current path and seeded course key.
+- Validation passed: parity + backend tests.
+### Phase 26.11: Notify/RSS Root Route Closure (2026-02-28)
+- Added root route coverage for `/notify` and `/rss_proxy` in both React router and Spring SPA carrier.
+- Improved route observability:
+  - `LearnerExperiencePage` now shows notify subpath context.
+  - `PlatformIntegrationsPage` now shows rss-proxy subpath context.
+- Validation passed: parity + backend tests.
+### Phase 26.12: Dashboard Subroute + Search-Reindex Legacy Shape (2026-02-28)
+- Added dashboard subroute compatibility:
+  - frontend `/dashboard/*` -> `LmsDashboardPage`
+  - backend SPA carrier `/dashboard/{dashboardPath:.+}` (+ trailing slash)
+- Added old-style search-reindex route compatibility:
+  - frontend `/course/:org/:number/:run/search_reindex` (+ trailing slash) -> `CourseOperationsPage`
+- `LmsDashboardPage` now shows current path for legacy subroute observability.
+- Validation passed: parity + backend tests.
+### Phase 26.13: Notify/RSS Trailing-Slash Hardening (2026-02-28)
+- Added explicit trailing-slash subpath route aliases for `notify` and `rss_proxy` in frontend router.
+- Added matching trailing-slash SPA carrier routes in Spring controller.
+- Updated migration map notes for optional trailing slash behavior.
+- Validation passed: parity + backend tests.
+### Phase 26.14: Internal SPA Entry Slash Compatibility (2026-02-28)
+- Added trailing-slash aliases for core migrated React entry routes on both frontend and backend carrier, including:
+  - notifications, notification-preferences, help-center, user-tours, mfe-branding,
+  - legacy-compatibility, api-families, teams-v0, uploads, contentstore,
+  - learner-services, instructor-tools, legacy-system-apis, course-operations,
+  - learner-experience, platform-integrations, search-commerce,
+  - authoring-apis, identity-access, compliance, system-status,
+  - notifications-center, resource-builder.
+- Fixed a transient route-array syntax issue in `StudioDashboardFrontendController` and revalidated.
+- Validation passed: parity + backend tests.
+### Phase 26.15: Old-Style Search-Reindex Backend Closure (2026-02-28)
+- Added explicit backend SPA carrier aliases for old-style search_reindex route:
+  - `/course/{org}/{number}/{run}/search_reindex` (+ trailing slash).
+- Enhanced `DashboardPage` route observability:
+  - shows current path and parsed legacy course key for `/course/*` entries.
+- Updated migration mapping note to indicate old-style course-key support.
+- Validation passed: parity + backend tests.
+### Phase 26.16: Authoring/System Route Subpath Support (2026-02-28)
+- Added frontend subpath aliases:
+  - `/authoring-apis/*`
+  - `/legacy-system-apis/*`
+- Added backend SPA carrier aliases:
+  - `/authoring-apis/{authoringPath:.+}`
+  - `/legacy-system-apis/{systemPath:.+}`
+- Enhanced page-level context:
+  - `AuthoringApisPage` now parses route and displays legacy course key from `/settings/advanced/*` or `/authoring-apis/*`.
+  - `LegacySystemApisPage` now displays current path.
+- Validation passed: parity + backend tests.
+### Phase 26.17: Signin/Signup Slash + Dashboard Subpath UX (2026-02-28)
+- Added `/signin/` and `/signup/` aliases in both frontend router and backend SPA carrier.
+- Enhanced `LmsDashboardPage` with dashboard subpath context display for `/dashboard/*` entries.
+- Updated migration map to state optional trailing slash for signin/signup entries.
+- Validation passed: parity + backend tests.
+### Phase 26.18: Parameterized Route Slash Backfill (2026-02-28)
+- Backfilled backend SPA carrier trailing-slash aliases for parameterized routes already supported by frontend:
+  - rerun/course_rerun source-key variants,
+  - tasks,
+  - videos,
+  - group_configurations,
+  - settings/details|grading|advanced.
+- This closes URL normalization mismatches between frontend and backend carrier layers.
+- Validation passed: parity + backend tests.
+### Phase 26.19: Wildcard Route Context Parsing Backfill (2026-02-28)
+- Improved page-level path parsing for wildcard-matched legacy routes:
+  - `InstructorToolsPage` now parses course/grader from `/settings/grading/*`.
+  - `ResourceBuilderPage` now parses course from `/settings/details/*`.
+  - `TeamManagementPage` now parses course from `/team/*` when params are absent.
+- These fixes close context-loss cases where routes enter via wildcard aliases.
+- Validation passed: parity + backend tests.
+### Phase 26.20: Legacy Tail Route Sweep (2026-02-28)
+- Added remaining legacy entry aliases from `master` references in both frontend router and backend SPA carrier:
+  - identity/lang: `/lang_pref/update_language`
+  - status/util: `/event`, `/calculate`
+  - content authoring: `/preview/xblock/*`, `/xblock/resource/*`
+  - operations/compliance: `/export_git/*`, `/course/*/entrance_exam`, `/certificates/*`
+  - authoring doc endpoints: `/authoring-api/ui`, `/authoring-api/schema`
+- Updated migration map with these route families.
+- Validation passed: parity + backend tests.

@@ -4,7 +4,7 @@
 按照 `BACKEND_REFACTOR_PLAN.md` 持续推进后端重构：完成分支与基线提交后，落地可扩展的 Java 后端基础能力，并进入第一波迁移准备（RFC、持久化、兼容路由）。
 
 ## Current Phase
-Phase 25
+Phase 26
 
 ## Phases
 ### Phase 1: Branch & Baseline Commit
@@ -194,6 +194,15 @@ Phase 25
 - [ ] Commit phase-25 changes
 - **Status:** in_progress
 
+### Phase 26: Frontend Decoupling Completion (React)
+- [x] Close legacy notification compatibility gaps (`v2/v3`, one-click update GET/POST/patch variants)
+- [x] Upgrade team management query compatibility (`email/username/user_id`, team `expand`, membership `admin`)
+- [x] Align React SPA routes with backend frontend-controller route set
+- [x] Add automated parity check script for backend-vs-frontend SPA routes
+- [ ] Run full frontend build in unrestricted environment and fix any runtime regressions (blocked in current sandbox)
+- [ ] Commit phase-26 changes
+- **Status:** in_progress
+
 ## Key Questions
 1. 如何把第一批 Java 代码变成可复制的迁移模板，而不是一次性 demo？
 2. 如何在不影响现网的前提下支持新旧接口并行（兼容路径 + 可回退）？
@@ -211,3 +220,137 @@ Phase 25
 |-------|---------|------------|
 | `mvn test` failed writing `~/.m2` | 1 | Switched to `-Dmaven.repo.local=/tmp/.m2` |
 | Maven dependency resolution failed (`repo.maven.apache.org` DNS) | 2 | Resolved by enabling networked Maven download (RAN) and rerunning tests |
+| `npm install` for `frontend-app-studio-dashboard` failed (`esbuild` spawnSync EPERM) | 1 | Continued with static route/API parity checks; build verification pending in unrestricted Node environment |
+| Cannot perform full LMS/CMS page migration in this repo snapshot | 1 | `lms/` and `cms/` contain only `static/` assets; no Django views/templates/urls to migrate |
+### Phase 26.1: Legacy Route Deepening and Regression Guard
+- [x] Expand trailing-slash and root-entry compatibility routes in Spring SPA controller.
+- [x] Re-map LMS/CMS legacy route families from shell placeholders to concrete React pages.
+- [x] Fix `/update_lang/` root endpoint regression by excluding it from SPA mapping.
+- [x] Re-run route parity and backend tests.
+- [ ] Re-run frontend build in unrestricted node environment (still blocked in current sandbox).
+- **Status:** in_progress
+### Phase 26.2: Legacy Deep-Link Operability
+- [x] Move `/help_token*` from shell page to concrete React help page.
+- [x] Add route-context prefill for `import/export/checklists` migration page.
+- [x] Add route-context prefill for `container/tabs/textbooks` migration page.
+- [x] Add route-context prefill for support/help-token/search entry flows.
+- [x] Re-run SPA parity and backend tests.
+- [ ] Run frontend build in unrestricted environment and fix TS/runtime issues if any (sandbox blocked).
+- **Status:** in_progress
+### Phase 26.3: Media/Transcript Compatibility Completion
+- [x] Add React API clients for legacy video/transcript endpoint family.
+- [x] Expand Uploads page with operation panels for transcript/video workflows.
+- [x] Add route aliases and backend SPA carrier paths for transcript/video endpoints.
+- [x] Add deep-link seed parsing for legacy media URLs.
+- [x] Re-run parity and backend tests.
+- [ ] Frontend build/runtime verification in unrestricted environment.
+- **Status:** in_progress
+### Phase 26.4: Legacy CMS Entry Closure
+- [x] Migrate `course_info/course_info_update/course_notifications` legacy routes.
+- [x] Migrate `xblock/*` legacy authoring routes.
+- [x] Migrate `transcripts/*` utility routes.
+- [x] Add page-level route-context extraction where needed.
+- [x] Re-run parity and backend tests.
+- [ ] Frontend build/runtime verification in unrestricted environment.
+- **Status:** in_progress
+### Phase 26.5: Tail Route Coverage
+- [x] Add `/organizations` route migration.
+- [x] Add legacy error preview route migration (`/403/404/429/500/not_found/server_error`).
+- [x] Add `/accessibility/` trailing-slash alias.
+- [x] Improve `/courses/*` parser for jump/wiki deep-link semantics.
+- [x] Re-run parity and backend tests.
+- [ ] Frontend build/runtime validation in unrestricted environment.
+- **Status:** in_progress
+### Phase 26.6: Identity Page Deepening
+- [x] Add path-aware behavior for `course_modes*` route family in Identity page.
+- [x] Re-run parity and backend tests.
+- [ ] Frontend build/runtime validation in unrestricted environment.
+- **Status:** in_progress
+### Phase 26.7: Slashful Key Hardening
+- [x] Add wildcard route aliases for slash-delimited course-key routes.
+- [x] Add path-based course-key parsing in affected React pages.
+- [x] Re-run parity and backend tests.
+- [ ] Frontend build/runtime validation in unrestricted environment.
+- **Status:** in_progress
+### Phase 26.8: Route-Aware UX Completion
+- [x] Add auto-run behavior for `support/help_token` -> help search flow.
+- [x] Add auto-run behavior for `search/catalog` -> legacy search flow.
+- [x] Improve learner-experience course-key parsing and path observability.
+- [x] Re-run parity and backend tests.
+- [ ] Frontend build/runtime validation in unrestricted environment.
+- **Status:** in_progress
+### Phase 26.9: XBlock/Transcript Compatibility Hardening
+- [x] Add `/transcripts/*` trailing-slash route compatibility (frontend + backend carrier).
+- [x] Add xblock wildcard aliases in frontend router.
+- [x] Improve contentstore path parsing for full usage/block key extraction.
+- [x] Re-run parity and backend tests.
+- [ ] Frontend build/runtime validation in unrestricted environment.
+- **Status:** in_progress
+### Phase 26.10: LMS Tail Routes
+- [x] Add `/change_enrollment` route migration.
+- [x] Add `/notify*` and `/rss_proxy*` route migration.
+- [x] Enhance learner services page with query-seeded course context.
+- [x] Re-run parity and backend tests.
+- [ ] Frontend build/runtime validation in unrestricted environment.
+- **Status:** in_progress
+### Phase 26.11: Notify/RSS Root Compatibility
+- [x] Add `/notify` and `/rss_proxy` root route migration (frontend + backend carrier).
+- [x] Add route-context observability in destination pages.
+- [x] Re-run parity and backend tests.
+- [ ] Frontend build/runtime validation in unrestricted environment.
+- **Status:** in_progress
+### Phase 26.12: Dashboard and Search-Reindex Closure
+- [x] Add `/dashboard/*` migration and backend carrier support.
+- [x] Add old-style `/course/:org/:number/:run/search_reindex` route aliases.
+- [x] Add dashboard page path observability.
+- [x] Re-run parity and backend tests.
+- [ ] Frontend build/runtime validation in unrestricted environment.
+- **Status:** in_progress
+### Phase 26.13: Notify/RSS Slash Compatibility
+- [x] Add trailing-slash alias routes for `notify` and `rss_proxy` subpaths (frontend + backend carrier).
+- [x] Re-run parity and backend tests.
+- [ ] Frontend build/runtime validation in unrestricted environment.
+- **Status:** in_progress
+### Phase 26.14: Internal Entry Slash Hardening
+- [x] Add trailing-slash aliases for migrated internal React entries (frontend + backend carrier).
+- [x] Re-run parity and backend tests.
+- [ ] Frontend build/runtime validation in unrestricted environment.
+- **Status:** in_progress
+### Phase 26.15: Old-Style Search-Reindex Closure
+- [x] Add backend SPA carrier alias for `/course/{org}/{number}/{run}/search_reindex`.
+- [x] Improve dashboard route observability for `/course/*` entries.
+- [x] Re-run parity and backend tests.
+- [ ] Frontend build/runtime validation in unrestricted environment.
+- **Status:** in_progress
+### Phase 26.16: Authoring/System Subpath Compatibility
+- [x] Add `/authoring-apis/*` and `/legacy-system-apis/*` frontend routes.
+- [x] Add backend SPA carrier support for authoring/system subpaths.
+- [x] Add page-level path/course context display.
+- [x] Re-run parity and backend tests.
+- [ ] Frontend build/runtime validation in unrestricted environment.
+- **Status:** in_progress
+### Phase 26.17: Auth Slash and Dashboard UX
+- [x] Add `/signin/` and `/signup/` compatibility aliases (frontend + backend carrier).
+- [x] Improve dashboard subpath observability.
+- [x] Re-run parity and backend tests.
+- [ ] Frontend build/runtime validation in unrestricted environment.
+- **Status:** in_progress
+### Phase 26.18: Parameterized Slash Backfill
+- [x] Add backend carrier trailing-slash aliases for key parameterized routes.
+- [x] Re-run parity and backend tests.
+- [ ] Frontend build/runtime validation in unrestricted environment.
+- **Status:** in_progress
+### Phase 26.19: Wildcard Context Backfill
+- [x] Add `/settings/grading/*` context parsing in Instructor tools page.
+- [x] Add `/settings/details/*` context parsing in Resource builder page.
+- [x] Add `/team/*` context parsing in Team management page.
+- [x] Re-run parity and backend tests.
+- [ ] Frontend build/runtime validation in unrestricted environment.
+- **Status:** in_progress
+### Phase 26.20: Legacy Tail Route Sweep
+- [x] Add remaining legacy route aliases from master refs in frontend router.
+- [x] Add matching backend SPA carrier aliases.
+- [x] Update migration map and findings/progress logs.
+- [x] Re-run parity and backend tests.
+- [ ] Frontend build/runtime validation in unrestricted environment.
+- **Status:** in_progress

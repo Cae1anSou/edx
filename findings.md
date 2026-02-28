@@ -213,3 +213,100 @@
 
 ## Visual/Browser Findings
 - N/A (no browser/image operations)
+
+## Frontend Decoupling Findings (2026-02-28)
+- React micro-frontend `frontend-app-studio-dashboard` 已覆盖当前 `StudioDashboardFrontendController` 承载的业务页面，但存在兼容细节缺口：
+  - 通知偏好仅覆盖 `v3` 与单一路径，未完整覆盖 legacy `v2` 和 `preferences/update` 的 GET/POST/patch 变体。
+  - 课程团队查询此前仅支持 `email`，后端 legacy 已支持 `email/username/user_id`。
+  - 团队接口的 `expand` 与 membership `admin` 查询参数此前未在页面暴露。
+  - SPA 路由参数形态存在轻微不对齐（后端含 `/course/{courseKey:.+}`、`/rerun/` 形态）。
+- 已完成修复：
+  - API 层新增 `fetchNotificationPreferencesV2`、`get/postNotificationPreferenceUpdate`。
+  - 页面层扩展通知偏好与团队参数输入能力。
+  - React 路由补齐 `/course/:courseKey`、`/rerun/`、`/rerun/:sourceCourseKey/`。
+  - 新增 `backend-java/scripts/check-spa-route-parity.py` 做后端-前端路由一致性验收。
+- 校验结果：
+  - `python3 backend-java/scripts/check-spa-route-parity.py` 返回通过（`backend routes: 32`, `frontend routes: 32`）。
+
+## Scope Blocker (LMS/CMS Full Migration)
+- 当前仓库快照中：
+  - `lms/` 仅包含 `lms/static/**`
+  - `cms/` 仅包含 `cms/static/**`
+- 未发现可迁移的 Django 端页面源（`views.py` / `urls.py` / `templates/`），因此无法在本仓库内完成“LMS/CMS 全量页面迁移到前后端分离”。
+- 结论：本轮可完成的是 Studio/legacy React 微前端迁移闭环；若要继续全量迁移，需要提供包含 LMS/CMS 服务端页面源码的仓库或子模块。
+
+## Master Source Intake (2026-02-28)
+- 用户确认 `master` 分支包含源码后，已从 `master` 抽取迁移参考文件到：
+  - `migration-reference/master/cms/*`
+  - `migration-reference/master/lms/*`
+- 重点参考了 `master:cms/urls.py` 的 legacy Studio 页面路径，并完成 React 路由与后端 SPA 承载路由扩展：
+  - `home/home_library`
+  - `library/...`、`library/.../team`
+  - `course_team/...`
+  - `videos/...`
+  - `group_configurations/...`
+  - `settings/details|grading|advanced/...`
+- 现状：这些 legacy URL 已可进入 React 应用；对应细分页面能力已映射到现有 React 页面模块。
+## Frontend Legacy Routing Findings (2026-02-28, continued)
+- Risk confirmed: mapping `/update_lang/` root into SPA controller breaks backend dark-language compatibility endpoint; test expected `401` but got `500`.
+- Fix applied: removed `/update_lang` and `/update_lang/` from Spring SPA controller and React root route mapping, while retaining `/update_lang/*` compatibility shell route.
+- Migration quality improved by replacing generic shell catch-all usage with domain-specific React pages for major LMS/CMS legacy families.
+## Frontend Legacy UX Findings (2026-02-28, continued)
+- Prior migration phase had many route aliases landing on pages without route-derived context, reducing practical operability when opened from legacy deep links.
+- Added route-context seeding for operations/content/help/search pages to preserve workflow continuity from old LMS/CMS URL patterns.
+- Help token routes now map to Help Center page instead of generic shell, reducing placeholder-path usage.
+## Video/Transcript Migration Findings (2026-02-28)
+- Previously, several CMS media endpoints were only route-carried and lacked corresponding React page actions.
+- Uploads migration now includes first-class operations for video feature probing and transcript-related endpoints, reducing placeholder compatibility behavior.
+- Remaining limitation: frontend build validation is still blocked in this sandbox due to `esbuild` EPERM during install; runtime verification requires unrestricted Node environment.
+## CMS Entry Migration Findings (2026-02-28)
+- Several Studio authoring entry URLs from legacy `cms/urls.py` were not yet routed to React pages (`course_info`, `course_notifications`, `xblock`, `transcripts`).
+- After this phase, these entries are SPA-carried and page-routed with route-context seeding, reducing dead-end paths during cutover.
+## Legacy LMS/CMS Tail Findings (2026-02-28)
+- Additional low-frequency legacy entries (`organizations`, error preview routes) needed explicit SPA migration to avoid fallback redirects.
+- LMS deep links with `jump_to` and wiki-related segments were previously parsed as generic; now classified into courseware/discussion for better continuity.
+## Identity Route Findings (2026-02-28)
+- Legacy identity routes were already mapped but not semantically differentiated.
+- Added path-aware data loading for `course_modes` improves practical migration quality without introducing new route families.
+## Slashful Key Findings (2026-02-28)
+- Legacy routes using old-style `org/course/run` keys can fail when only single-segment params are used.
+- Added wildcard aliases and path parsers to preserve compatibility for slash-delimited keys across CMS/LMS migrated routes.
+## Route-Aware UX Findings (2026-02-28)
+- Some migrated pages still required manual action after opening a legacy deep link.
+- Added route-aware auto-execution for help/search entry pages to reduce friction and better preserve legacy user flow.
+## XBlock/Transcript Hardening Findings (2026-02-28)
+- Trailing slash variants and complex xblock identifiers can break route matching or key extraction if not handled explicitly.
+- Added alias routes and full-key parsing to reduce legacy deep-link breakage in content authoring flows.
+## LMS Tail Entry Findings (2026-02-28)
+- `change_enrollment`, `notify`, and `rss_proxy` are common LMS entry families that were present in legacy URLs but not explicitly mapped in React routes.
+- After mapping and context-seeding, these routes now enter meaningful React pages instead of fallback behavior.
+## Notify/RSS Closure Findings (2026-02-28)
+- Root forms of `notify` and `rss_proxy` were not explicitly carried in backend route map.
+- Added root aliases to avoid 404 on these legacy entry points and improved page-level path diagnostics.
+## Dashboard/Search-Reindex Findings (2026-02-28)
+- Legacy learner dashboard includes subroutes under `/dashboard/`; root-only mapping is insufficient.
+- Old-style `org/course/run` route form for `search_reindex` benefits from explicit 3-segment route aliases on frontend.
+## Notify/RSS Trailing Slash Findings (2026-02-28)
+- Legacy links may include optional trailing slashes on subpaths; explicit aliases reduce route-matching edge cases.
+- Added both frontend and backend carrier aliases to keep behavior consistent.
+## Internal Entry Slash Findings (2026-02-28)
+- Even non-legacy-facing SPA entries benefit from explicit trailing-slash aliases due to proxies/bookmarks that normalize URLs.
+- Added frontend/backed paired aliases to minimize redirect/fallback surprises.
+## Search-Reindex Backend Closure Findings (2026-02-28)
+- Frontend alias existed for old-style search_reindex path while backend carrier lacked an explicit equivalent.
+- Added backend alias to ensure full-path compatibility under Spring SPA routing.
+## Authoring/System Subpath Findings (2026-02-28)
+- Exact-only routes for authoring/system utility pages are brittle when legacy navigation appends subpaths.
+- Added wildcard/subpath aliases plus context display to improve debuggability and deep-link compatibility.
+## Signin/Signup Slash Findings (2026-02-28)
+- Legacy auth entrypoints can be hit with optional trailing slash; explicit aliases reduce unnecessary fallback redirects.
+- Dashboard subpath observability improves validation of learner dashboard deep-link migration.
+## Parameterized Slash Backfill Findings (2026-02-28)
+- Frontend router had several parameterized trailing-slash aliases that backend SPA carrier did not explicitly include.
+- Added backend aliases to avoid mismatch when upstream systems normalize URLs with trailing slash.
+## Wildcard Context Findings (2026-02-28)
+- Wildcard fallback routes can bypass `useParams`-based seeding and leave pages without legacy context.
+- Added location-path parsing in affected pages to restore course-key/grader-key continuity.
+## Legacy Tail Route Sweep Findings (2026-02-28)
+- Master-reference legacy tails still had uncovered SPA entry points (`lang_pref/update_language`, `preview/xblock`, `xblock/resource`, `export_git`, `certificates`, `authoring-api/ui|schema`, `course/*/entrance_exam`, `event`, `calculate`).
+- Added explicit frontend + backend route coverage to reduce remaining 404/fallback cases during LMS/CMS cutover.

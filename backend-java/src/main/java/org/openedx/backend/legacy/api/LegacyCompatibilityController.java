@@ -218,6 +218,60 @@ public class LegacyCompatibilityController {
         }
     }
 
+    @GetMapping("/api/legacy/media/generate_video_upload_link/{courseId}")
+    @RequireLogin
+    public ResponseEntity<?> generateVideoUploadLink(@PathVariable String courseId) {
+        return ResponseEntity.ok(Map.of(
+                "course_id", courseId,
+                "upload_url", "https://uploads.local/" + courseId,
+                "upload_token", "video-up-token-1"
+        ));
+    }
+
+    @GetMapping("/api/legacy/media/video_images_upload_enabled")
+    @RequireLogin
+    public ResponseEntity<?> videoImagesUploadEnabled() {
+        return ResponseEntity.ok(Map.of("enabled", true));
+    }
+
+    @GetMapping("/api/legacy/media/video_features")
+    @RequireLogin
+    public ResponseEntity<?> videoFeatures() {
+        return ResponseEntity.ok(Map.of(
+                "video_upload_enabled", true,
+                "transcripts_enabled", true
+        ));
+    }
+
+    @GetMapping("/api/legacy/media/transcript_preferences/{courseId}")
+    @RequireLogin
+    public ResponseEntity<?> transcriptPreferences(@PathVariable String courseId) {
+        return ResponseEntity.ok(Map.of(
+                "course_id", courseId,
+                "default_language", "en",
+                "provider", "internal"
+        ));
+    }
+
+    @GetMapping("/api/legacy/media/transcript_credentials/{courseId}")
+    @RequireLogin
+    public ResponseEntity<?> transcriptCredentials(@PathVariable String courseId) {
+        return ResponseEntity.ok(Map.of(
+                "course_id", courseId,
+                "credential_type", "service_account",
+                "configured", true
+        ));
+    }
+
+    @GetMapping("/api/legacy/media/video_encodings_download/{courseId}")
+    @RequireLogin
+    public ResponseEntity<?> videoEncodingsDownload(@PathVariable String courseId) {
+        return ResponseEntity.ok(Map.of(
+                "course_id", courseId,
+                "encodings", List.of()
+        ));
+    }
+
     private String currentUser(HttpServletRequest request) {
         String user = request.getHeader("X-User-Id");
         return StringUtils.hasText(user) ? user : null;

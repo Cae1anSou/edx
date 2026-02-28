@@ -136,3 +136,11 @@ cd backend-java
 - `contracts/spring-endpoints.txt`
 - `contracts/frontend-api-paths.txt`
 - `contracts/coverage-report.md`
+
+## SPA 路由迁移一致性校验
+用于校验后端承载的 SPA 路由与 React `App.tsx` 是否一一对齐：
+
+```bash
+cd backend-java
+python3 scripts/check-spa-route-parity.py
+```

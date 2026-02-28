@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -18,11 +17,6 @@ public class StudioLegacyCompatibilityController {
 
     public StudioLegacyCompatibilityController(StudioDashboardService service) {
         this.service = service;
-    }
-
-    @GetMapping("/organizations")
-    public List<String> organizations() {
-        return service.organizations();
     }
 
     @PostMapping("/course/")

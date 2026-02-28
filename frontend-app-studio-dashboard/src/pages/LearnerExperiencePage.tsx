@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import {
   fetchBookmarks,
   fetchCourseHome,
@@ -12,6 +12,31 @@ import {
 } from '../api/studio';
 
 export function LearnerExperiencePage() {
+  const params = useParams<{ coursePath?: string }>();
+  const location = useLocation();
+
+  const parseCourseLike = (segments: string[]) => {
+    if (segments.length === 0) {
+      return '';
+    }
+    if (segments[0].includes(':')) {
+      return decodeURIComponent(segments[0]);
+    }
+    if (segments.length >= 3) {
+      return decodeURIComponent(segments.slice(0, 3).join('/'));
+    }
+    return decodeURIComponent(segments[0]);
+  };
+
+  const wildcardCourse = (() => {
+    if (!location.pathname.startsWith('/courses/')) {
+      return '';
+    }
+    const segments = location.pathname.replace('/courses/', '').split('/').filter(Boolean);
+    return parseCourseLike(segments);
+  })();
+  const routeCourse = params.coursePath ? parseCourseLike([params.coursePath]) : wildcardCourse;
+
   const bookmarksQuery = useQuery({ queryKey: ['lx-bookmarks'], queryFn: fetchBookmarks });
   const courseHomeQuery = useQuery({ queryKey: ['lx-course-home'], queryFn: fetchCourseHome });
   const courseHomeV1Query = useQuery({ queryKey: ['lx-course-home-v1'], queryFn: fetchCourseHomeV1 });
@@ -26,6 +51,19 @@ export function LearnerExperiencePage() {
       <header className="page-header">
         <h1>Learner Experience</h1>
         <p>React migration for learner-facing legacy API surfaces.</p>
+        <p>
+          <strong>Current path:</strong> {location.pathname}
+        </p>
+        {location.pathname.startsWith('/notify') ? (
+          <p>
+            <strong>Legacy notify path:</strong> {decodeURIComponent(location.pathname.replace(/^\/notify\/?/, '') || '/')}
+          </p>
+        ) : null}
+        {routeCourse ? (
+          <p>
+            <strong>Legacy route course key:</strong> {routeCourse}
+          </p>
+        ) : null}
       </header>
 
       <section className="actions">

@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { createCourse, createLibrary, fetchOrganizations, rerunCourse } from '../api/studio';
 import { validateCombinedKeyLength, validateKeyField, validateRequired } from '../validation';
 
@@ -41,6 +41,46 @@ function validateLibrary(input: LibraryPayload): string | null {
 }
 
 export function ResourceBuilderPage() {
+  const location = useLocation();
+  const params = useParams<{ courseKey?: string; providedId?: string }>();
+  const seededCourseKey = params.courseKey ? decodeURIComponent(params.courseKey) : '';
+
+  const routeSeed = useMemo(() => {
+    const pathname = location.pathname.replace(/\/+$/, '');
+    const parseCourseLike = (segments: string[]) => {
+      if (segments.length === 0) {
+        return '';
+      }
+      if (segments[0].includes(':')) {
+        return decodeURIComponent(segments[0]);
+      }
+      if (segments.length >= 3) {
+        return decodeURIComponent(segments.slice(0, 3).join('/'));
+      }
+      return decodeURIComponent(segments[0]);
+    };
+
+    if (pathname.startsWith('/course_info/')) {
+      const rest = pathname.slice('/course_info/'.length).split('/').filter(Boolean);
+      return { courseKey: parseCourseLike(rest), providedId: '' };
+    }
+    if (pathname.startsWith('/course_info_update/')) {
+      const rest = pathname.slice('/course_info_update/'.length).split('/').filter(Boolean);
+      const courseKey = parseCourseLike(rest);
+      const providedIndex = rest[0]?.includes(':') ? 1 : 3;
+      const providedId = rest.length > providedIndex ? decodeURIComponent(rest[providedIndex]) : '';
+      return { courseKey, providedId };
+    }
+    if (pathname.startsWith('/settings/details/')) {
+      const rest = pathname.slice('/settings/details/'.length).split('/').filter(Boolean);
+      return { courseKey: parseCourseLike(rest), providedId: '' };
+    }
+    return { courseKey: seededCourseKey, providedId: params.providedId ? decodeURIComponent(params.providedId) : '' };
+  }, [location.pathname, params.providedId, seededCourseKey]);
+
+  const effectiveCourseKey = routeSeed.courseKey || seededCourseKey;
+  const seededProvidedId = routeSeed.providedId;
+
   const organizationsQuery = useQuery({ queryKey: ['resource-builder-organizations'], queryFn: fetchOrganizations });
 
   const [courseForm, setCourseForm] = useState<CoursePayload>({ display_name: '', org: '', number: '', run: '' });
@@ -50,8 +90,14 @@ export function ResourceBuilderPage() {
     org: '',
     number: '',
     run: '',
-    source_course_key: ''
+    source_course_key: effectiveCourseKey
   });
+
+  useEffect(() => {
+    if (effectiveCourseKey) {
+      setRerunForm((prev) => ({ ...prev, source_course_key: effectiveCourseKey }));
+    }
+  }, [effectiveCourseKey]);
 
   const createCourseMutation = useMutation({ mutationFn: createCourse });
   const createLibraryMutation = useMutation({ mutationFn: createLibrary });
@@ -62,6 +108,19 @@ export function ResourceBuilderPage() {
       <header className="page-header">
         <h1>Resource Builder</h1>
         <p>React migration for course creation, library creation, and course rerun flows.</p>
+        <p>
+          <strong>Current path:</strong> {location.pathname}
+        </p>
+        {effectiveCourseKey ? (
+          <p>
+            <strong>Legacy route course key:</strong> {effectiveCourseKey}
+          </p>
+        ) : null}
+        {seededProvidedId ? (
+          <p>
+            <strong>Legacy provided id:</strong> {seededProvidedId}
+          </p>
+        ) : null}
       </header>
 
       <section className="actions">

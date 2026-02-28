@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   fetchCcx,
   fetchCertificatesV0,
@@ -59,6 +59,7 @@ const API_ACTIONS: Array<{ label: string; run: () => Promise<Record<string, unkn
 ];
 
 export function LegacySystemApisPage() {
+  const location = useLocation();
   const runMutation = useMutation({
     mutationFn: async ({ action }: { action: () => Promise<Record<string, unknown>> }) => action()
   });
@@ -68,6 +69,9 @@ export function LegacySystemApisPage() {
       <header className="page-header">
         <h1>Legacy System APIs</h1>
         <p>React page for remaining legacy system-style API families.</p>
+        <p>
+          <strong>Current path:</strong> {location.pathname}
+        </p>
       </header>
 
       <section className="actions">

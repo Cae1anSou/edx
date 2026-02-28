@@ -1,17 +1,56 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useMemo, useState } from 'react';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { fetchCourseTeamAssignments, updateCourseTeamAssignments } from '../api/studio';
 
 export function TeamManagementPage() {
-  const [email, setEmail] = useState('');
-  const [lookupEmail, setLookupEmail] = useState<string | null>(null);
+  const location = useLocation();
+  const params = useParams<{ courseKey?: string; email?: string }>();
+  const seededEmail = params.email ? decodeURIComponent(params.email) : '';
+  const seededCourseKey = useMemo(() => {
+    if (params.courseKey) {
+      return decodeURIComponent(params.courseKey);
+    }
+    const pathname = location.pathname.replace(/\/+$/, '');
+    if (!pathname.startsWith('/course_team/')) {
+      if (!pathname.startsWith('/team/')) {
+        return '';
+      }
+      const rest = pathname.slice('/team/'.length).split('/').filter(Boolean);
+      if (rest.length === 0) {
+        return '';
+      }
+      if (rest[0].includes(':')) {
+        return decodeURIComponent(rest[0]);
+      }
+      if (rest.length >= 3) {
+        return decodeURIComponent(rest.slice(0, 3).join('/'));
+      }
+      return decodeURIComponent(rest[0]);
+    }
+    const rest = pathname.slice('/course_team/'.length).split('/').filter(Boolean);
+    if (rest.length === 0) {
+      return '';
+    }
+    if (rest[0].includes(':')) {
+      return decodeURIComponent(rest[0]);
+    }
+    if (rest.length >= 3) {
+      return decodeURIComponent(rest.slice(0, 3).join('/'));
+    }
+    return decodeURIComponent(rest[0]);
+  }, [location.pathname, params.courseKey]);
+
+  const [email, setEmail] = useState(seededEmail);
+  const [username, setUsername] = useState('');
+  const [userId, setUserId] = useState('');
+  const [lookup, setLookup] = useState<{ email?: string; username?: string; userId?: string } | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
   const assignmentsQuery = useQuery({
-    queryKey: ['team-assignments', lookupEmail],
-    queryFn: () => fetchCourseTeamAssignments(lookupEmail ?? ''),
-    enabled: Boolean(lookupEmail)
+    queryKey: ['team-assignments', lookup?.email, lookup?.username, lookup?.userId],
+    queryFn: () => fetchCourseTeamAssignments(lookup ?? {}),
+    enabled: Boolean(lookup)
   });
 
   const updateRole = useMutation({
@@ -39,23 +78,40 @@ export function TeamManagementPage() {
       <header className="page-header">
         <h1>Team Management</h1>
         <p>Lookup and update course team roles.</p>
+        {seededCourseKey ? (
+          <p>
+            <strong>Legacy route course key:</strong> {seededCourseKey}
+          </p>
+        ) : null}
       </header>
 
       <form
         className="create-form"
         onSubmit={(event) => {
           event.preventDefault();
-          if (!email.trim()) {
-            setMessage('A valid email address is required.');
+          if (!email.trim() && !username.trim() && !userId.trim()) {
+            setMessage('At least one filter is required: email, username, or user id.');
             return;
           }
-          setLookupEmail(email.trim());
+          setLookup({
+            email: email.trim() || undefined,
+            username: username.trim() || undefined,
+            userId: userId.trim() || undefined
+          });
           setMessage(null);
         }}
       >
         <label>
           Team member email
           <input value={email} onChange={(event) => setEmail(event.target.value)} placeholder="user@example.com" />
+        </label>
+        <label>
+          Username
+          <input value={username} onChange={(event) => setUsername(event.target.value)} placeholder="staff_user" />
+        </label>
+        <label>
+          User ID
+          <input value={userId} onChange={(event) => setUserId(event.target.value)} placeholder="42" />
         </label>
         <div className="actions">
           <button type="submit">Load Roles</button>
@@ -87,10 +143,10 @@ export function TeamManagementPage() {
               <div className="item-actions">
                 <button
                   type="button"
-                  disabled={updateRole.isPending || !lookupEmail}
+                  disabled={updateRole.isPending || !lookup?.email}
                   onClick={() =>
                     updateRole.mutate({
-                      email: lookupEmail ?? '',
+                      email: lookup?.email ?? '',
                       operations: [{ course_id: item.course_id, role: 'staff', action: 'assign' }]
                     })
                   }
@@ -99,10 +155,10 @@ export function TeamManagementPage() {
                 </button>
                 <button
                   type="button"
-                  disabled={updateRole.isPending || !lookupEmail}
+                  disabled={updateRole.isPending || !lookup?.email}
                   onClick={() =>
                     updateRole.mutate({
-                      email: lookupEmail ?? '',
+                      email: lookup?.email ?? '',
                       operations: [{ course_id: item.course_id, role: 'instructor', action: 'assign' }]
                     })
                   }
@@ -112,10 +168,10 @@ export function TeamManagementPage() {
                 <button
                   type="button"
                   className="secondary-btn"
-                  disabled={updateRole.isPending || !lookupEmail || !item.role}
+                  disabled={updateRole.isPending || !lookup?.email || !item.role}
                   onClick={() =>
                     updateRole.mutate({
-                      email: lookupEmail ?? '',
+                      email: lookup?.email ?? '',
                       operations: [{ course_id: item.course_id, role: (item.role ?? 'staff') as 'staff' | 'instructor', action: 'revoke' }]
                     })
                   }

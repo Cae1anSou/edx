@@ -1,17 +1,25 @@
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   fetchChangeEmailSettings,
+  fetchCourseModesV1,
   fetchNotificationPreferencesV3,
   fetchOrganizationsV0,
   fetchThirdPartyProviders
 } from '../api/studio';
 
 export function IdentityAccessPage() {
+  const location = useLocation();
   const emailSettingsQuery = useQuery({ queryKey: ['identity-email-settings'], queryFn: fetchChangeEmailSettings });
   const notificationPrefsQuery = useQuery({
     queryKey: ['identity-notification-prefs'],
     queryFn: fetchNotificationPreferencesV3
+  });
+  const isCourseModesRoute = location.pathname.startsWith('/course_modes');
+  const courseModesQuery = useQuery({
+    queryKey: ['identity-course-modes'],
+    queryFn: fetchCourseModesV1,
+    enabled: isCourseModesRoute
   });
   const organizationsQuery = useQuery({ queryKey: ['identity-organizations-v0'], queryFn: fetchOrganizationsV0 });
   const providersQuery = useQuery({ queryKey: ['identity-third-party-providers'], queryFn: fetchThirdPartyProviders });
@@ -21,6 +29,9 @@ export function IdentityAccessPage() {
       <header className="page-header">
         <h1>Identity and Access</h1>
         <p>React migration for account settings, org directory, and third-party identity providers.</p>
+        <p>
+          <strong>Current path:</strong> {location.pathname}
+        </p>
       </header>
 
       <section className="actions">
@@ -38,6 +49,13 @@ export function IdentityAccessPage() {
         {notificationPrefsQuery.isLoading ? <p>Loading notification preferences...</p> : null}
         {notificationPrefsQuery.error ? <p className="error-text">Failed to load notification preferences.</p> : null}
         {notificationPrefsQuery.data ? <pre>{JSON.stringify(notificationPrefsQuery.data, null, 2)}</pre> : null}
+        {isCourseModesRoute ? (
+          <>
+            {courseModesQuery.isLoading ? <p>Loading course modes...</p> : null}
+            {courseModesQuery.error ? <p className="error-text">Failed to load course modes.</p> : null}
+            {courseModesQuery.data ? <pre>{JSON.stringify(courseModesQuery.data, null, 2)}</pre> : null}
+          </>
+        ) : null}
       </section>
 
       <section className="create-form">

@@ -1,11 +1,42 @@
 import { useMutation } from '@tanstack/react-query';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useMemo, useState } from 'react';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { fetchInstructorCourseInfo, fetchInstructorSummary, fetchInstructorTasks } from '../api/studio';
 
 export function InstructorToolsPage() {
-  const [courseId, setCourseId] = useState('course-v1:org+num+run');
-  const [problemLocation, setProblemLocation] = useState('');
+  const location = useLocation();
+  const params = useParams<{ courseKey?: string; graderIndex?: string }>();
+  const routeSeed = useMemo(() => {
+    if (params.courseKey) {
+      return {
+        courseId: decodeURIComponent(params.courseKey),
+        graderIndex: params.graderIndex ? decodeURIComponent(params.graderIndex) : ''
+      };
+    }
+    const pathname = location.pathname.replace(/\/+$/, '');
+    if (!pathname.startsWith('/settings/grading/')) {
+      return { courseId: 'course-v1:org+num+run', graderIndex: '' };
+    }
+    const rest = pathname.slice('/settings/grading/'.length).split('/').filter(Boolean);
+    if (rest.length === 0) {
+      return { courseId: 'course-v1:org+num+run', graderIndex: '' };
+    }
+    if (rest[0].includes(':')) {
+      return {
+        courseId: decodeURIComponent(rest[0]),
+        graderIndex: rest[1] ? decodeURIComponent(rest[1]) : ''
+      };
+    }
+    return {
+      courseId: decodeURIComponent(rest.slice(0, 3).join('/')),
+      graderIndex: rest[3] ? decodeURIComponent(rest[3]) : ''
+    };
+  }, [location.pathname, params.courseKey, params.graderIndex]);
+  const seededCourseId = routeSeed.courseId;
+  const seededGraderIndex = routeSeed.graderIndex;
+
+  const [courseId, setCourseId] = useState(seededCourseId);
+  const [problemLocation, setProblemLocation] = useState(seededGraderIndex);
 
   const summaryMutation = useMutation({ mutationFn: fetchInstructorSummary });
   const courseInfoMutation = useMutation({ mutationFn: fetchInstructorCourseInfo });
@@ -19,6 +50,16 @@ export function InstructorToolsPage() {
       <header className="page-header">
         <h1>Instructor Tools</h1>
         <p>React migration for instructor summary, course info, and instructor tasks endpoints.</p>
+        {params.courseKey ? (
+          <p>
+            <strong>Legacy route course key:</strong> {seededCourseId}
+          </p>
+        ) : null}
+        {seededGraderIndex ? (
+          <p>
+            <strong>Legacy route grader index:</strong> {seededGraderIndex}
+          </p>
+        ) : null}
       </header>
 
       <section className="actions">

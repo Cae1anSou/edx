@@ -1,12 +1,54 @@
 import { useMutation } from '@tanstack/react-query';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { fetchBulkDiscussionToggle, fetchMobileApi, fetchYoutubeVideoIds, postBulkEnroll } from '../api/studio';
 
 export function CourseOperationsPage() {
+  const location = useLocation();
   const [courseId, setCourseId] = useState('course-v1:org+num+run');
   const [apiVersion, setApiVersion] = useState('v0');
   const [bulkPayload, setBulkPayload] = useState('{"course_id":"course-v1:org+num+run","emails":"a@example.com"}');
+
+  const legacyRouteCourseId = useMemo(() => {
+    const pathname = location.pathname.replace(/\/+$/, '');
+    const parseCourseLikeFromPath = (restPath: string) => {
+      const segments = restPath.split('/').filter(Boolean);
+      if (segments.length === 0) {
+        return '';
+      }
+      if (segments[0].includes(':')) {
+        return decodeURIComponent(segments[0]);
+      }
+      if (segments.length >= 3) {
+        return decodeURIComponent(segments.slice(0, 3).join('/'));
+      }
+      return decodeURIComponent(segments[0]);
+    };
+    const prefixes = ['/import/', '/import_status/', '/export/', '/export_output/', '/export_status/', '/checklists/'];
+    for (const prefix of prefixes) {
+      if (pathname.startsWith(prefix)) {
+        const raw = parseCourseLikeFromPath(pathname.slice(prefix.length));
+        if (raw) {
+          return raw;
+        }
+      }
+    }
+    if (pathname.startsWith('/course/') && pathname.endsWith('/search_reindex')) {
+      const candidate = pathname.slice('/course/'.length, pathname.length - '/search_reindex'.length).replace(/\/+$/, '');
+      if (candidate) {
+        return decodeURIComponent(candidate);
+      }
+    }
+    return '';
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!legacyRouteCourseId) {
+      return;
+    }
+    setCourseId(legacyRouteCourseId);
+    setBulkPayload(JSON.stringify({ course_id: legacyRouteCourseId, emails: 'a@example.com' }));
+  }, [legacyRouteCourseId]);
 
   const bulkEnrollMutation = useMutation({ mutationFn: postBulkEnroll });
   const discussionMutation = useMutation({ mutationFn: fetchBulkDiscussionToggle });
@@ -18,6 +60,14 @@ export function CourseOperationsPage() {
       <header className="page-header">
         <h1>Course Operations</h1>
         <p>React migration of bulk enrollment, discussions toggle, mobile, and youtube endpoints.</p>
+        <p>
+          <strong>Current path:</strong> {location.pathname}
+        </p>
+        {legacyRouteCourseId ? (
+          <p>
+            <strong>Legacy course key:</strong> {legacyRouteCourseId}
+          </p>
+        ) : null}
       </header>
 
       <section className="actions">

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   fetchContentSearchStudio,
   fetchContentTaggingV1,
@@ -11,6 +11,32 @@ import {
 } from '../api/studio';
 
 export function AuthoringApisPage() {
+  const location = useLocation();
+  const legacyCourseKey = (() => {
+    const pathname = location.pathname.replace(/\/+$/, '');
+    const parseCourseLike = (segments: string[]) => {
+      if (segments.length === 0) {
+        return '';
+      }
+      if (segments[0].includes(':')) {
+        return decodeURIComponent(segments[0]);
+      }
+      if (segments.length >= 3) {
+        return decodeURIComponent(segments.slice(0, 3).join('/'));
+      }
+      return decodeURIComponent(segments[0]);
+    };
+    if (pathname.startsWith('/settings/advanced/')) {
+      const rest = pathname.slice('/settings/advanced/'.length).split('/').filter(Boolean);
+      return parseCourseLike(rest);
+    }
+    if (pathname.startsWith('/authoring-apis/')) {
+      const rest = pathname.slice('/authoring-apis/'.length).split('/').filter(Boolean);
+      return parseCourseLike(rest);
+    }
+    return '';
+  })();
+
   const contentSearchQuery = useQuery({ queryKey: ['authoring-content-search'], queryFn: fetchContentSearchStudio });
   const contentTaggingQuery = useQuery({ queryKey: ['authoring-content-tagging'], queryFn: fetchContentTaggingV1 });
   const librariesQuery = useQuery({ queryKey: ['authoring-libraries'], queryFn: fetchLibrariesV2 });
@@ -24,6 +50,14 @@ export function AuthoringApisPage() {
       <header className="page-header">
         <h1>Authoring APIs</h1>
         <p>React migration for authoring-related legacy API families.</p>
+        <p>
+          <strong>Current path:</strong> {location.pathname}
+        </p>
+        {legacyCourseKey ? (
+          <p>
+            <strong>Legacy course key:</strong> {legacyCourseKey}
+          </p>
+        ) : null}
       </header>
 
       <section className="actions">

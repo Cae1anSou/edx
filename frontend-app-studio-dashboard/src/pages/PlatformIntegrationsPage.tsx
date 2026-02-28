@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { useMemo } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import {
   fetchCcx,
   fetchCertificatesV0,
@@ -16,6 +17,16 @@ import {
 } from '../api/studio';
 
 export function PlatformIntegrationsPage() {
+  const location = useLocation();
+  const rssSeed = useMemo(() => {
+    const pathname = location.pathname.replace(/\/+$/, '');
+    if (!pathname.startsWith('/rss_proxy/')) {
+      return '';
+    }
+    const raw = pathname.slice('/rss_proxy/'.length);
+    return raw ? decodeURIComponent(raw) : '';
+  }, [location.pathname]);
+
   const ccxQuery = useQuery({ queryKey: ['pi-ccx'], queryFn: fetchCcx });
   const certsQuery = useQuery({ queryKey: ['pi-certs'], queryFn: fetchCertificatesV0 });
   const cohortsQuery = useQuery({ queryKey: ['pi-cohorts'], queryFn: fetchCohortsV1 });
@@ -34,6 +45,14 @@ export function PlatformIntegrationsPage() {
       <header className="page-header">
         <h1>Platform Integrations</h1>
         <p>React migration for platform integration and extension API families.</p>
+        <p>
+          <strong>Current path:</strong> {location.pathname}
+        </p>
+        {rssSeed ? (
+          <p>
+            <strong>Legacy rss path:</strong> {rssSeed}
+          </p>
+        ) : null}
       </header>
 
       <section className="actions">

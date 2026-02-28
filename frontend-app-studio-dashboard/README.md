@@ -18,7 +18,7 @@ The app expects backend endpoints at:
 - `POST /api/studio/v1/courses/rerun`
 - `POST /api/studio/v1/libraries`
 - `DELETE /api/studio/v1/notifications/{notificationId}`
-- `GET /api/support/v1/manage_course_team/?email=...`
+- `GET /api/support/v1/manage_course_team/?email=...` (also supports `username` / `user_id`)
 - `PUT /api/support/v1/manage_course_team/`
 - `GET /api/tasks/v0/`
 - `POST /api/tasks/v0/`
@@ -27,7 +27,11 @@ The app expects backend endpoints at:
 - `PATCH /api/notifications/read/`
 - `PUT /api/notifications/mark-seen/{appName}/`
 - `GET /api/notifications/v3/configurations/`
+- `GET /api/notifications/v2/configurations/`
 - `POST /api/notifications/preferences/update/{username}/`
+- `GET /api/notifications/preferences/update/{username}/`
+- `GET /api/notifications/preferences/update/{username}/{patch}/`
+- `POST /api/notifications/preferences/update/{username}/{patch}/`
 - `GET /api/v2/help_center/articles/search.json?query=...`
 - `GET /api/mfe_config/v1?mfe=...`
 - `GET /api/branding/v1/footer` (`Accept: application/json`)
@@ -88,5 +92,35 @@ Routes:
 - `/system-status` dedicated system status/health page
 - `/notifications-center` unified notifications operations page
 - `/resource-builder` dedicated course/library/rerun builder page
+
+Additional legacy CMS aliases are also wired to React destinations, including:
+- `/home`, `/home_library`
+- `/library/{libraryKey}`, `/library/{libraryKey}/team`
+- `/course_team/...`
+- `/videos/...`
+- `/group_configurations/...`
+- `/settings/details/...`, `/settings/grading/...`, `/settings/advanced/...`
+
+LMS entry aliases currently wired:
+- `/dashboard`
+- `/courses/...` (including nested courseware/progress/instructor paths via wildcard)
+- `/course_modes/...`
+- `/verify_student/...`
+- `/support/...`
+- `/wiki/...`
+- `/search/...`
+- `/catalog/...`
+- `/api-admin/...`
+- `/update_lang/...`
+- `/help_token/...`
+
+Additional legacy CMS aliases wired:
+- `/howitworks`
+- `/signin_redirect_to_lms`
+- `/request_course_creator`
+- `/import/...`, `/import_status/...`
+- `/export/...`, `/export_output/...`, `/export_status/...`
+- `/checklists/...`, `/container/...`, `/container_embed/...`, `/orphan/...`
+- `/tabs/...`, `/textbooks/...`, `/video_images/...`
 
 For same-origin local dev, run this app behind the same host as `backend-java`.

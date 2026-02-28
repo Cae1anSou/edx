@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import {
   createEnrollment,
   fetchCreditProviders,
@@ -12,8 +12,24 @@ import {
 } from '../api/studio';
 
 export function LearnerServicesPage() {
+  const location = useLocation();
   const [courseId, setCourseId] = useState('course-v1:org+num+run');
   const [financialBody, setFinancialBody] = useState('{"course_id":"course-v1:org+num+run","reason":"need aid"}');
+
+  const routeSeed = useMemo(() => {
+    const searchParams = new URLSearchParams(location.search);
+    return {
+      courseId: searchParams.get('course_id') ?? ''
+    };
+  }, [location.search]);
+
+  useEffect(() => {
+    if (!routeSeed.courseId) {
+      return;
+    }
+    setCourseId(routeSeed.courseId);
+    setFinancialBody(JSON.stringify({ course_id: routeSeed.courseId, reason: 'need aid' }));
+  }, [routeSeed.courseId]);
 
   const creditQuery = useQuery({ queryKey: ['learner-credit-providers'], queryFn: fetchCreditProviders });
   const endpointQuery = useQuery({ queryKey: ['learner-endpoint-v1'], queryFn: fetchEndpointV1 });
@@ -29,6 +45,14 @@ export function LearnerServicesPage() {
       <header className="page-header">
         <h1>Learner Services</h1>
         <p>React migration of enrollment, entitlements, financial assistance, and profile image actions.</p>
+        <p>
+          <strong>Current path:</strong> {location.pathname}
+        </p>
+        {routeSeed.courseId ? (
+          <p>
+            <strong>Legacy query course key:</strong> {routeSeed.courseId}
+          </p>
+        ) : null}
       </header>
 
       <section className="actions">

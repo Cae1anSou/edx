@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   fetchEndpointV1,
   fetchInstructorTaskV1,
@@ -10,6 +10,7 @@ import {
 } from '../api/studio';
 
 export function SystemStatusPage() {
+  const location = useLocation();
   const [mobileVersion, setMobileVersion] = useState('v0');
 
   const endpointQuery = useQuery({ queryKey: ['status-endpoint-v1'], queryFn: fetchEndpointV1 });
@@ -24,6 +25,9 @@ export function SystemStatusPage() {
       <header className="page-header">
         <h1>System Status</h1>
         <p>React migration for core health and status-oriented legacy endpoints.</p>
+        <p>
+          <strong>Current path:</strong> {location.pathname}
+        </p>
       </header>
 
       <section className="actions">

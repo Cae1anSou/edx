@@ -1,11 +1,63 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { fetchClipboardItems, fetchCourseBlocks, fetchDownstreams, syncDownstream } from '../api/studio';
 
 export function ContentstorePage() {
+  const location = useLocation();
   const [downstreamBlockId, setDownstreamBlockId] = useState('block-v1');
   const [courseId, setCourseId] = useState('course-v1:org+num+run');
+
+  const legacyRouteSeed = useMemo(() => {
+    const pathname = location.pathname.replace(/\/+$/, '');
+    const parseCourseLike = (segments: string[]) => {
+      if (segments.length === 0) {
+        return '';
+      }
+      if (segments[0].includes(':')) {
+        return decodeURIComponent(segments[0]);
+      }
+      if (segments.length >= 3) {
+        return decodeURIComponent(segments.slice(0, 3).join('/'));
+      }
+      return decodeURIComponent(segments[0]);
+    };
+    const coursePrefixes = ['/tabs/', '/textbooks/'];
+    for (const prefix of coursePrefixes) {
+      if (pathname.startsWith(prefix)) {
+        const raw = parseCourseLike(pathname.slice(prefix.length).split('/').filter(Boolean));
+        if (raw) {
+          return { courseKey: raw, downstreamId: '' };
+        }
+      }
+    }
+
+    const blockPrefixes = ['/container/', '/container_embed/', '/orphan/', '/xblock/container/', '/xblock/outline/', '/xblock/'];
+    for (const prefix of blockPrefixes) {
+      if (pathname.startsWith(prefix)) {
+        const restSegments = pathname.slice(prefix.length).split('/').filter(Boolean);
+        let raw = '';
+        if (prefix === '/xblock/' && restSegments.length > 1) {
+          raw = restSegments.slice(0, -1).join('/');
+        } else {
+          raw = restSegments.join('/');
+        }
+        if (raw) {
+          return { courseKey: '', downstreamId: decodeURIComponent(raw) };
+        }
+      }
+    }
+    return { courseKey: '', downstreamId: '' };
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (legacyRouteSeed.courseKey) {
+      setCourseId(legacyRouteSeed.courseKey);
+    }
+    if (legacyRouteSeed.downstreamId) {
+      setDownstreamBlockId(legacyRouteSeed.downstreamId);
+    }
+  }, [legacyRouteSeed]);
 
   const clipboardQuery = useQuery({
     queryKey: ['contentstore-clipboard'],
@@ -31,6 +83,19 @@ export function ContentstorePage() {
       <header className="page-header">
         <h1>Contentstore and Staging</h1>
         <p>React migration for clipboard, downstream sync, and blocks lookup.</p>
+        <p>
+          <strong>Current path:</strong> {location.pathname}
+        </p>
+        {legacyRouteSeed.courseKey ? (
+          <p>
+            <strong>Legacy course key:</strong> {legacyRouteSeed.courseKey}
+          </p>
+        ) : null}
+        {legacyRouteSeed.downstreamId ? (
+          <p>
+            <strong>Legacy block key:</strong> {legacyRouteSeed.downstreamId}
+          </p>
+        ) : null}
       </header>
 
       <section className="actions">

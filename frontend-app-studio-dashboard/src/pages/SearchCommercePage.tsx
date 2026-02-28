@@ -1,11 +1,31 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { fetchCommerceBaskets, fetchCreditProviders, fetchEntitlements, searchLegacy } from '../api/studio';
 
 export function SearchCommercePage() {
+  const location = useLocation();
   const [courseId, setCourseId] = useState('course-v1:org+num+run');
   const [user, setUser] = useState('studio-react-user');
+
+  const routeSeed = useMemo(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const seededCourseId = searchParams.get('course_id') ?? '';
+    const seededUser = searchParams.get('user') ?? '';
+    return {
+      courseId: seededCourseId,
+      user: seededUser
+    };
+  }, [location.search]);
+
+  useEffect(() => {
+    if (routeSeed.courseId) {
+      setCourseId(routeSeed.courseId);
+    }
+    if (routeSeed.user) {
+      setUser(routeSeed.user);
+    }
+  }, [routeSeed]);
 
   const commerceQuery = useQuery({ queryKey: ['sc-commerce'], queryFn: fetchCommerceBaskets });
   const creditQuery = useQuery({ queryKey: ['sc-credit'], queryFn: fetchCreditProviders });
@@ -14,12 +34,30 @@ export function SearchCommercePage() {
   const searchMutation = useMutation({
     mutationFn: searchLegacy
   });
+  const { mutate: runSearch, isPending: isSearching, data: searchData } = searchMutation;
+
+  useEffect(() => {
+    const isLegacySearchEntry = location.pathname.startsWith('/search') || location.pathname.startsWith('/catalog');
+    if (!isLegacySearchEntry || isSearching || searchData) {
+      return;
+    }
+    if (!courseId.trim() && !user.trim()) {
+      return;
+    }
+    runSearch({
+      courseId: courseId.trim() || undefined,
+      user: user.trim() || undefined
+    });
+  }, [courseId, isSearching, location.pathname, runSearch, searchData, user]);
 
   return (
     <main className="container">
       <header className="page-header">
         <h1>Search and Commerce</h1>
         <p>React migration for search, baskets, credit providers, and entitlements.</p>
+        <p>
+          <strong>Current path:</strong> {location.pathname}
+        </p>
       </header>
 
       <section className="actions">

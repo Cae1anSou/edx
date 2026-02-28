@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { fetchStudioDashboard } from '../api/studio';
 import { ItemList } from '../components/ItemList';
 import { CreateCourseForm, CreateLibraryForm } from '../components/CreateForms';
@@ -21,6 +21,7 @@ const TAB_TO_HASH: Record<Tab, string> = {
 };
 
 export function DashboardPage() {
+  const location = useLocation();
   const [tab, setTab] = useState<Tab>(() => HASH_TO_TAB[window.location.hash] ?? 'courses');
   const [showCourseForm, setShowCourseForm] = useState(false);
   const [showLibraryForm, setShowLibraryForm] = useState(false);
@@ -29,6 +30,24 @@ export function DashboardPage() {
     queryKey: ['studio-dashboard'],
     queryFn: fetchStudioDashboard
   });
+
+  const legacyCourseKey = (() => {
+    const pathname = location.pathname.replace(/\/+$/, '');
+    if (!pathname.startsWith('/course/')) {
+      return '';
+    }
+    const rest = pathname.slice('/course/'.length).split('/').filter(Boolean);
+    if (rest.length === 0) {
+      return '';
+    }
+    if (rest[0].includes(':')) {
+      return decodeURIComponent(rest[0]);
+    }
+    if (rest.length >= 3) {
+      return decodeURIComponent(rest.slice(0, 3).join('/'));
+    }
+    return decodeURIComponent(rest[0]);
+  })();
 
   useEffect(() => {
     const hash = TAB_TO_HASH[tab];
@@ -73,6 +92,14 @@ export function DashboardPage() {
       <header className="page-header">
         <h1>Studio Dashboard</h1>
         <p>Manage courses and libraries from one place.</p>
+        <p>
+          <strong>Current path:</strong> {location.pathname}
+        </p>
+        {legacyCourseKey ? (
+          <p>
+            <strong>Legacy course key:</strong> {legacyCourseKey}
+          </p>
+        ) : null}
       </header>
       <Notifications notifications={dashboardQuery.data.notifications} />
 

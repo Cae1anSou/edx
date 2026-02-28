@@ -57,9 +57,23 @@ export function createLibrary(input: z.infer<typeof createLibrarySchema>): Promi
 export type CreateCourseInput = z.infer<typeof createCourseSchema>;
 export type CreateLibraryInput = z.infer<typeof createLibrarySchema>;
 
-export function fetchCourseTeamAssignments(email: string): Promise<CourseTeamAssignment[]> {
-  const query = encodeURIComponent(email.trim());
-  return getApi<CourseTeamAssignment[]>(`/api/support/v1/manage_course_team/?email=${query}`);
+export function fetchCourseTeamAssignments(params: {
+  email?: string;
+  username?: string;
+  userId?: string;
+}): Promise<CourseTeamAssignment[]> {
+  const query = new URLSearchParams();
+  if (params.email?.trim()) {
+    query.set('email', params.email.trim());
+  }
+  if (params.username?.trim()) {
+    query.set('username', params.username.trim());
+  }
+  if (params.userId?.trim()) {
+    query.set('user_id', params.userId.trim());
+  }
+  const suffix = query.toString();
+  return getApi<CourseTeamAssignment[]>(`/api/support/v1/manage_course_team/${suffix ? `?${suffix}` : ''}`);
 }
 
 export function updateCourseTeamAssignments(params: {
@@ -112,10 +126,33 @@ export function fetchNotificationPreferencesV3(): Promise<{ status: string; vers
   return getApi<{ status: string; version: string; apps: string[] }>('/api/notifications/v3/configurations/');
 }
 
+export function fetchNotificationPreferencesV2(): Promise<Record<string, unknown>> {
+  return getApi<Record<string, unknown>>('/api/notifications/v2/configurations/');
+}
+
 export function updateNotificationPreference(username?: string): Promise<{ result: string; username: string }> {
-  const user = username ?? currentUserId();
+  return postNotificationPreferenceUpdate({ username });
+}
+
+export function getNotificationPreferenceUpdate(params?: {
+  username?: string;
+  patch?: string;
+}): Promise<{ result: string; username: string }> {
+  const user = params?.username ?? currentUserId();
+  const suffix = params?.patch ? `/${encodeURIComponent(params.patch)}` : '';
+  return getApi<{ result: string; username: string }>(
+    `/api/notifications/preferences/update/${encodeURIComponent(user)}${suffix}/`
+  );
+}
+
+export function postNotificationPreferenceUpdate(params?: {
+  username?: string;
+  patch?: string;
+}): Promise<{ result: string; username: string }> {
+  const user = params?.username ?? currentUserId();
+  const suffix = params?.patch ? `/${encodeURIComponent(params.patch)}` : '';
   return postApi<Record<string, never>, { result: string; username: string }>(
-    `/api/notifications/preferences/update/${encodeURIComponent(user)}/`,
+    `/api/notifications/preferences/update/${encodeURIComponent(user)}${suffix}/`,
     {}
   );
 }
@@ -205,6 +242,13 @@ export function fetchCourseBlocks(courseId?: string): Promise<Record<string, unk
   return getApi<Record<string, unknown>>(`/api/courses/v1/blocks/${suffix}`);
 }
 
+export function fetchLearningProgress(courseId: string, userId?: string): Promise<Record<string, unknown>> {
+  const targetUser = userId && userId.trim() ? userId.trim() : currentUserId();
+  return getApi<Record<string, unknown>>(
+    `/api/v1/courses/${encodeURIComponent(courseId)}/progress/${encodeURIComponent(targetUser)}`
+  );
+}
+
 export function fetchCreditProviders(): Promise<Record<string, unknown>> {
   return getApi<Record<string, unknown>>('/api/credit/v1/providers/');
 }
@@ -276,6 +320,30 @@ export function createUpload(filename?: string): Promise<{ upload: Record<string
 
 export function fetchUpload(token: string): Promise<{ upload: Record<string, unknown> }> {
   return getApi<{ upload: Record<string, unknown> }>(`/api/v2/uploads/${encodeURIComponent(token)}.json`);
+}
+
+export function fetchGenerateVideoUploadLink(courseId: string): Promise<Record<string, unknown>> {
+  return getApi<Record<string, unknown>>(`/api/legacy/media/generate_video_upload_link/${encodeURIComponent(courseId)}`);
+}
+
+export function fetchVideoImagesUploadEnabled(): Promise<Record<string, unknown>> {
+  return getApi<Record<string, unknown>>('/api/legacy/media/video_images_upload_enabled');
+}
+
+export function fetchVideoFeatures(): Promise<Record<string, unknown>> {
+  return getApi<Record<string, unknown>>('/api/legacy/media/video_features');
+}
+
+export function fetchTranscriptPreferences(courseId: string): Promise<Record<string, unknown>> {
+  return getApi<Record<string, unknown>>(`/api/legacy/media/transcript_preferences/${encodeURIComponent(courseId)}`);
+}
+
+export function fetchTranscriptCredentials(courseId: string): Promise<Record<string, unknown>> {
+  return getApi<Record<string, unknown>>(`/api/legacy/media/transcript_credentials/${encodeURIComponent(courseId)}`);
+}
+
+export function fetchVideoEncodingsDownload(courseId: string): Promise<Record<string, unknown>> {
+  return getApi<Record<string, unknown>>(`/api/legacy/media/video_encodings_download/${encodeURIComponent(courseId)}`);
 }
 
 export function postBulkEnroll(payload: Record<string, unknown>): Promise<Record<string, unknown>> {
